@@ -14,6 +14,7 @@ public class BookInfo {
     // 책 본문
     @Id
     @Column(name = "book_info_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int chapterNum;

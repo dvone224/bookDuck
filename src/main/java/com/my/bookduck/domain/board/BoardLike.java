@@ -26,6 +26,7 @@ public class BoardLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
 }
