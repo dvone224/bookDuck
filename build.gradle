@@ -18,10 +18,30 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // P6Spy 의존성 추가  --> jpa db 콘솔창에 ? 값넣어주는 라이브러리
+    implementation 'p6spy:p6spy:3.9.1'
+    implementation 'com.github.gavlyukovskiy:datasource-decorator-spring-boot-autoconfigure:1.9.0'
+
+    // 시큐리티추가
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+
+    //Oauth 유저 추가
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
