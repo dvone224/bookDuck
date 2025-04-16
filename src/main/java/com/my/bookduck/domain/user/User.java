@@ -1,6 +1,7 @@
 package com.my.bookduck.domain.user;
 
 import com.my.bookduck.domain.group.Group;
+import com.my.bookduck.domain.book.BookComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,6 +38,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Group> groups;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookComment> comments;
 
     private enum Role {
         ROLE_USER, ROLE_ADMIN

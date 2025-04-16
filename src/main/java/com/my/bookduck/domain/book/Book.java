@@ -3,10 +3,7 @@ package com.my.bookduck.domain.book;
 import com.my.bookduck.domain.board.Board;
 import com.my.bookduck.domain.group.Group;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"categories", "bookInfos"})
 public class Book {
+    // 책
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id")
@@ -39,4 +37,17 @@ public class Book {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookComment> comments;
+
+    @Builder
+    public Book(String title,String cover,String writer,LocalDate publicationDate,String publishing,int price){
+        this.title = title;
+        this.cover = cover;
+        this.writer = writer;
+        this.publicationDate = publicationDate;
+        this.publishing = publishing;
+        this.price = price;
+    }
 }

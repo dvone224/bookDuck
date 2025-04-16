@@ -12,6 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"book", "category"})
 public class BookCategory {
+    // 장르
     @Id
     @Column(name = "book_id")
     private Long bookId;

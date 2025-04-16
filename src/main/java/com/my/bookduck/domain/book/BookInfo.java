@@ -11,6 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = "book")
 public class BookInfo {
+    // 책 본문
     @Id
     @Column(name = "book_info_id")
     private Long id;
