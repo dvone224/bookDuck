@@ -18,10 +18,12 @@ public class BookInfo {
 
     private int chapterNum;
     private String chapterTitle;
+
     @Lob
     private String chapterBody;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
     private Book book;
 
 }

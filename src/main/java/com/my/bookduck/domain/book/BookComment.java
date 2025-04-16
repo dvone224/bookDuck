@@ -19,7 +19,7 @@ public class BookComment {
     private String chapterLocation; // 챕터 수
     private String bodyLocation; // 코멘트를 단 글자의 위치(글자수)
     private String comment; // 코멘트 문장
-    private LocalDateTime createAt; // 코멘트를 단 시간
+    private LocalDateTime createdAt; // 코멘트를 단 시간
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
