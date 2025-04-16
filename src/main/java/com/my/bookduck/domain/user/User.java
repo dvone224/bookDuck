@@ -1,5 +1,6 @@
 package com.my.bookduck.domain.user;
 
+import com.my.bookduck.domain.group.Group;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // jpa 만 내 객체를 생성할 수 있게
-@ToString(exclude = {"userBooks","carts"})
+@ToString(exclude = {"userBooks","carts","groups"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cart> carts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Group> groups;
 
     private enum Role {
         ROLE_USER, ROLE_ADMIN
