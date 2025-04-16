@@ -1,5 +1,6 @@
 package com.my.bookduck.domain.group;
 
+import com.my.bookduck.domain.book.BookComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,4 +26,6 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupBook> groupBooks;
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookComment> comments;
 }

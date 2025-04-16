@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Getter
 @EqualsAndHashCode
 public class BookCategoryId implements Serializable {
+    //
     private Long bookId;
     private Long categoryId;
 }

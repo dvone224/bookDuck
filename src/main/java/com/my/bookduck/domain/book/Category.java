@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = "bookCategories")
 public class Category {
+    // 장르
     @Id
     @Column(name = "category_id")
     private Long id;
