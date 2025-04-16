@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+
+<header th:fragment="bodyHeader">
+<!--    <a class="menu" href="/member/members">회원목록</a>-->
+    <div class="menu" onclick="location.href='/member/members'"> 회원목록</div>
+    <div class="menu" onclick="location.href='/member'"> 회원추가 </div>
+    <div class="menu" onclick="location.href='/study'"> 공부 기록 등록</div>
+    <div class="menu" onclick="location.href='/study/records'"> 공부 기록 목록 </div>
+</header>
+
+</html>
