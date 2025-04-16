@@ -13,5 +13,5 @@ server:
 
 logging:
   level:
-    com.my.studyRecord: trace
+    com.my.bookduck: trace
     org.springframework.security: debug
