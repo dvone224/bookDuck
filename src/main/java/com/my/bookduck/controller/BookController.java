@@ -3,6 +3,7 @@ package com.my.bookduck.controller;
 import com.my.bookduck.controller.request.AddBookRequest;
 import com.my.bookduck.controller.response.BookLIstViewResponse;
 import com.my.bookduck.domain.book.Book;
+import com.my.bookduck.service.BookInfoService;
 import com.my.bookduck.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final BookInfoService bookInfoService;
 
     @PostMapping({"/",""})
     public String addBook(final @RequestBody AddBookRequest book, Model model) {
@@ -78,5 +80,11 @@ public class BookController {
         return "list"; // 검색 결과도 동일한 'list' 뷰를 사용하여 표시 (뷰 템플릿 재사용)
     }
 
+
+    @GetMapping("/read/{book_id}")
+    @ResponseBody
+    public String readBook(@PathVariable Long book_id, Model model) {
+        return bookInfoService.getBookBody(book_id);
+    }
 
 }

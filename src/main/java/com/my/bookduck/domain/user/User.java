@@ -37,9 +37,6 @@ public class User {
     private List<Cart> carts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Group> groups;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookComment> comments;
 
     private enum Role {
