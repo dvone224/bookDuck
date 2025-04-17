@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>결제 페이지</title>
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+</head>
+<body>
+
+<h2>결제 정보 입력</h2>
+
+<form id="payment-form">
+    <label>상품명: <input type="text" id="product-name" value="해리포터" required></label><br><br>
+    <label>가격(원): <input type="number" id="amount" value="7000" required></label><br><br>
+    <label>구매자 이름: <input type="text" id="customer-name" value="홍길동" required></label><br><br>
+    <button type="submit">결제하기</button>
+</form>
+
+<script>
+    const tossPayments = TossPayments("test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1");
+
+    document.getElementById("payment-form").addEventListener("submit", function (e) {
+        e.preventDefault(); // 폼 submit 막기
+
+        const productName = document.getElementById("product-name").value;
+        const amount = parseInt(document.getElementById("amount").value);
+        const customerName = document.getElementById("customer-name").value;
+        const orderId = "order-" + Math.random().toString(36).substring(2, 12);
+
+        tossPayments.requestPayment("카드", {
+            amount: amount,
+            orderId: orderId,
+            orderName: productName,
+            customerName: customerName,
+            successUrl: `http://localhost:8081/payment/success?orderId=${orderId}&orderName=${encodeURIComponent(productName)}&customerName=${encodeURIComponent(customerName)}&amount=${amount}`,
+            failUrl: "http://localhost:8081/payment/fail"
+        }).catch(function (error) {
+            if (error.code === "USER_CANCEL") {
+                alert("결제를 취소했습니다.");
+            } else {
+                alert("에러 발생: " + error.message);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
