@@ -31,7 +31,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/login","/book","login-form").permitAll() // 페이지 경로 확정시 추가
+                        .requestMatchers("/", "/home", "/login","/book","login-form", "/**").permitAll() // 페이지 경로 확정시 추가
                         .requestMatchers("/user","/book").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin").hasAnyRole("ADMIN")
                         .requestMatchers("/error").permitAll()
