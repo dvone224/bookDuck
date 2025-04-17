@@ -3,10 +3,7 @@ package com.my.bookduck.domain.user;
 import com.my.bookduck.domain.group.Group;
 import com.my.bookduck.domain.book.BookComment;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +24,7 @@ public class User {
     private String nickName;
     private String email;
     private String img;
+    @Enumerated(EnumType.STRING)
     private Role role;
     private LocalDateTime created;
 
@@ -39,10 +37,34 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookComment> comments;
 
-    private enum Role {
+    public enum Role {
         ROLE_USER, ROLE_ADMIN
     }
 
+    // 2025. 04. 17 추가 _ 내연
+    private String provider;
+    private String providerId;
 
+    @Builder
+    public User(String name, String password, String loginId, String nickName, String email, String img, String role, String provider, String providerId) {
+        if(loginId == null) this.loginId = name;
+        else this.loginId = loginId;
+
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        if(loginId.equals("admin"))this.role = Role.ROLE_ADMIN;
+        else if(role == null) this.role = Role.ROLE_USER;
+        else this.role = Role.valueOf(role);
+
+        if(nickName == null) this.nickName = name;
+        else this.nickName = nickName;
+
+        this.img = img;
+
+        this.provider = provider;
+        this.providerId = providerId;
+
+    }
 
 }
