@@ -4,25 +4,29 @@
 <body>
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}" ></div>
 <section class="content">
-    <h1>LIST</h1>
-    <table>
-        <tr><th>아이디</th><th>이름</th><th>이메일</th><th>권한</th><th>삭제</th>
-        </tr>
-        <th:block th:each="member :${list}">
-            <tr> <!--기본값이 있고 그걸 변경하는 식-->
-                <td><a class="link btn btn-content" id="loginId" th:text="${member.LoginId}" th:href="@{/member/memberStudyRecord/{id}(id=${member.Id})}">admin </a></td>
-                <td th:text="${member.Name}">관리자</td>
-                <td th:text="${member.email}">none@join.com</td>
-                <td th:text="${member.Role}">ADMIN</td>
-                <td><a class="link btn btn-delete" th:href="@{/member/del/{id}(id=${member.Id})}">삭제 </a>
-                    <!--이건 js에 클릭이벤트로 처리해놓으셨더라-->
-                    <button class="btn btn-delete" th:data-id="${member.Id}" >삭제 ajax</button>
-                </td>
-            </tr>
-        </th:block>
-    </table>
+    <h1>My Groub list</h1>
+    <div class="container">
+        <div class="list-groub" th:each="groub : ${list}">
+            <!-- 모임 이름 -->
+            <div class="groub-content" th:text="${groub.name}">
+                그룹명
+            </div>
+            <!-- 가장 최근에 수정한 책, 없으면 최근에 추가된 책 -->
+            <div class="groub-content" th:text="${groub.recentBook}">
+                그룹 책
+            </div>
+            <!-- 모임장 -->
+            <div class="groub-content" th:text="${groub.leader}">
+                모임장
+            </div>
+            <!-- 모임원 -->
+            <div class="groub-content" th:text="${groub.user}">
+                모임원
+            </div>
+        </div>
+    </div>
 </section>
 </body>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </html>
-<script defer src="/js/member.js"> </script>
+<script defer src="/js/member.j s"> </script>
