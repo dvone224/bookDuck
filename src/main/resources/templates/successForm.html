@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 성공창</title>
+</head>
+<body>
+
+<h1>결제 성공</h1>
+
+<!-- 결제 정보를 출력할 영역 -->
+<p>주문 번호: <span id="order-id"></span></p>
+<p>상품명: <span id="product-name"></span></p>
+<p>가격: <span id="amount"></span>원</p>
+<p>구매자 이름: <span id="customer-name"></span></p>
+
+<script>
+    // URL에서 쿼리 파라미터를 가져오는 함수
+    const urlParams = new URLSearchParams(window.location.search);
+/*    function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }*/
+
+    // 쿼리 파라미터를 가져와서 HTML에 표시
+    document.getElementById("order-id").textContent = urlParams.get("orderId");
+    document.getElementById("product-name").textContent = urlParams.get("orderName");
+    document.getElementById("amount").textContent = urlParams.get("amount");
+    document.getElementById("customer-name").textContent = urlParams.get("customerName");
+</script>
+
+</body>
+</html>
