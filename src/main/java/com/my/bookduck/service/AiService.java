@@ -1,5 +1,10 @@
 package com.my.bookduck.service;
 
+import com.my.bookduck.domain.group.Group;
+import com.my.bookduck.domain.group.GroupUser;
+import com.my.bookduck.domain.user.User;
+import com.my.bookduck.repository.TestGroupRepository;
+import com.my.bookduck.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // 로깅 추가
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -26,6 +31,42 @@ import java.util.stream.IntStream;
 public class AiService {
 
     private final OllamaChatModel ollamaChatModel;
+    private final TestGroupRepository testGroupRepository;
+    private final UserRepository userRepository;
+
+    public void addGroup() {
+        // 1. Group 생성 및 저장
+        Group newGroup = new Group();
+        newGroup.setName("newGroupMapsId");
+        testGroupRepository.save(newGroup); // newGroup에 ID 할당됨
+
+        // 2. User 생성 및 저장
+        User newUser1 = new User();
+        userRepository.save(newUser1); // newUser1에 ID 할당됨
+        User newUser2 = new User();
+        userRepository.save(newUser2); // newUser2에 ID 할당됨
+
+        // 3. GroupUser 생성
+        GroupUser groupUser1 = new GroupUser();
+        groupUser1.setGroup(newGroup); // 연관 Group 설정
+        groupUser1.setUser(newUser1);  // 연관 User 설정
+
+        GroupUser groupUser2 = new GroupUser(newGroup, newUser2, null); // 생성자 사용 예시
+
+        // 4. Group에 GroupUser 추가 (양방향 연관관계 설정)
+        // Group 엔티티의 users 리스트가 초기화되어 있다고 가정
+        if (newGroup.getUsers() == null) {
+            newGroup.setUsers(new ArrayList<>());
+        }
+        newGroup.getUsers().add(groupUser1);
+        newGroup.getUsers().add(groupUser2);
+
+        // 5. Group 저장 (CascadeType.ALL에 의해 GroupUser도 저장됨)
+        // 저장 시 JPA가 newGroup.getId()와 newUser1.getId() 등을 읽어
+        // group_user 테이블의 group_id, user_id 컬럼(PK이자 FK)에 값을 채움
+        testGroupRepository.save(newGroup);
+
+    }
 
     @Value("${summarization.chunk.size}")
     private int chunkSize;

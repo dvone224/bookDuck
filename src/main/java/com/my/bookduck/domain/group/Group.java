@@ -5,15 +5,14 @@ import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.domain.book.BookComment;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 @Table(name = "duck_groups")
 public class Group {
     @Id

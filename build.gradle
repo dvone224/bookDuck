@@ -15,6 +15,9 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://github.com/psiegman/mvn-repo/raw/master/releases'
+    }
 }
 
 dependencyManagement {
@@ -66,8 +69,16 @@ dependencies {
 
     // 필수: WebFlux (WebClient, Mono, Flux) 및 Web (Controller 등) 지원
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation 'nl.siegmann.epublib:epublib-core:3.1'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+configurations {
+    all {
+        exclude group: "org.slf4j", module: "slf4j-simple"
+    }
 }

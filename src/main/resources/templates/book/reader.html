@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<!-- Thymeleaf 네임스페이스 추가 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Controller에서 전달된 bookTitle 사용 예시 (선택 사항) -->
+    <!-- <title th:text="${bookTitle != null ? bookTitle : 'Ebook Reader'}"></title> -->
+    <title>Ebook Reader</title>
+
+    <!-- *** JSZip 라이브러리 로드 추가 *** -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+
+    <!-- epub.js 라이브러리 로드 (CDN 또는 로컬 경로) -->
+    <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+    <!-- 로컬 경로 예시: <script th:src="@{/js/epub.min.js}"></script> -->
+
+    <style>
+        /* 이전 답변의 CSS 스타일과 동일하게 사용 가능 */
+        body { margin: 0; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; }
+        #viewer {
+            width: 90%; /* 너비 조정 */
+            max-width: 800px; /* 최대 너비 설정 */
+            height: 80vh;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            overflow: hidden; /* 스크롤바는 epub.js가 관리 */
+            position: relative; /* 버튼 위치 기준 */
+        }
+        #prev, #next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5em;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 15px 10px;
+            border-radius: 5px;
+            user-select: none;
+            z-index: 10; /* 뷰어 위에 표시 */
+            opacity: 0.3; /* 평소엔 반투명 */
+            transition: opacity 0.2s ease-in-out;
+        }
+        #viewer:hover #prev, #viewer:hover #next {
+            opacity: 0.8; /* 마우스 올리면 진하게 */
+        }
+        #prev { left: 5px; }
+        #next { right: 5px; }
+        #loading-indicator { /* 로딩 표시기 스타일 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2em;
+            color: #555;
+            display: none; /* 평소엔 숨김 */
+        }
+        #toc-container { /* 목차 컨테이너 스타일 */
+            width: 250px;
+            height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-right: 10px; /* 뷰어와의 간격 */
+            display: none; /* 초기엔 숨김 */
+        }
+        #toc-container ul { list-style: none; padding-left: 15px; }
+        #toc-container a { text-decoration: none; color: #337ab7; }
+        #toc-container a:hover { text-decoration: underline; }
+        .main-container { display: flex; justify-content: center; width: 100%;}
+        #controls { margin-top: 10px; } /* 컨트롤 버튼 영역 */
+    </style>
+</head>
+<body>
+<h1 th:text="'Reading Book ID: ' + ${bookId}">Ebook Reader</h1>
+
+<div class="main-container">
+    <div id="toc-container">
+        <h2>목차</h2>
+        <ul id="toc-list"></ul>
+    </div>
+    <div id="viewer">
+        <div id="loading-indicator">Loading...</div>
+        <a id="prev"><</a>
+        <a id="next">></a>
+    </div>
+</div>
+
+<div id="controls">
+    <button id="toggle-toc">목차 보기/숨기기</button>
+    <!-- 폰트 크기 조절 등 추가 가능 -->
+</div>
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/ // Thymeleaf 변수를 안전하게 사용하기 위해 CDATA 섹션 사용
+
+    // Controller에서 전달된 bookId 가져오기
+    const bookId = /*[[${bookId}]]*/ 'default_id';
+    const viewerElement = document.getElementById('viewer');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const tocContainer = document.getElementById('toc-container');
+    const tocList = document.getElementById('toc-list');
+    const toggleTocButton = document.getElementById('toggle-toc');
+
+    // Thymeleaf 표현식 안에서 @{...} 결과와 ${bookId}를 + 연산자로 연결
+    const bookUrl = /*[[ @{/book/api/books/epub/} + ${bookId} ]]*/ '/default/api/path/for/epub/default_id'; // fallback URL 예시
+
+    console.log("Book ID:", bookId);
+    console.log("Constructed absolute bookUrl:", bookUrl);
+
+    let rendition = null;
+    let book = null;
+
+    // bookId와 bookUrl이 유효한지 확인
+    if (bookId && bookId !== 'default_id' && bookUrl && !bookUrl.includes('default_id')) {
+        loadingIndicator.style.display = 'block'; // 로딩 시작 표시
+
+        try {
+            // --- epub.js 초기화 (URL 직접 사용 + 옵션) ---
+            // JSZip이 로드되었으므로 URL을 직접 사용해도 잘 작동할 것으로 기대
+            // openAs: "epub" 옵션은 URL이 EPUB 파일을 직접 가리킴을 명시 (안정성을 위해 유지)
+            book = ePub(bookUrl, { openAs: "epub" });
+
+            console.log("epub.js book object created directly from URL (with JSZip loaded):", book);
+
+            // book.ready Promise 로깅 (초기 파싱 확인)
+            book.ready.then(() => {
+                console.log(">>> book.ready Promise resolved! (from URL)");
+            }).catch(err => {
+                console.error(">>> book.ready Promise rejected! (from URL)", err);
+            });
+
+            // 렌더링 설정
+            rendition = book.renderTo("viewer", {
+                width: "100%",
+                height: "100%",
+                spread: "auto",
+                allowScriptedContent: true // 스크립트 실행 허용 유지
+            });
+
+            console.log("epub.js rendition object created:", rendition);
+
+            // rendition.started 로깅 (렌더링 시작 확인)
+            rendition.started.then(() => console.log(">>> rendition.started resolved!"));
+
+            // 첫 페이지 표시 (Promise 반환)
+            rendition.display().then(() => {
+                console.log("Book rendered successfully by epub.js from URL");
+                loadingIndicator.style.display = 'none'; // 로딩 완료
+                // 렌더링 완료 후 키보드 이벤트 연결
+                rendition.on("keyup", handleKeyPress);
+            }).catch(err => {
+                console.error("Error rendering book with epub.js from URL:", err);
+                viewerElement.innerHTML = "epub.js 렌더링 중 오류(URL).";
+                loadingIndicator.style.display = 'none';
+            });
+
+            // 목차 생성 (book.loaded.navigation이 로드된 후 사용 가능)
+            book.loaded.navigation.then(function(toc) {
+                tocContainer.style.display = 'block';
+                tocList.innerHTML = '';
+                toc.forEach(function(chapter) {
+                    const li = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.textContent = chapter.label.trim();
+                    link.href = chapter.href;
+                    link.onclick = function(event) {
+                        event.preventDefault();
+                        if (rendition) {
+                            rendition.display(chapter.href);
+                        }
+                    };
+                    li.appendChild(link);
+                    tocList.appendChild(li);
+                });
+                console.log("Table of Contents loaded successfully.");
+            }).catch(err => {
+                console.error("Error loading Table of Contents:", err);
+            });
+
+
+            // --- 이벤트 리스너 설정 ---
+            prevButton.addEventListener("click", function() {
+                if (rendition) rendition.prev();
+            });
+            nextButton.addEventListener("click", function() {
+                if (rendition) rendition.next();
+            });
+
+            rendition.on("relocated", function(location){
+                console.log("Current location CFI:", location.start.cfi);
+                // localStorage.setItem(bookUrl + ':loc', location.start.cfi);
+            });
+
+            toggleTocButton.addEventListener("click", function() {
+                if (tocContainer.style.display === 'none') {
+                    tocContainer.style.display = 'block';
+                } else {
+                    tocContainer.style.display = 'none';
+                }
+            });
+
+        } catch (e) {
+            console.error("Error during epub.js initialization or processing from URL:", e);
+            viewerElement.innerHTML = "EPUB 처리 중 오류 발생(URL).";
+            loadingIndicator.style.display = 'none';
+        }
+
+    } else {
+        console.log("Invalid bookId or bookUrl, cannot load book.");
+        viewerElement.innerText = "유효한 책 ID가 필요합니다.";
+        loadingIndicator.style.display = 'none';
+    }
+
+    // 키보드 이벤트 핸들러 함수
+    function handleKeyPress(event) {
+        if (rendition) {
+            if(event.key === "ArrowLeft"){
+                rendition.prev();
+            }
+            if(event.key === "ArrowRight"){
+                rendition.next();
+            }
+        }
+    }
+
+    /*]]>*/
+</script>
+</body>
+</html>

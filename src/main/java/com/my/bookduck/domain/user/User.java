@@ -10,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // jpa 만 내 객체를 생성할 수 있게
+@Setter
+@NoArgsConstructor  // jpa 만 내 객체를 생성할 수 있게
 @ToString(exclude = {"userBooks","carts","groups"})
 public class User {
     @Id

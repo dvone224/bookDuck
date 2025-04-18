@@ -25,6 +25,8 @@ public class Book {
     private LocalDate publicationDate;
     private String publishing;
     private int price;
+    private String identifier;
+    private String epubPath;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCategory> categories;

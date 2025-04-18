@@ -8,9 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer; // 중요
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +23,17 @@ public class SecurityConfig {
     private final UserSuccessHandler userSuccessHandler;
     private final UserAuthFailureHandler userAuthFailureHandler;
 
-
+    // 시큐리티 기능 비활성화
+    @Bean
+    public WebSecurityCustomizer configure() { // 스프링 시큐리티 기능 비활성화
+        return (web) -> web.ignoring()
+                .requestMatchers(
+                        new AntPathRequestMatcher("/static/**"),
+                        new AntPathRequestMatcher("/img/**"),
+                        new AntPathRequestMatcher("/css/**"),
+                        new AntPathRequestMatcher("/js/**")
+                );
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
