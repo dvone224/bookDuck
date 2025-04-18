@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>책목록페이지</title>
+</head>
+<body>
+<h1>책리스트</h1>
+  <section>
+    <table>
+      <tbody>
+      <tr th:each="book : ${list}">
+        <td th:text="${book.title}">3</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

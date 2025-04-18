@@ -7,6 +7,7 @@ import com.my.bookduck.domain.book.BookComment;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Table(name = "duck_groups")
+@ToString(exclude = {"users","books","boards","comments"})
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +24,7 @@ public class Group {
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GroupUser> users;
+    private List<GroupUser> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupBook> books;
@@ -32,4 +34,15 @@ public class Group {
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookComment> comments;
+
+
+    @Builder
+    public Group(String name) {
+        this.name = name;
+    }
+
+    public void addGroupUser(GroupUser groupUser) {
+        this.users.add(groupUser);
+        groupUser.setGroup(this); // GroupUser 엔티티에 setGroup 메소드 필요
+    }
 }

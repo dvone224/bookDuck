@@ -25,6 +25,7 @@
         const amount = parseInt(document.getElementById("amount").value);
         const customerName = document.getElementById("customer-name").value;
         const orderId = "order-" + Math.random().toString(36).substring(2, 12);
+        // + 유저아이디까지 추가해서 중복될 확률을 줄인다
 
         tossPayments.requestPayment("카드", {
             amount: amount,

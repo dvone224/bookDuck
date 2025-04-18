@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>새 그룹 생성 (멤버 닉네임 검색)</title>
+    <style>
+        body { font-family: sans-serif; }
+        .form-container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="search"] { width: calc(100% - 16px); padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        /* --- 검색 결과 스타일 --- */
+        #search-results-container {
+            position: relative;
+        }
+        #searchResults {
+            position: absolute;
+            width: calc(100% - 2px);
+            border: 1px solid #ccc;
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: white;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: none;
+        }
+        #searchResults li {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        #searchResults li:last-child {
+            border-bottom: none;
+        }
+        #searchResults li:hover {
+            background-color: #f0f0f0;
+        }
+        /* --- 선택된 사용자 스타일 --- */
+        #selectedUsersContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid #eee;
+            min-height: 40px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        .selected-user-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e0e0e0;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .selected-user-tag .remove-user {
+            margin-left: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            border: none;
+            background: none;
+            padding: 0;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .selected-user-tag .remove-user:hover {
+            color: #000;
+        }
+        /* --- 에러 메시지 --- */
+        #errorMessage {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 1em;
+        }
+        /* --- 버튼 --- */
+        .action-buttons { text-align: center; margin-top: 20px; }
+        button { padding: 10px 25px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>새 그룹 생성</h1>
+
+    <!-- 그룹 생성을 처리할 서버 URL로 수정 (예: /groups/create) -->
+    <form id="createGroupForm" th:action="@{/group/create}" method="post">
+
+        <!-- 1. 그룹 이름 입력 -->
+        <div class="form-group">
+            <label for="groupNameInput">그룹 이름:</label>
+            <input type="text" id="groupNameInput" name="groupName" placeholder="그룹 이름을 입력하세요" required>
+        </div>
+
+        <!-- 2. 사용자 검색 및 선택 -->
+        <div class="form-group">
+            <label for="userSearchInput">멤버 추가 (2명 ~ 4명):</label>
+            <div id="search-results-container">
+                <input type="search" id="userSearchInput" placeholder="초대할 사용자 닉네임 검색 (예: 오리)">
+                <!-- 검색 결과가 표시될 리스트 -->
+                <ul id="searchResults"></ul>
+            </div>
+        </div>
+
+        <!-- 3. 선택된 사용자 목록 표시 -->
+        <div class="form-group">
+            <label>선택된 멤버:</label>
+            <div id="selectedUsersContainer">
+                <!-- 선택된 사용자가 여기에 태그 형태로 추가됨 -->
+            </div>
+            <!-- 실제 form 제출 시 사용될 숨겨진 input 필드들을 담을 곳 -->
+            <div id="hiddenMemberIdsContainer" style="display: none;"></div>
+        </div>
+
+        <!-- 4. 에러 메시지 표시 영역 -->
+        <div id="errorMessage"></div>
+
+        <!-- 5. 그룹 생성 버튼 -->
+        <div class="action-buttons">
+            <button type="submit" id="submitButton" disabled>그룹 생성</button>
+            <!-- 초기에는 비활성화 -->
+        </div>
+
+    </form>
+</div>
+
+<script>
+    // --- 요소 가져오기 ---
+    const searchInput = document.getElementById('userSearchInput');
+    const searchResults = document.getElementById('searchResults');
+    const selectedUsersContainer = document.getElementById('selectedUsersContainer');
+    const hiddenMemberIdsContainer = document.getElementById('hiddenMemberIdsContainer');
+    const groupNameInput = document.getElementById('groupNameInput');
+    const createGroupForm = document.getElementById('createGroupForm');
+    const submitButton = document.getElementById('submitButton');
+    const errorMessageDiv = document.getElementById('errorMessage');
+
+    // --- 상태 변수 ---
+    let selectedUsers = new Map(); // 선택된 사용자 관리 (ID -> NickName)
+    const MIN_MEMBERS = 2;
+    const MAX_MEMBERS = 4;
+
+    // --- 이벤트 리스너 ---
+
+    // 1. 검색어 입력 시
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        const query = searchInput.value.trim();
+        if (query.length > 0) {
+            searchTimeout = setTimeout(() => {
+                fetchUsers(query); // 백엔드 API 호출
+            }, 300);
+        } else {
+            clearSearchResults();
+        }
+    });
+
+    // 2. 검색 결과 클릭 시 사용자 선택
+    searchResults.addEventListener('click', (event) => {
+        if (event.target.tagName === 'LI' && event.target.dataset.userId) {
+            const userId = event.target.dataset.userId;
+            const userNickname = event.target.dataset.userNickname; // data-user-nickname 속성 사용
+
+            if (selectedUsers.has(userId)) {
+                showError('이미 선택된 사용자입니다.');
+                return;
+            }
+            if (selectedUsers.size >= MAX_MEMBERS) {
+                showError(`최대 ${MAX_MEMBERS}명까지만 초대할 수 있습니다.`);
+                return;
+            }
+
+            addSelectedUser(userId, userNickname); // nickName 전달
+
+            searchInput.value = '';
+            clearSearchResults();
+            validateForm();
+        }
+    });
+
+    // 3. 선택된 사용자 제거 버튼 클릭 시
+    selectedUsersContainer.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-user')) {
+            const userId = event.target.dataset.userId;
+            removeSelectedUser(userId);
+            validateForm();
+        }
+    });
+
+    // 4. 폼 제출 시 유효성 검사
+    createGroupForm.addEventListener('submit', (event) => {
+        if (!validateForm()) {
+            event.preventDefault();
+            showError(`멤버를 ${MIN_MEMBERS}명 이상 ${MAX_MEMBERS}명 이하로 선택해주세요.`);
+        } else {
+            clearError();
+        }
+    });
+
+    // 5. 검색창 벗어나면 결과 숨기기
+    document.addEventListener('click', (event) => {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            clearSearchResults();
+        }
+    });
+
+    // --- 함수들 ---
+
+    // 사용자 검색 함수 (fetch URL은 /user/search?name=... 유지)
+    async function fetchUsers(query) {
+        // Controller의 /user/search 엔드포인트 호출
+        const searchUrl = `/user/search?name=${encodeURIComponent(query)}&limit=8`;
+        try {
+            const response = await fetch(searchUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            // 백엔드에서 [{id: ..., nickName: ...}, ...] 형태의 JSON 반환 기대
+            const users = await response.json();
+            displaySearchResults(users);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            showError('사용자 검색 중 오류가 발생했습니다.');
+            clearSearchResults();
+        }
+    }
+
+    // 검색 결과 표시 함수
+    function displaySearchResults(users) {
+        searchResults.innerHTML = '';
+        if (users && users.length > 0) {
+            users.forEach(user => {
+                // 이미 선택된 사용자는 결과에 표시하지 않음
+                if (!selectedUsers.has(String(user.id))) {
+                    const li = document.createElement('li');
+                    li.textContent = user.nickName; // 목록에 닉네임 표시
+                    li.dataset.userId = user.id;
+                    li.dataset.userNickname = user.nickName; // dataset에도 nickName 저장
+                    searchResults.appendChild(li);
+                }
+            });
+            searchResults.style.display = 'block';
+        } else {
+            const li = document.createElement('li');
+            li.textContent = '검색 결과가 없습니다.';
+            li.style.cursor = 'default';
+            li.style.color = '#777';
+            searchResults.appendChild(li);
+            searchResults.style.display = 'block';
+        }
+    }
+
+    // 검색 결과 숨기기 함수
+    function clearSearchResults() {
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'none';
+    }
+
+    // 선택된 사용자 추가 함수
+    function addSelectedUser(userId, userNickname) { // 파라미터 이름 변경
+        if (!selectedUsers.has(userId) && selectedUsers.size < MAX_MEMBERS) {
+            selectedUsers.set(userId, userNickname); // Map에 nickName 저장
+
+            // 화면에 태그 추가
+            const tag = document.createElement('span');
+            tag.classList.add('selected-user-tag');
+            tag.dataset.userId = userId;
+            tag.textContent = userNickname; // 태그 텍스트를 nickName으로 설정
+
+            const removeBtn = document.createElement('button');
+            removeBtn.classList.add('remove-user');
+            removeBtn.type = 'button';
+            removeBtn.textContent = '×';
+            removeBtn.dataset.userId = userId;
+
+            tag.appendChild(removeBtn);
+            selectedUsersContainer.appendChild(tag);
+
+            // 숨겨진 input 추가 (폼 제출용)
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'memberIds'; // 서버에서 받을 이름
+            hiddenInput.value = userId;
+            hiddenInput.id = `hidden-user-${userId}`; // 제거 시 찾기 위한 ID
+            hiddenMemberIdsContainer.appendChild(hiddenInput);
+
+            clearError();
+        }
+    }
+
+    // 선택된 사용자 제거 함수
+    function removeSelectedUser(userId) {
+        if (selectedUsers.has(userId)) {
+            selectedUsers.delete(userId); // Map에서 제거
+
+            // 화면에서 태그 제거
+            const tagToRemove = selectedUsersContainer.querySelector(`.selected-user-tag[data-user-id="${userId}"]`);
+            if (tagToRemove) {
+                selectedUsersContainer.removeChild(tagToRemove);
+            }
+
+            // 숨겨진 input 제거
+            const hiddenInputToRemove = hiddenMemberIdsContainer.querySelector(`#hidden-user-${userId}`);
+            if (hiddenInputToRemove) {
+                hiddenMemberIdsContainer.removeChild(hiddenInputToRemove);
+            }
+            clearError();
+        }
+    }
+
+    // 폼 유효성 검사 및 버튼 활성화/비활성화 함수
+    function validateForm() {
+        const memberCount = selectedUsers.size;
+        const isGroupNameValid = groupNameInput.value.trim().length > 0;
+        const isMemberCountValid = memberCount >= MIN_MEMBERS && memberCount <= MAX_MEMBERS;
+
+        if (isGroupNameValid && isMemberCountValid) {
+            submitButton.disabled = false;
+            clearError();
+            return true;
+        } else {
+            submitButton.disabled = true;
+            return false;
+        }
+    }
+
+    // 에러 메시지 표시
+    function showError(message) {
+        errorMessageDiv.textContent = message;
+    }
+
+    // 에러 메시지 제거
+    function clearError() {
+        errorMessageDiv.textContent = '';
+    }
+
+    // 페이지 로드 시 초기 유효성 검사
+    validateForm();
+    groupNameInput.addEventListener('input', validateForm);
+
+</script>
+
+</body>
+</html>
