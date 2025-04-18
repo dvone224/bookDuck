@@ -37,16 +37,15 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    @ResponseBody
     public String getAllBooks(final Model model) {
         List<BookLIstViewResponse> books = bookService.getAllBooks().stream()
                 .map(m -> new BookLIstViewResponse(m)).toList();
 
         if(books.isEmpty()) {
-            return "redirect:/";
+            return "book/booklist";
         }
         model.addAttribute("list", books);
-        return "list";
+        return "book/booklist";
     }
 
     @GetMapping("/search")
