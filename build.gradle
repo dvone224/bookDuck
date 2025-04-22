@@ -66,6 +66,12 @@ dependencies {
 
     // 필수: WebFlux (WebClient, Mono, Flux) 및 Web (Controller 등) 지원
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //email 인증 관련
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    implementation 'javax.mail:javax.mail-api:1.6.2'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
 }
 
 tasks.named('test') {
