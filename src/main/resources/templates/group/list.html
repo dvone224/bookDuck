@@ -1,32 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
 <body>
-<div th:replace="~{fragments/bodyHeader :: bodyHeader}" ></div>
-<section class="content">
-    <h1>My Groub list</h1>
-    <div class="container">
-        <div class="list-groub" th:each="groub : ${list}">
-            <!-- 모임 이름 -->
-            <div class="groub-content" th:text="${groub.name}">
-                그룹명
-            </div>
-            <!-- 가장 최근에 수정한 책, 없으면 최근에 추가된 책 -->
-            <div class="groub-content" th:text="${groub.recentBook}">
-                그룹 책
-            </div>
-            <!-- 모임장 -->
-            <div class="groub-content" th:text="${groub.leader}">
-                모임장
-            </div>
-            <!-- 모임원 -->
-            <div class="groub-content" th:text="${groub.user}">
-                모임원
-            </div>
-        </div>
-    </div>
-</section>
+
 </body>
-<footer th:replace="~{fragments/footer :: footer}"></footer>
 </html>
-<script defer src="/js/member.j s"> </script>

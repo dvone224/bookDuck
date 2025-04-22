@@ -1,19 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>책목록페이지</title>
+  <meta charset="UTF-8">
+  <title th:text="${pageTitle ?: '도서 목록'}">도서 목록</title>
+  <!-- 스타일은 이전과 동일하게 유지 -->
+  <style>
+    /* ... 이전 스타일 코드 ... */
+  </style>
 </head>
 <body>
-<h1>책리스트</h1>
+<!-- 왼쪽 사이드바: 카테고리 필터 -->
+<aside class="sidebar">
+  <h2>카테고리</h2>
+  <form id="filterForm" th:action="@{/book/books}" method="get">
+    <input type="hidden" name="query" th:value="${searchQuery}"> <!-- 검색어 유지 -->
+
+    <div class="filter-group">
+      <label for="mainCategorySelect">대분류</label>
+      <!-- 이름은 mainCategoryId 유지, 선택 시 JS에서 처리 -->
+      <select id="mainCategorySelect" name="mainCategoryIdParam">
+        <option value="">-- 전체 --</option>
+        <option th:each="cat : ${mainCategories}"
+                th:value="${cat.id}"
+                th:text="${cat.name}"
+                th:selected="${cat.id == selectedMainCategoryId}">대분류</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="subCategorySelect">소분류</label>
+      <!-- 최종 필터링 ID는 이 값으로 제출됨 -->
+      <select id="subCategorySelect" name="categoryId" th:disabled="${subCategories.isEmpty()}">
+        <option value="">-- 전체 --</option>
+        <option th:each="subCat : ${subCategories}"
+                th:value="${subCat.id}"
+                th:text="${subCat.name}"
+                th:selected="${subCat.id == selectedSubCategoryId}">소분류</option>
+      </select>
+    </div>
+    <button type="submit" style="width: 100%; padding: 10px; margin-top: 10px; background-color: #28a745; color: white; border:none; border-radius: 4px; cursor:pointer;">적용</button>
+  </form>
+</aside>
+
+<!-- 오른쪽 메인 컨텐츠: 검색창 및 도서 목록 -->
+<main class="main-content">
+  <h1 th:text="${pageTitle ?: '도서 목록'}">도서 목록</h1>
+
+  <!-- 검색 폼 -->
+  <form th:action="@{/book/books}" method="get" class="search-form">
+    <!-- 숨겨진 필드: 현재 선택된 카테고리 필터 유지 -->
+    <!-- 소분류가 선택되었으면 categoryId에 소분류 ID를, 아니면 mainCategoryId에 대분류 ID를 -->
+    <input type="hidden" name="categoryId" th:value="${selectedSubCategoryId}">
+    <input type="hidden" name="mainCategoryId" th:value="${selectedSubCategoryId == null ? selectedMainCategoryId : ''}">
+
+    <input type="text" name="query" placeholder="책 제목 또는 저자 검색" th:value="${searchQuery}" aria-label="도서 검색">
+    <button type="submit">검색</button>
+    <a th:if="${searchQuery != null and !searchQuery.isEmpty()} or ${selectedMainCategoryId != null}" th:href="@{/book/books}">전체 목록 보기</a>
+  </form>
+
+  <!-- 도서 목록 (테이블 구조는 이전과 동일) -->
   <section>
+    <!-- ... 테이블 및 메시지 표시 로직 (이전과 동일) ... -->
+    <p th:if="${message}" class="message" th:text="${message}"></p>
     <table>
+      <thead>
+      <tr>
+        <th>표지</th>
+        <th>제목</th>
+        <th>저자</th>
+        <th>출판사</th>
+      </tr>
+      </thead>
       <tbody>
-      <tr th:each="book : ${list}">
-        <td th:text="${book.title}">3</td>
+      <tr th:if="${!list.isEmpty()}" th:each="book : ${list}">
+        <td>
+          <img th:if="${book.cover != null and !book.cover.isEmpty()}" th:src="@{${book.cover}}" alt="표지" class="cover-thumbnail"/>
+          <span th:unless="${book.cover != null and !book.cover.isEmpty()}">N/A</span>
+        </td>
+        <td><span th:text="${book.title}">책 제목</span></td>
+        <td th:text="${book.writer}">저자 이름</td>
+        <td th:text="${book.publishing}">출판사 이름</td>
+      </tr>
+      <tr th:if="${list.isEmpty() and message == null}">
+        <td colspan="4" class="no-data">표시할 도서가 없습니다.</td>
       </tr>
       </tbody>
     </table>
   </section>
+</main>
+
+<!-- JavaScript (이전과 거의 동일) -->
+<script>
+  const mainCategorySelect = document.getElementById('mainCategorySelect');
+  const subCategorySelect = document.getElementById('subCategorySelect');
+  const filterForm = document.getElementById('filterForm');
+
+  mainCategorySelect.addEventListener('change', async function() {
+    const selectedMainId = this.value;
+    subCategorySelect.innerHTML = '<option value="">-- 전체 --</option>';
+    subCategorySelect.disabled = true;
+
+    // 대분류 선택 시, 소분류 드롭다운의 name="categoryId" 값을 '' 로 초기화
+    // (사용자가 소분류 '전체'를 선택한 효과)
+    subCategorySelect.value = '';
+
+    // 대분류 선택 시, mainCategoryId 파라미터 이름을 mainCategoryIdParam -> mainCategoryId로 변경하여
+    // 폼 제출 시 이 값이 넘어 가도록 함 (소분류가 ''일 때 대분류 ID가 기준이 됨)
+    // 이 부분은 폼의 name을 수정하는 대신, Controller에서 파라미터 처리로 해결하는 것이 더 나음
+    // mainCategorySelect.name = 'mainCategoryId'; // 이 줄은 제거하거나 주석 처리
+
+
+    if (selectedMainId) {
+      try {
+        const response = await fetch(`/api/categories/${selectedMainId}/subcategories`);
+        if (!response.ok) throw new Error('Failed to fetch subcategories');
+        const subCategories = await response.json();
+
+        if (subCategories && subCategories.length > 0) {
+          subCategories.forEach(subCat => {
+            const option = document.createElement('option');
+            option.value = subCat.id;
+            option.textContent = subCat.name;
+            subCategorySelect.appendChild(option);
+          });
+          subCategorySelect.disabled = false;
+        }
+      } catch (error) {
+        console.error("Error loading subcategories:", error);
+      }
+    }
+  });
+
+  // 소분류 선택 시 처리 (특별히 할 일 없음, form 제출 시 categoryId 값이 사용됨)
+  subCategorySelect.addEventListener('change', function() {
+    // 소분류가 선택되면 mainCategoryIdParam의 의미가 없어지므로,
+    // 폼 제출 시 mainCategoryIdParam 값을 ''로 변경하는 로직 추가 가능 (선택적)
+    // if (this.value !== '') {
+    //      mainCategorySelect.name = 'mainCategoryIdParam_disabled'; // 예시: 임시로 이름 변경
+    // } else {
+    //      mainCategorySelect.name = 'mainCategoryIdParam'; // 복원
+    // }
+    // => Controller에서 로직으로 처리하는 것이 더 안정적임
+  });
+</script>
 </body>
 </html>
