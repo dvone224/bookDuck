@@ -36,7 +36,8 @@ public class UserAuthFailureHandler extends SimpleUrlAuthenticationFailureHandle
             errorMessage = errorMessage + "알 수 없는 오류로 로그인 요청을 처리할 수 없습니다. 관리자에게 문의하세요.";
         }
         log.error("errorMessage = {}", errorMessage);
-        setDefaultFailureUrl("/login?error=true&exception" + errorMessage);
+        //setDefaultFailureUrl("/login?error=true&exception" + errorMessage);
+        setDefaultFailureUrl("/login-form");
 
         super.onAuthenticationFailure(request, response, exception);
 

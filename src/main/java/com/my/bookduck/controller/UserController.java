@@ -24,7 +24,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping({"","/"})
-    public String addUser(@RequestParam AddUserRequest user, Model model) {
+    public String addUser(final @ModelAttribute AddUserRequest user, Model model) {
         log.info("request User: {}", user);
         try{
             userService.createUser(user);

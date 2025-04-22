@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>북덕 로그인 페이지</title>
 </head>
+
+
+
 <body>
+
+<div class="form-container">
+    <h1>북덕 로그인</h1>
+
+    <form id="userLoginform" action="/login" method="post">
+        <!-- 아이디 입력 영역 -->
+        <div>
+            <label for="username">아이디</label>
+            <input type="text" id="username" name="username" placeholder="ID를 입력해주세요" required autocomplete="off">
+        </div>
+        <div>
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" placeholder="PASSWORD를 입력해주세요" required autocomplete="off">
+        </div>
+        <input type="radio" value="아이디 저장">
+        <a>아이디 또는 비밀번호 찾기</a>
+        <div>
+            <button type="submit" class="btn login-btn">로그인</button>
+        </div>
+
+        <div class="social-login">
+            <button type="button" class="btn social-btn google-btn" onclick='location.href="/oauth2/authorization/google"'>Google로 로그인</button>
+            <button type="button" class="btn social-btn naver-btn" onclick='location.href="/oauth2/authorization/naver"'>Naver로 로그인</button>
+        </div>
+        <button type="button" class="btn signup-btn" onclick="location.href='/sign-up'">회원가입</button>
+
+    </form>
+
+
+</div>
+
+
 
 </body>
 </html>
