@@ -24,10 +24,12 @@ public class GroupBook {
     @Column(name = "book_id")
     private Long bookId;
 
+    @MapsId("groupId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
 
+    @MapsId("bookId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;

@@ -91,7 +91,6 @@ public class BookController {
     // 1. 뷰어 HTML 페이지를 반환하는 메소드
     @GetMapping("/read/{id}")
     public String ebookReaderPage(@PathVariable Long id, Model model) {
-        // (선택 사항) 책 정보를 미리 조회해서 모델에 추가할 수 있음 (예: 제목 표시)
         // Book book = bookService.getBookById(id);
         // if (book == null) { return "error/404"; /* 404 페이지 반환 */ }
         // model.addAttribute("bookTitle", book.getTitle());
@@ -101,16 +100,11 @@ public class BookController {
     }
 
 
-    // 2. EPUB 파일 데이터를 반환하는 메소드 (이전 코드와 거의 동일)
-    //    @ResponseBody 어노테이션을 추가하여 리턴값이 뷰 이름이 아니라 응답 본문임을 명시
     @CrossOrigin
     @GetMapping("/api/books/epub/{id}")
-    @ResponseBody // 중요: 이 메소드는 뷰가 아닌 데이터를 직접 반환
+    @ResponseBody
     public ResponseEntity<Resource> serveEpub(@PathVariable Long id) {
-        // *** 이 로그를 추가하세요! ***
-        System.out.println("!!!!!!!!!!! serveEpub method entered for id: " + id + " !!!!!!!!!!!");
         Path filePath = eBookService.getBookPath(id); // 서비스에서 Path 객체 가져오기
-        log.info("Serving epub file {}", filePath);
         if (filePath == null) {
             System.err.println("File path not found for id: " + id);
             return ResponseEntity.notFound().build();
