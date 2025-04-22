@@ -31,7 +31,6 @@ public class EBookService {
     public Path getBookPath(Long id) {
         Optional<Book> bookOptional = bookRepository.findById(id);
         if (bookOptional.isPresent()) {
-            // DB에는 상대 경로 또는 파일명만 저장되어 있다고 가정
             String relativePathString = bookOptional.get().getEpubPath();
             if (relativePathString != null && !relativePathString.isEmpty()) {
                 // 기본 경로(epubBasePath)와 DB의 상대 경로(relativePathString)를 안전하게 조합

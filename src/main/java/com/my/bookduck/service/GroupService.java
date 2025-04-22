@@ -43,14 +43,7 @@ public class GroupService {
                         return new IllegalArgumentException("Invalid user ID: " + memberId);
                     });
 
-            GroupUser groupUser = GroupUser.builder()
-                    // .group(newGroup) // 아래 addGroupUser에서 설정됨
-                    .user(member)
-                    .build();
-            groupUser.setGroupId(newGroup.getId());
-            groupUser.setUserId(member.getId());
             // *** 중요 변경: GroupUser를 Group의 리스트에 추가 (양방향 설정 포함) ***
-            newGroup.addGroupUser(groupUser); // 편의 메소드 사용
             // 또는 직접 추가:
             // newGroup.getUsers().add(groupUser);
             // groupUser.setGroup(newGroup); // 양방향 설정

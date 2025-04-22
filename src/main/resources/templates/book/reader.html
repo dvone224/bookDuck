@@ -2,229 +2,641 @@
 <!-- Thymeleaf 네임스페이스 추가 -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- Controller에서 전달된 bookTitle 사용 예시 (선택 사항) -->
-    <!-- <title th:text="${bookTitle != null ? bookTitle : 'Ebook Reader'}"></title> -->
-    <title>Ebook Reader</title>
-
-    <!-- *** JSZip 라이브러리 로드 추가 *** -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ebook Reader (Mobile) - offsetX Nav + Settings</title> <!-- Title updated -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
-
-    <!-- epub.js 라이브러리 로드 (CDN 또는 로컬 경로) -->
     <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-    <!-- 로컬 경로 예시: <script th:src="@{/js/epub.min.js}"></script> -->
 
     <style>
-        /* 이전 답변의 CSS 스타일과 동일하게 사용 가능 */
-        body { margin: 0; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; }
-        #viewer {
-            width: 90%; /* 너비 조정 */
-            max-width: 800px; /* 최대 너비 설정 */
-            height: 80vh;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            overflow: hidden; /* 스크롤바는 epub.js가 관리 */
-            position: relative; /* 버튼 위치 기준 */
+        /* Basic reset and mobile-first styles */
+        * {
+            box-sizing: border-box;
         }
-        #prev, #next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2.5em;
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* Overall page structure */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #f8f8f8;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 50;
+            flex-wrap: wrap;
+        }
+        .app-header h1 {
+            font-size: 1.1em;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: auto;
+        }
+        #toggle-toc {
+            padding: 5px 10px;
+            font-size: 0.9em;
             cursor: pointer;
-            background: rgba(0, 0, 0, 0.2);
-            color: white;
-            padding: 15px 10px;
-            border-radius: 5px;
-            user-select: none;
-            z-index: 10; /* 뷰어 위에 표시 */
-            opacity: 0.3; /* 평소엔 반투명 */
-            transition: opacity 0.2s ease-in-out;
+            flex-shrink: 0;
+            margin-left: 10px;
         }
-        #viewer:hover #prev, #viewer:hover #next {
-            opacity: 0.8; /* 마우스 올리면 진하게 */
+        /* Remove debug buttons */
+        #debug-prev, #debug-next {
+            display: none;
         }
-        #prev { left: 5px; }
-        #next { right: 5px; }
-        #loading-indicator { /* 로딩 표시기 스타일 */
+
+        /* Viewer area */
+        #viewer-container {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* Cursor might be set by epubjs iframe now */
+            /* cursor: pointer; */
+        }
+        #viewer {
+            width: 100%;
+            height: 100%;
+        }
+        #viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            /* Let iframe handle pointer events for rendition listener */
+            pointer-events: auto;
+        }
+
+        /* Prev/Next Buttons - Hidden */
+        #prev, #next {
+            display: none;
+        }
+
+        /* Loading Indicator */
+        #loading-indicator {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 1.2em;
             color: #555;
-            display: none; /* 평소엔 숨김 */
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 20;
         }
-        #toc-container { /* 목차 컨테이너 스타일 */
-            width: 250px;
-            height: 80vh;
+
+        /* --- Mobile Table of Contents (Off-Canvas Menu) --- */
+        #toc-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+        #toc-container {
+            position: fixed;
+            top: 0;
+            left: -85%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            z-index: 1000;
             overflow-y: auto;
-            border: 1px solid #eee;
-            padding: 10px;
-            margin-right: 10px; /* 뷰어와의 간격 */
-            display: none; /* 초기엔 숨김 */
+            transition: left 0.3s ease-in-out;
+            padding: 15px;
+            padding-top: 50px;
         }
-        #toc-container ul { list-style: none; padding-left: 15px; }
-        #toc-container a { text-decoration: none; color: #337ab7; }
-        #toc-container a:hover { text-decoration: underline; }
-        .main-container { display: flex; justify-content: center; width: 100%;}
-        #controls { margin-top: 10px; } /* 컨트롤 버튼 영역 */
+        #toc-container h2 { margin-top: 0; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        #toc-container ul { list-style: none; padding: 0; margin: 0; }
+        #toc-container li { margin-bottom: 5px; }
+        #toc-container a { text-decoration: none; color: #337ab7; display: block; padding: 8px 5px; border-radius: 3px; }
+        #toc-container a:hover, #toc-container a:active { background-color: #eee; text-decoration: none; }
+
+        /* State when TOC is visible */
+        body.toc-visible #toc-container { left: 0; }
+        body.toc-visible #toc-overlay {
+            pointer-events: auto;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+
+        /* --- Settings Bar Styles --- */
+        #settings-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(40, 40, 40, 0.9);
+            color: white;
+            padding: 10px 15px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+            z-index: 900;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateY(100%); /* Start hidden */
+            transition: transform 0.3s ease-in-out;
+            font-size: 0.9em;
+        }
+        #settings-bar.settings-visible {
+            transform: translateY(0); /* Slide in */
+        }
+        .settings-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-grow: 1;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .setting-group label {
+            margin-right: 5px;
+        }
+        #settings-bar button {
+            padding: 5px 10px;
+            min-width: 30px;
+            cursor: pointer;
+            background-color: #555;
+            border: 1px solid #777;
+            color: white;
+            border-radius: 3px;
+        }
+        #settings-bar button:active {
+            background-color: #777;
+        }
+        #current-font-size {
+            min-width: 45px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #close-settings {
+            background-color: transparent;
+            border: none;
+            font-size: 1.2em;
+            padding: 0 5px;
+        }
+
+        /* --- Dark Mode Styles for Main UI --- */
+        body.dark-mode { background-color: #121212; }
+        body.dark-mode .app-header { background-color: #1e1e1e; color: #e0e0e0; border-bottom-color: #333; }
+        body.dark-mode #settings-bar { background-color: rgba(30, 30, 30, 0.95); color: #e0e0e0; box-shadow: 0 -2px 5px rgba(0,0,0,0.5); }
+        body.dark-mode #settings-bar button { background-color: #333; border-color: #555; color: #e0e0e0; }
+        body.dark-mode #settings-bar button:active { background-color: #555; }
+        body.dark-mode #close-settings { color: #bbb; }
+        body.dark-mode #toc-container { background-color: #1e1e1e; color: #e0e0e0; border-right: 1px solid #333; }
+        body.dark-mode #toc-container h2 { border-bottom-color: #333; }
+        body.dark-mode #toc-container a { color: #bb86fc; }
+        body.dark-mode #toc-container a:hover, body.dark-mode #toc-container a:active { background-color: #333; }
+        body.dark-mode #loading-indicator { color: #e0e0e0; background: rgba(30, 30, 30, 0.8); }
+
     </style>
 </head>
 <body>
-<h1 th:text="'Reading Book ID: ' + ${bookId}">Ebook Reader</h1>
 
-<div class="main-container">
-    <div id="toc-container">
-        <h2>목차</h2>
-        <ul id="toc-list"></ul>
-    </div>
-    <div id="viewer">
+<div class="page-container">
+    <header class="app-header">
+        <h1 th:text="${bookTitle != null ? bookTitle : 'Ebook Reader'}">Ebook Reader</h1>
+        <!-- <button id="debug-prev">Debug Prev</button> -->
+        <!-- <button id="debug-next">Debug Next</button> -->
+        <button id="toggle-toc">목차</button>
+    </header>
+
+    <div id="viewer-container">
+        <div id="viewer"></div> <!-- iframe will be rendered inside here -->
         <div id="loading-indicator">Loading...</div>
-        <a id="prev"><</a>
-        <a id="next">></a>
+        <a id="prev" aria-label="Previous Page"><</a>
+        <a id="next" aria-label="Next Page">></a>
     </div>
 </div>
 
-<div id="controls">
-    <button id="toggle-toc">목차 보기/숨기기</button>
-    <!-- 폰트 크기 조절 등 추가 가능 -->
+<div id="toc-overlay"></div>
+<nav id="toc-container" aria-label="Table of Contents">
+    <h2>목차</h2>
+    <ul id="toc-list"></ul>
+</nav>
+
+<!-- *** Settings UI (with Font Size and Dark Mode) *** -->
+<div id="settings-bar">
+    <div class="settings-content">
+        <div class="setting-group">
+            <label>Font Size:</label>
+            <button id="decrease-font" aria-label="Decrease font size">-</button>
+            <span id="current-font-size">100%</span>
+            <button id="increase-font" aria-label="Increase font size">+</button>
+        </div>
+        <div class="setting-group">
+            <button id="toggle-dark-mode">Dark Mode</button>
+        </div>
+    </div>
+    <button id="close-settings" aria-label="Close settings">×</button>
 </div>
 
 
 <script th:inline="javascript">
-    /*<![CDATA[*/ // Thymeleaf 변수를 안전하게 사용하기 위해 CDATA 섹션 사용
+    /*<![CDATA[*/
 
-    // Controller에서 전달된 bookId 가져오기
+    // --- Elements ---
     const bookId = /*[[${bookId}]]*/ 'default_id';
     const viewerElement = document.getElementById('viewer');
-    const prevButton = document.getElementById('prev');
-    const nextButton = document.getElementById('next');
+    const viewerContainer = document.getElementById('viewer-container');
     const loadingIndicator = document.getElementById('loading-indicator');
     const tocContainer = document.getElementById('toc-container');
     const tocList = document.getElementById('toc-list');
     const toggleTocButton = document.getElementById('toggle-toc');
+    const tocOverlay = document.getElementById('toc-overlay');
+    const settingsBar = document.getElementById('settings-bar');
+    const decreaseFontButton = document.getElementById('decrease-font');
+    const increaseFontButton = document.getElementById('increase-font');
+    const currentFontSizeSpan = document.getElementById('current-font-size');
+    const closeSettingsButton = document.getElementById('close-settings');
+    const toggleDarkModeButton = document.getElementById('toggle-dark-mode');
 
-    // Thymeleaf 표현식 안에서 @{...} 결과와 ${bookId}를 + 연산자로 연결
-    const bookUrl = /*[[ @{/book/api/books/epub/} + ${bookId} ]]*/ '/default/api/path/for/epub/default_id'; // fallback URL 예시
+    const bookUrl = /*[[ @{/book/api/books/epub/} + ${bookId} ]]*/ '/default/api/path/for/epub/default_id';
 
     console.log("Book ID:", bookId);
-    console.log("Constructed absolute bookUrl:", bookUrl);
 
+    // --- State Variables ---
     let rendition = null;
     let book = null;
+    let currentBookTitle = 'Ebook Reader';
+    let isModifyingSelection = false;
+    let currentFontSizePercent = 100;
+    const FONT_SIZE_STEP = 10;
+    const MIN_FONT_SIZE = 70;
+    const MAX_FONT_SIZE = 150;
+    let isDarkMode = false;
 
-    // bookId와 bookUrl이 유효한지 확인
+    // --- UI Functions ---
+    function closeToc() {
+        if (tocContainer) tocContainer.style.left = '-85%';
+        if (tocOverlay) tocOverlay.style.opacity = '0';
+        if (tocOverlay) tocOverlay.style.visibility = 'hidden';
+        document.body.classList.remove('toc-visible');
+    }
+    function openToc() {
+        if (tocContainer) tocContainer.style.left = '0';
+        if (tocOverlay) tocOverlay.style.opacity = '1';
+        if (tocOverlay) tocOverlay.style.visibility = 'visible';
+        document.body.classList.add('toc-visible');
+    }
+    function showSettings() {
+        if (settingsBar) settingsBar.classList.add('settings-visible');
+    }
+    function hideSettings() {
+        if (settingsBar) settingsBar.classList.remove('settings-visible');
+    }
+
+    // --- Font Size Function ---
+    function applyFontSize() {
+        if (rendition && currentFontSizeSpan) {
+            const sizeString = `${currentFontSizePercent}%`;
+            try {
+                rendition.themes.fontSize(sizeString);
+                currentFontSizeSpan.textContent = sizeString;
+            } catch (e) {
+                console.error("Error applying font size:", e);
+            }
+        }
+    }
+
+    // --- Dark Mode Functions ---
+    function applyDarkMode(enable) {
+        isDarkMode = enable;
+        const themeToSelect = enable ? 'dark' : 'default';
+        if (rendition) {
+            try {
+                rendition.themes.select(themeToSelect);
+            } catch(e) {
+                console.error(`Error selecting theme '${themeToSelect}':`, e);
+            }
+        }
+        if (enable) {
+            document.body.classList.add('dark-mode');
+            if (toggleDarkModeButton) toggleDarkModeButton.textContent = "Light Mode";
+            try { localStorage.setItem('ebookReaderDarkMode', 'enabled'); } catch (e) {}
+        } else {
+            document.body.classList.remove('dark-mode');
+            if (toggleDarkModeButton) toggleDarkModeButton.textContent = "Dark Mode";
+            try { localStorage.setItem('ebookReaderDarkMode', 'disabled'); } catch (e) {}
+        }
+        applyFontSize(); // Re-apply font size after theme change
+    }
+
+    function toggleDarkMode() {
+        applyDarkMode(!isDarkMode);
+        console.log('!!!!!!!!!!!!!Dark Mode!!!!!!!!!!!!!!!!!!!');
+        rendition.display(localStorage.getItem(storageKey));
+        // rendition.display(rendition.currentLocation());
+    }
+
+    function applyInitialDarkModeState() {
+        let savedMode = null;
+        try { savedMode = localStorage.getItem('ebookReaderDarkMode'); } catch (e) {}
+        if (savedMode === 'enabled') {
+            applyDarkMode(true);
+        } else {
+            applyDarkMode(false);
+        }
+    }
+
+    // --- Main Initialization Logic ---
     if (bookId && bookId !== 'default_id' && bookUrl && !bookUrl.includes('default_id')) {
-        loadingIndicator.style.display = 'block'; // 로딩 시작 표시
-
+        loadingIndicator.style.display = 'block';
         try {
-            // --- epub.js 초기화 (URL 직접 사용 + 옵션) ---
-            // JSZip이 로드되었으므로 URL을 직접 사용해도 잘 작동할 것으로 기대
-            // openAs: "epub" 옵션은 URL이 EPUB 파일을 직접 가리킴을 명시 (안정성을 위해 유지)
             book = ePub(bookUrl, { openAs: "epub" });
+            console.log("epub.js book object created.");
 
-            console.log("epub.js book object created directly from URL (with JSZip loaded):", book);
-
-            // book.ready Promise 로깅 (초기 파싱 확인)
             book.ready.then(() => {
-                console.log(">>> book.ready Promise resolved! (from URL)");
-            }).catch(err => {
-                console.error(">>> book.ready Promise rejected! (from URL)", err);
-            });
+                console.log(">>> book.ready resolved.");
+                const metadata = book.package.metadata;
+                if (metadata.title) { currentBookTitle = metadata.title; document.querySelector('.app-header h1').textContent = currentBookTitle; document.title = currentBookTitle; }
+                const toc = book.navigation.toc;
+                tocList.innerHTML = ''; const fragment = document.createDocumentFragment();
+                toc.forEach(function(chapter) {
+                    const li = document.createElement('li'); const link = document.createElement('a');
+                    link.textContent = chapter.label.trim(); link.href = chapter.href;
+                    link.onclick = function(event) { event.preventDefault(); if (rendition) { rendition.display(chapter.href).then(closeToc); } };
+                    li.appendChild(link); fragment.appendChild(li);
+                });
+                tocList.appendChild(fragment);
+                console.log("TOC processed.");
+                toggleTocButton.disabled = false;
+            }).catch(err => { console.error("Error book.ready:", err); toggleTocButton.disabled = true; });
 
-            // 렌더링 설정
             rendition = book.renderTo("viewer", {
-                width: "100%",
-                height: "100%",
-                spread: "auto",
-                allowScriptedContent: true // 스크립트 실행 허용 유지
+                width: "100%", height: "100%", spread: "none", allowScriptedContent: true
             });
+            console.log("epub.js rendition object created.");
 
-            console.log("epub.js rendition object created:", rendition);
+            // --- Register Dark Theme ---
+            rendition.themes.register("dark", {
+                "body": { "background": "#121212 !important", "color": "#e0e0e0 !important" },
+                "p, li, div, span, blockquote, pre": { "color": "#e0e0e0 !important" },
+                "h1, h2, h3, h4, h5, h6": { "color": "#f0f0f0 !important" },
+                "a": { "color": "#bb86fc !important", "text-decoration": "underline !important" },
+                "a:hover": { "color": "#d0a0ff !important" }
+            });
+            console.log("Registered 'dark' theme.");
 
-            // rendition.started 로깅 (렌더링 시작 확인)
-            rendition.started.then(() => console.log(">>> rendition.started resolved!"));
+            // --- Default Theme with Light Mode Styles ---
+            rendition.themes.default({
+                "p, div, li": { "text-align": "left !important" },
+                "body": { "background": "#ffffff !important", "color": "#000000 !important" },
+                "p, li, div, span, blockquote, pre": { "color": "#000000 !important" },
+                "h1, h2, h3, h4, h5, h6": { "color": "#000000 !important" },
+                "a": { "color": "#0000ee !important", "text-decoration": "underline !important" },
+                "a:hover": { "color": "#551a8b !important" }
+            });
+            console.log("Applied base theme overrides (left-align + light mode styles).");
 
-            // 첫 페이지 표시 (Promise 반환)
-            rendition.display().then(() => {
-                console.log("Book rendered successfully by epub.js from URL");
-                loadingIndicator.style.display = 'none'; // 로딩 완료
-                // 렌더링 완료 후 키보드 이벤트 연결
+            // --- Apply Initial Dark Mode State ---
+            applyInitialDarkModeState(); // Also applies initial font size via applyDarkMode
+
+            const storageKey = `ebookReaderPosition_${bookId}`;
+
+            // *** 저장된 위치 불러오기 시도 ***
+            let startCfi = null;
+            try {
+                startCfi = localStorage.getItem(storageKey);
+                if (startCfi) {
+                    console.log("Found saved position (CFI):", startCfi);
+                }
+            } catch (e) {
+                console.error("Error reading saved position from localStorage:", e);
+            }
+
+
+            // *** Rendition Display and Event Listener Attachment ***
+            rendition.display(startCfi).then(() => {
+                console.log("Book rendered. Attaching listeners...");
+                loadingIndicator.style.display = 'none';
+
+                // --- Keyboard Navigation ---
                 rendition.on("keyup", handleKeyPress);
+
+                rendition.on("relocated", function(location) {
+                    if (location && location.start && location.start.cfi) {
+                        const currentCfi = location.start.cfi;
+                        // console.log("Relocated to:", currentCfi); // 디버깅 로그
+                        try {
+                            // 현재 위치의 시작 CFI를 localStorage에 저장
+                            localStorage.setItem(storageKey, currentCfi);
+                            // console.log("Saved position (CFI):", currentCfi); // 저장 확인 로그 (선택 사항)
+                        } catch (e) {
+                            console.error("Error saving position to localStorage:", e);
+                        }
+                    }
+                });
+
+                // --- *** Rendition 'click' listener (using offsetX) with Settings Toggle *** ---
+                rendition.on('click', function handleRenditionClick(event) {
+                    // console.log("================ Rendition Click ================");
+                    if (!rendition || !rendition.currentLocation()) { return; }
+
+                    const originalEvent = event.originalEvent || event;
+                    // console.log("   Target:", originalEvent.target ? originalEvent.target.tagName : 'null');
+
+                    // Check if click is on the settings bar itself
+                    let target = originalEvent.target;
+                    while (target && target !== document.body) {
+                        if (target === settingsBar) { return; } // Ignore clicks originating from settings bar
+                        target = target.parentElement;
+                    }
+
+                    // Link Check
+                    targetElement = originalEvent.target;
+                    let isActualLink = false;
+                    let linkCheckDepth = 0;
+                    while (targetElement && targetElement !== viewerElement && linkCheckDepth < 10) {
+                        if (targetElement.tagName === 'A' && targetElement.hasAttribute('href')) { isActualLink = true; break; }
+                        if (!targetElement.parentElement || targetElement.parentElement === targetElement.ownerDocument) break;
+                        targetElement = targetElement.parentElement; linkCheckDepth++;
+                    }
+                    if (isActualLink) { return; }
+
+                    // Coordinate Calculation using offsetX/layerX
+                    let relativeClickX = -1;
+                    let usedMethod = "None";
+                    if (typeof originalEvent.offsetX !== 'undefined') {
+                        relativeClickX = originalEvent.offsetX; usedMethod = "offsetX";
+                    } else if (typeof originalEvent.layerX !== 'undefined') {
+                        relativeClickX = originalEvent.layerX; usedMethod = "layerX";
+                    } else {
+                        console.error("Cannot get relative X (offsetX/layerX)."); return;
+                    }
+
+                    // Navigation / Settings Toggle Logic
+                    try {
+                        const viewerRect = viewerElement.getBoundingClientRect();
+                        if (!viewerRect || viewerRect.width <= 0) { return; }
+                        const viewerWidth = viewerRect.width; // Use parent viewer width for zones
+
+                        const prevZoneEnd = viewerWidth / 3;
+                        const nextZoneStart = viewerWidth * 2 / 3;
+
+                        const targetTag = originalEvent.target ? originalEvent.target.tagName.toUpperCase() : '';
+                        const isRootTarget = targetTag === 'HTML' || targetTag === 'BODY';
+
+                        if (isRootTarget) {
+                            const clickX_viewport = originalEvent.clientX;
+                            const viewerLeft = viewerRect.left;
+                            const relativeToViewerX = clickX_viewport - viewerLeft;
+                            if (relativeToViewerX >= prevZoneEnd && relativeToViewerX <= nextZoneStart) {
+                                // Toggle settings on middle click for root target
+                                if (settingsBar.classList.contains('settings-visible')) { hideSettings(); } else { showSettings(); }
+                            }
+                        } else {
+                            // Use relativeClickX for specific element clicks
+                            if (relativeClickX >= 0 && relativeClickX < prevZoneEnd) {
+                                rendition.prev(); hideSettings();
+                            } else if (relativeClickX > nextZoneStart && relativeClickX <= viewerWidth) {
+                                rendition.next(); hideSettings();
+                            } else if (relativeClickX >= prevZoneEnd && relativeClickX <= nextZoneStart) {
+                                // Toggle settings on middle click for specific elements
+                                if (settingsBar.classList.contains('settings-visible')) { hideSettings(); } else { showSettings(); }
+                            }
+                        }
+                    } catch(navError) { console.error("Nav/Settings logic error:", navError); }
+                });
+                console.log("Attached 'click' listener (using offsetX) with Settings Toggle.");
+
+
+                // --- Settings Button Listeners ---
+                if (decreaseFontButton) {
+                    decreaseFontButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (currentFontSizePercent > MIN_FONT_SIZE) {
+                            currentFontSizePercent -= FONT_SIZE_STEP;
+                            applyFontSize();
+                        }
+                    });
+                }
+                if (increaseFontButton) {
+                    increaseFontButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (currentFontSizePercent < MAX_FONT_SIZE) {
+                            currentFontSizePercent += FONT_SIZE_STEP;
+                            applyFontSize();
+                        }
+                    });
+                }
+                if (toggleDarkModeButton) {
+                    toggleDarkModeButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleDarkMode();
+                    });
+                }
+                if (closeSettingsButton) {
+                    closeSettingsButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        hideSettings();
+                    });
+                }
+                console.log("Attached settings button listeners.");
+
+                // --- Word Selection Handler (Optional, can be removed if not needed) ---
+                let isModifyingSelectionWord = false;
+                rendition.on('displayed', function(view) {
+                    const iframeDoc = view.document;
+                    const iframeWin = view.window;
+                    if (!iframeDoc || !iframeWin) return;
+                    const handleSelectionChange = () => {
+                        if (isModifyingSelectionWord) return;
+                        const selection = iframeWin.getSelection();
+                        if (selection && !selection.isCollapsed && selection.rangeCount > 0) {
+                            isModifyingSelectionWord = true;
+                            try {
+                                selection.modify("move", "backward", "word");
+                                selection.modify("extend", "forward", "word");
+                            } catch (e) { /* Ignore */ }
+                            finally { setTimeout(() => { isModifyingSelectionWord = false; }, 0); }
+                        }
+                    };
+                    iframeDoc.addEventListener('selectionchange', handleSelectionChange);
+                });
+                // console.log("Setup word selection handling.");
+
+
             }).catch(err => {
-                console.error("Error rendering book with epub.js from URL:", err);
-                viewerElement.innerHTML = "epub.js 렌더링 중 오류(URL).";
+                console.error("Error rendering book:", err);
+                viewerElement.innerHTML = "<p style='padding: 20px; text-align: center;'>Error rendering book.</p>";
                 loadingIndicator.style.display = 'none';
             });
 
-            // 목차 생성 (book.loaded.navigation이 로드된 후 사용 가능)
-            book.loaded.navigation.then(function(toc) {
-                tocContainer.style.display = 'block';
-                tocList.innerHTML = '';
-                toc.forEach(function(chapter) {
-                    const li = document.createElement('li');
-                    const link = document.createElement('a');
-                    link.textContent = chapter.label.trim();
-                    link.href = chapter.href;
-                    link.onclick = function(event) {
-                        event.preventDefault();
-                        if (rendition) {
-                            rendition.display(chapter.href);
-                        }
-                    };
-                    li.appendChild(link);
-                    tocList.appendChild(li);
-                });
-                console.log("Table of Contents loaded successfully.");
-            }).catch(err => {
-                console.error("Error loading Table of Contents:", err);
-            });
-
-
-            // --- 이벤트 리스너 설정 ---
-            prevButton.addEventListener("click", function() {
-                if (rendition) rendition.prev();
-            });
-            nextButton.addEventListener("click", function() {
-                if (rendition) rendition.next();
-            });
-
-            rendition.on("relocated", function(location){
-                console.log("Current location CFI:", location.start.cfi);
-                // localStorage.setItem(bookUrl + ':loc', location.start.cfi);
-            });
-
+            // --- Existing Event Listeners (TOC etc.) ---
             toggleTocButton.addEventListener("click", function() {
-                if (tocContainer.style.display === 'none') {
-                    tocContainer.style.display = 'block';
-                } else {
-                    tocContainer.style.display = 'none';
-                }
+                if (document.body.classList.contains('toc-visible')) { closeToc(); } else { openToc(); }
+            });
+            tocOverlay.addEventListener("click", closeToc);
+            rendition.on("relocated", function(location){
+                // console.log("Relocated to:", location.start.cfi); // Optional log
             });
 
         } catch (e) {
-            console.error("Error during epub.js initialization or processing from URL:", e);
-            viewerElement.innerHTML = "EPUB 처리 중 오류 발생(URL).";
+            console.error("Error during epub.js initialization:", e);
+            viewerElement.innerHTML = "<p style='padding: 20px; text-align: center;'>Failed to initialize reader.</p>";
             loadingIndicator.style.display = 'none';
+            toggleTocButton.disabled = true;
         }
 
     } else {
-        console.log("Invalid bookId or bookUrl, cannot load book.");
-        viewerElement.innerText = "유효한 책 ID가 필요합니다.";
+        console.error("Invalid bookId or bookUrl.");
+        viewerElement.innerHTML = "<p style='padding: 20px; text-align: center;'>Invalid Book ID.</p>";
         loadingIndicator.style.display = 'none';
+        toggleTocButton.disabled = true;
     }
 
-    // 키보드 이벤트 핸들러 함수
+    // --- Keyboard Navigation Function ---
     function handleKeyPress(event) {
         if (rendition) {
-            if(event.key === "ArrowLeft"){
-                rendition.prev();
+            if (settingsBar && settingsBar.classList.contains('settings-visible')) {
+                // Optionally block keyboard nav when settings are open
+                // return;
             }
-            if(event.key === "ArrowRight"){
+
+            if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                rendition.prev();
+                hideSettings(); // Hide settings on key nav
+            }
+            if (event.key === "ArrowRight") {
+                event.preventDefault();
                 rendition.next();
+                hideSettings(); // Hide settings on key nav
             }
         }
     }
+
+    toggleTocButton.disabled = true; // Initially disabled
 
     /*]]>*/
 </script>
