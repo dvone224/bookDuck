@@ -2,6 +2,7 @@ package com.my.bookduck.config.auth;
 
 import com.my.bookduck.domain.user.User;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -14,15 +15,48 @@ import java.util.Map;
 @Data
 public class BDUserDetails implements UserDetails, OAuth2User {
     private User user;
-    private Map<String, Object> userAttributes;
+    private Map<String, Object> attributes;
 
     public BDUserDetails(User user) {
         this.user = user;
     }
 
-    public BDUserDetails(User user, Map<String, Object> userAttributes) {
+    public BDUserDetails(User user, Map<String, Object> attributes) {
         this.user = user;
-        this.userAttributes = userAttributes;
+        this.attributes = attributes;
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+        collection.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return user.getRole().name();
+            }
+        });
+
+        return collection;
+    }
+
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getLoginId();
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     @Override
@@ -44,44 +78,4 @@ public class BDUserDetails implements UserDetails, OAuth2User {
     public boolean isEnabled() {
         return true;
     }
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return user.getRole().toString();
-            }
-        });
-        return collection;
-    }
-
-    @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
-
-    @Override
-    public String getUsername() {
-        return user.getName();
-    }
-
-    @Override
-    public <A> A getAttribute(String name) {
-        return OAuth2User.super.getAttribute(name);
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return userAttributes;
-    }
-
-    @Override
-    public String getName() {
-        return "";
-    }
-
-
 }

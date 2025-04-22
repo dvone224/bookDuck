@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,6 +18,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.http.HttpRequest;
 import java.util.Map;
@@ -26,9 +29,19 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
-    HttpServletRequest request; // session 값 확인 필요
+
+    //private final HttpServletRequest request; // session 값 확인 필요
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public static HttpSession getSession() {
+        return getRequest().getSession();
+    }
+
+    public static HttpServletRequest getRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -63,11 +76,13 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
         if(userOptional.isEmpty()){
             //log.info("진행여부 판단");
-            HttpSession session = request.getSession();
+            HttpSession session = getSession();
+            String joinNickname = session.getAttribute("joinNickName") == null? "임시별명" : session.getAttribute("joinNickName").toString();
+
             user = user.builder()
                     .loginId(oAuth2UserInfo.getProvider()+"_"+oAuth2UserInfo.getProviderId())
-                    //.name(oAuth2UserInfo.getName())
-                    .nickName(session.getAttribute("joinNickName").toString()) // 값이 입력 되는지 확인 할 것.
+                    .name(oAuth2UserInfo.getName())
+                    .nickName(joinNickname) // 값이 입력 되는지 확인 할 것.
                     .email(oAuth2UserInfo.getEmail())
                     .password("socialLogin")
                     .provider(oAuth2UserInfo.getProvider())

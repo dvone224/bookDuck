@@ -14,21 +14,21 @@ public class NaverUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProviderId() {
-        return "";
+        return (String)attributes.get("id");
     }
 
-//    @Override
-//    public String getName() {
-//        return "";
-//    }
+    @Override
+    public String getName() {
+        return (String)attributes.get("name");
+    }
 
     @Override
     public String getEmail() {
-        return "";
+        return (String)attributes.get("email");
     }
 
     @Override
     public String getProvider() {
-        return "";
+        return "naver";
     }
 }

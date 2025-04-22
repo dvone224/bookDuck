@@ -16,10 +16,10 @@ public class GoogleUserInfo implements OAuth2UserInfo {
         return attributes.get("sub").toString();
     }
 
-//    @Override
-//    public String getName() {
-//        return attributes.get("name").toString();
-//    }
+    @Override
+    public String getName() {
+        return attributes.get("name").toString();
+    }
 
     @Override
     public String getEmail() {

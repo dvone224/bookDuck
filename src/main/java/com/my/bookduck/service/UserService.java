@@ -24,6 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Transactional
     public void createUser(AddUserRequest userDto) throws IllegalStateException {
         log.info("userDto: {}", userDto);
         userDto.setPw(bCryptPasswordEncoder.encode(userDto.getPw()));
@@ -33,7 +34,7 @@ public class UserService {
 
     private User GetUserId(User user) throws IllegalStateException {
         log.info("getUserId: {}", user);
-        if(userRepository.findById(user.getId()) != null){
+        if(userRepository.findByLoginId(user.getLoginId()) != null){
             throw new IllegalStateException("이미 존재하는 회원 아이디가 있습니다.");
         }
         if(userRepository.findByEmail(user.getEmail()) != null){

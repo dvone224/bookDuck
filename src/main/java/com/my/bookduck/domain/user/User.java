@@ -8,6 +8,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.my.bookduck.domain.user.User.Role.ROLE_ADMIN;
+import static com.my.bookduck.domain.user.User.Role.ROLE_USER;
+
 @Entity
 @Getter
 @Setter
@@ -29,13 +32,13 @@ public class User {
     private Role role;
     private LocalDateTime created;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<UserBook> userBooks;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Cart> carts;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<BookComment> comments;
 
     public enum Role {
@@ -54,8 +57,8 @@ public class User {
         this.name = name;
         this.password = password;
         this.email = email;
-        if(loginId.equals("admin"))this.role = Role.ROLE_ADMIN;
-        else if(role == null) this.role = Role.ROLE_USER;
+        if(loginId.equals("admin"))this.role = ROLE_ADMIN;
+        else if(role == null) this.role = ROLE_USER;
         else this.role = Role.valueOf(role);
 
         if(nickName == null) this.nickName = name;

@@ -1,10 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>북덕 회원가입 페이지</title>
 </head>
+
+
+
 <body>
+
+<div class="form-container">
+    <h1>북덕 회원가입</h1>
+
+    <form id="userjoinform" action="/user" method="post">
+
+        <div>
+            <label for="joinId">아이디</label>
+            <input type="text" id="joinId" name="id" placeholder="ID를 입력해주세요" required autocomplete="off">
+        </div>
+        <div>
+            <label for="joinPw">비밀번호</label>
+            <input type="text" id="joinPw" name="pw" placeholder="PASSWORD를 입력해주세요" required autocomplete="off">
+        </div>
+        <div>
+            <label for="joinNickname">닉네임</label>
+            <input type="text" id="joinNickname" name="nickName" placeholder="별명을 입력해주세요" required autocomplete="off">
+        </div>
+        <div>
+            <label for="joinEmail">이메일</label>
+            <input type="text" id="joinEmail" name="email" placeholder="이메일을 입력해주세요" required autocomplete="off">
+            <button>인증</button>
+        </div>
+        <div>
+            <label for="joinEmail">인증번호</label>
+            <input type="text" id="joinCode" name="verifyCode" placeholder="인증번호를 입력하세요" required autocomplete="off">
+            <button>인증완료</button>
+        </div>
+        <div>
+            이미지
+        </div>
+        <div>
+            <input type="radio" value="개인정보 수집 및 이용 동의(필수)">
+            <button>약관보기</button>
+        </div>
+
+        <button type="submit" class="btn btn-submit">가입하기</button>
+
+    </form>
+
+
+</div>
+
+
 
 </body>
 </html>
