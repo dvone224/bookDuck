@@ -71,6 +71,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     implementation 'nl.siegmann.epublib:epublib-core:3.1'
+    //email 인증 관련
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    implementation 'javax.mail:javax.mail-api:1.6.2'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
 }
 
 tasks.named('test') {

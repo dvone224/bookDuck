@@ -10,8 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
+
+import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -55,5 +58,9 @@ public class UserController {
         log.info("Returning {} search results based on nickname", users.size()); // *** 로그 메시지 변경 ***
         return ResponseEntity.ok(users);
     }
+
+
+
+
 
 }
