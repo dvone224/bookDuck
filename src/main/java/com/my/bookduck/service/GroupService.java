@@ -66,4 +66,16 @@ public class GroupService {
 
         return savedGroup;
     }
+
+    /**
+     * 주어진 이름의 그룹이 이미 존재하는지 확인합니다.
+     * Controller의 중복 확인 API에서 사용됩니다.
+     *
+     * @param name 확인할 그룹 이름 (앞뒤 공백 제거됨)
+     * @return 그룹이 존재하면 true, 그렇지 않으면 false
+     */
+    @Transactional(readOnly = true) // 데이터 변경이 없는 조회 작업이므로 readOnly=true 설정
+    public boolean existsByName(String name) {
+        return groupRepository.existsByName(name.trim());
+    }
 }

@@ -4,14 +4,13 @@ package com.my.bookduck.controller;
 import com.my.bookduck.service.GroupService; // GroupService 임포트
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // 리다이렉트 시 메시지 전달
 
 import java.util.List; // List 임포트
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -56,11 +55,7 @@ public class GroupController {
             // 성공 시 리다이렉트할 경로 (예: 그룹 목록 페이지, 마이페이지 등)
             return "redirect:/group/success"; // 예시 경로 (실제 경로로 변경 필요)
 
-        } catch (IllegalArgumentException e) { // 사용자를 찾지 못한 경우 등
-            log.error("Error creating group: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-            return "redirect:/group/addForm"; // 생성 폼으로 리다이렉트
-        } catch (Exception e) { // 그 외 예외 처리
+        }catch (Exception e) { // 그 외 예외 처리
             log.error("Unexpected error during group creation", e);
             redirectAttributes.addFlashAttribute("errorMsg", "그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
             return "redirect:/group/addForm"; // 생성 폼으로 리다이렉트
@@ -69,10 +64,34 @@ public class GroupController {
         // return "group/successForm";
     }
 
+    // 그룹저장 성공시 이동페이지
+    @GetMapping("/success")
+    public String showAddGroupSuccess() {
+        return "group/success";
+    }
+
+
     // 그룹 목록 페이지 예시 (리다이렉트 타겟)
     @GetMapping("/list")
     public String showGroupList() {
         // TODO: 그룹 목록 조회 로직 추가
         return "group/list"; // 그룹 목록 뷰 이름
+    }
+
+    /**
+     * 그룹 이름 중복 확인 API (AJAX 호출용)
+     * @param name 확인할 그룹 이름
+     * @return JSON 형태 {"isAvailable": boolean}
+     */
+    @GetMapping("/check-name")
+    @ResponseBody // JSON 응답을 위해 필요
+    public ResponseEntity<Map<String, Boolean>> checkGroupName(@RequestParam String name) {
+        if (name == null || name.trim().isEmpty()) {
+            // 빈 이름은 사용할 수 없다고 간주
+            return ResponseEntity.ok(Map.of("isAvailable", false));
+        }
+        boolean isAvailable = !groupService.existsByName(name.trim());
+        log.debug("Checking group name '{}'. Available: {}", name, isAvailable);
+        return ResponseEntity.ok(Map.of("isAvailable", isAvailable));
     }
 }
