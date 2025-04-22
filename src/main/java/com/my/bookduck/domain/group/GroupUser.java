@@ -34,7 +34,7 @@ public class GroupUser {
     private Role role;
 
     public enum Role { // public 또는 package-private으로 변경하는 것이 좋을 수 있음
-        ROLE_USER, ROLE_ADMIN
+        ROLE_USER, ROLE_LEADER
     }
 
     // 생성자나 편의 메소드를 통해 group, user, role 설정 가능
