@@ -29,3 +29,4 @@ payment:
     test_secret_api_key: ${TOSS_SECRET_API_KEY:test_sk_DpexMgkW36onEppeZLqpVGbR5ozO} # 오타 수정
     success_url: ${TOSS_SUCCESS_URL:http://localhost:8080/api/payment/success} # 기본값 설정
     fail_url: ${TOSS_FAIL_URL:http://localhost:8080/api/payment/fail} # 기본값 설정
+

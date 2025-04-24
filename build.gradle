@@ -76,6 +76,8 @@ dependencies {
     implementation 'javax.mail:javax.mail-api:1.6.2'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
+
+
 }
 
 tasks.named('test') {

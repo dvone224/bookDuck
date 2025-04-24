@@ -4,8 +4,229 @@
   <meta charset="UTF-8">
   <title th:text="${pageTitle ?: '도서 목록'}">도서 목록</title>
   <style>
-    /* --- CSS 스타일은 이전과 동일하게 유지 --- */
-    /* (스타일 코드 생략) */
+    /* Reset default styles for consistency */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Layout: Sidebar + Main Content */
+    .sidebar {
+      width: 250px;
+      background-color: #fff;
+      padding: 20px;
+      border-right: 1px solid #ddd;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      margin-left: 270px; /* Sidebar width + some spacing */
+      padding: 20px;
+      flex-grow: 1;
+    }
+
+    /* Sidebar Styles */
+    .sidebar h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .filter-group {
+      margin-bottom: 15px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .filter-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      background-color: #fff;
+      transition: border-color 0.3s;
+    }
+
+    .filter-group select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .filter-group select:disabled {
+      background-color: #f0f0f0;
+      cursor: not-allowed;
+    }
+
+    /* Main Content Styles */
+    .main-content h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    /* Search Bar Styles */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-bar input[type="text"] {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .search-bar input[type="text"]:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .search-bar button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-bar button:hover {
+      background-color: #2980b9;
+    }
+
+    .search-bar a {
+      font-size: 0.9rem;
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .search-bar a:hover {
+      text-decoration: underline;
+    }
+
+    /* Book Table Styles */
+    #bookListSection {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #bookTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    #bookTable th,
+    #bookTable td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    #bookTable th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    #bookTable td {
+      font-size: 0.9rem;
+    }
+
+    .cover-thumbnail {
+      width: 50px;
+      height: auto;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .no-data {
+      text-align: center;
+      color: #777;
+      font-style: italic;
+      padding: 20px;
+    }
+
+    .message {
+      text-align: center;
+      color: #e74c3c;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 15px;
+      }
+
+      .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-bar button {
+        width: 100%;
+      }
+
+      #bookTable th,
+      #bookTable td {
+        padding: 8px;
+        font-size: 0.85rem;
+      }
+
+      .cover-thumbnail {
+        width: 40px;
+      }
+    }
+
+    /* Accessibility Enhancements */
+    :focus {
+      outline: 2px solid #3498db;
+      outline-offset: 2px;
+    }
+
+    button:focus,
+    a:focus {
+      outline: 2px solid #3498db;
+    }
   </style>
 </head>
 <body>
@@ -51,8 +272,7 @@
 <main class="main-content">
   <h1 th:text="${pageTitle ?: '도서 목록'}">도서 목록</h1>
 
-  <!-- 검색 폼: 이 폼은 그대로 유지하며, 페이지 새로고침을 통한 검색을 담당 -->
-  <form th:action="@{/book/books}" method="get" class="search-form">
+
     <!-- 검색 시 현재 카테고리 상태 유지를 위한 hidden input (선택 사항) -->
     <!-- 이 부분은 복잡도를 높일 수 있으므로, 검색 시 카테고리 필터 초기화를 원하면 제거 -->
     <input type="hidden" name="mainCategoryIdParam" th:value="${selectedMainCategoryId}">
@@ -60,9 +280,10 @@
 
     <!-- 검색어 입력 필드 -->
     <input type="text" id="searchQueryInput" name="query" placeholder="책 제목 또는 저자 검색" th:value="${searchQuery}" aria-label="도서 검색">
-    <button type="submit">검색</button>
+    <button id="search-test" onclick="fetchAndUpdateBooks()">검색</button>
     <a th:if="${searchQuery != null and !searchQuery.isEmpty()} or ${selectedMainCategoryId != null}" th:href="@{/book/books}">전체 목록 보기</a>
-  </form>
+
+
 
   <!-- 도서 목록 섹션 -->
   <section id="bookListSection"> <!-- 목록을 감싸는 컨테이너 ID 추가 -->
@@ -83,7 +304,7 @@
       <!-- 초기 로딩 시 서버에서 렌더링된 내용 -->
       <tr th:if="${!list.isEmpty()}" th:each="book : ${list}">
         <td>
-          <img th:if="${book.cover != null and !book.cover.isEmpty()}" th:src="@{${book.cover}}" alt="표지" class="cover-thumbnail"/>
+<!--          <img th:if="${book.cover != null and !book.cover.isEmpty()}" th:src="@{${book.cover}}" alt="표지" class="cover-thumbnail"/>-->
           <span th:unless="${book.cover != null and !book.cover.isEmpty()}">N/A</span>
         </td>
         <td><span th:text="${book.title}">책 제목</span></td>
@@ -196,6 +417,16 @@
   subCategorySelect.addEventListener('change', async function() {
     // 소분류가 변경되면 즉시 도서 목록 업데이트
     await fetchAndUpdateBooks();
+  });
+
+  searchQueryInput.addEventListener('keydown', function(event) {
+    // 눌린 키가 Enter 키인지 확인 (event.key === 'Enter' 가 최신 방식)
+    if (event.key === 'Enter' || event.keyCode === 13) { // keyCode는 구형 브라우저 호환용
+      // Enter 키의 기본 동작(예: 폼 제출)을 막습니다.
+      event.preventDefault();
+      // 검색 함수 호출
+      fetchAndUpdateBooks();
+    }
   });
 
   /*]]>*/
