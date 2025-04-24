@@ -1,22 +1,146 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" >
 
+<script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    @font-face {
+        font-family: 'Cafe24Supermagic-Bold-v1.0';
+        src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'GowunBatang-Regular';
+        src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    /* Fontawesome 4.7 */
+    @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+    body{
+        font-family: 'GowunBatang-Regular';
+        font-size: 14px;
+    }
+
+    .header_one_top, .header_right{
+        display: flex;
+    }
+    .header_one_top {
+        /*border: 1px solid black;*/
+        justify-content: space-between; /* 내부 요소를 양 끝으로 배치 */
+        align-items: center; /* 세로 정렬을 중앙으로 */
+        width: 100%;
+    }
+
+    .btn_haeder{
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    .back{
+        background: lightgray;
+    }
+    .icon_white{
+        color: white;
+    }
+    .icon_grey{
+        color: lightgray;
+    }
+    .icon_blue{
+        color: skyblue;
+    }
+
+    .logo{
+        /*border: 1px solid black;*/
+        width: 90px;
+        height: 20px;
+        font-family: 'Cafe24Supermagic-Bold-v1.0';
+        font-size: 20px;
+        color: darkblue;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    .header_one_bottom{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header_one_bottom .menu{
+        /*border: 1px solid black;*/
+        width: 33%;
+        height: 25px;
+        color: gray;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        transition: all 0.4s;
+    }
+    .menu:hover{
+        font-size: 16px;
+        /*color: darkblue;*/
+    }
+
+</style>
+
 <header th:fragment="bodyHeader">
 <!--    <div class="menu" onclick="location.href='/member/members'"> 회원목록</div>
     <div class="menu" onclick="location.href='/member'"> 회원추가 </div>
     <div class="menu" onclick="location.href='/study'"> 공부 기록 등록</div>
     <div class="menu" onclick="location.href='/study/records'"> 공부 기록 목록 </div>-->
-    <div class="header_top">
-        <img class="home" src="" href="/member/members">
-        <div class="top_menu">
-            <img class="cart" src="" href="/member/members">
-            <img class="myPage" src="" href="/member/members">
+    <div class="header_one">
+        <div class="header_one_top">
+            <div class="heaer_left">
+                <div class="logo" onclick="location.href='/home'">
+                    BookDuck²
+                </div>
+            </div>
+            <div class="header_right">
+                <div class="btn_haeder cart" onclick="location.href='/member/members'">
+                    <i class="fa-solid fa-cart-shopping icon_blue"></i>
+                </div>
+                <div class="btn_haeder mine" onclick="location.href='/member/members'">
+                    <i class="fa-solid fa-user icon_blue"></i>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="header_bottom">
-        <a class="menu" href="/member/members">다 읽었어요</a>
-        <a class="menu" href="/member/members">명예의 전당</a>
-        <a class="menu" href="/member/members">북덕이 서점</a>
+        <div class="header_one_bottom">
+            <div class="menu" onclick="location.href='/member/members'">다 읽었어요</div>
+            <div class="menu" onclick="location.href='/member/members'">명예의 전당</div>
+            <div class="menu" onclick="location.href='/member/members'">북덕이 서점</div>
+        </div>
     </div>
 </header>
 </html>
+
+<!--
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 현재 페이지의 경로 가져오기
+        let currentPath = window.location.pathname;
+
+        // 모든 메뉴 항목 가져오기
+        let menuItems = document.querySelectorAll(".menu");
+
+        menuItems.forEach(menu => {
+            let targetPath = menu.getAttribute("onclick").match(/'([^']+)'/)[1];
+
+            // 현재 페이지와 메뉴의 링크가 일치하면 'select' 클래스 추가
+            if (targetPath === currentPath) {
+                menu.classList.add("select");
+            } else {
+                menu.classList.remove("select");
+            }
+        });
+    });
+</script>-->

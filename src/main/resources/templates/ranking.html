@@ -2,9 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <style>
+        /* Fontawesome 4.7 */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+        body{}
+        .rankingBox{
+            width: 80%;
+            height: auto;
+            clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+            /*clip-path: polygon(0% 0%, 100% 0%, calc(100% - 10px) calc(100% - 0px), calc(75% - 10px) 100%, calc(48% - 10px) 100%, 0 100%);*/
+            position: relative; /* paper의 기준점 설정 */
+            margin: 20px;
+            padding: 10px;
+        }
+        .blue{
+            background: skyblue;
+        }
+        .yellow{
+            background: sandybrown;
+        }
+        .paper{
+            width: 10px;
+            height: 10px;
+            background: #007bff;
+            clip-path: polygon(100% 0, 0% 100%, 0 0);
+            position: absolute; /* 상위 div 기준으로 위치 설정 */
+            bottom: 0;
+            right: 0;
+        }
+        .best_like{
+            border: 1px solid blue;
+        }
+        p{
+            border: 1px solid blue;
+        }
+        .book_img{
+            border: 1px solid black;
+            width: 75px;
+            height: 100px;
+            border-radius: 5px;
+        }
+        .icon_red{
+            color: red;
+        }
+    </style>
+    <title> BookDuck²::명예의 전당 </title>
 </head>
 <body>
-<h1>명예의 전당</h1>
+<div class="rankingBox blue">
+    <div class="best_like">
+        <p class="title">가장 많은 사람들이 좋아요를 누른 책</p>
+        <div class="place">
+            <div class="second_place">
+                <div class="silver">2</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="crew_name">뽀닥뽀닥책읽기crew</div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+                <div class="like_cnt"><i class="fa-solid fa-heart icon_red"></i>0</div>
+            </div>
+            <div class="first_place">
+                <div class="gold">1</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="crew_name">뽀닥뽀닥책읽기crew</div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+                <div class="like_cnt"><i class="fa-solid fa-heart icon_red"></i>0</div>
+            </div>
+            <div class="therd_place">
+                <div class="bronze">3</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="crew_name">뽀닥뽀닥책읽기crew</div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+                <div class="like_cnt"><i class="fa-solid fa-heart icon_red"></i>0</div>
+            </div>
+        </div>
+    </div>
+    <div class="paper"></div>
+</div>
+<div class="rankingBox yellow">
+</div>
+<div class="rankingBox blue">
+</div>
 </body>
 </html>

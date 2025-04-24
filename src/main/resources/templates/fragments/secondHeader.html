@@ -1,14 +1,61 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    /* Fontawesome 4.7 */
+    @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+    .header_two, .header_left, .header_right{
+        display: flex;
+    }
+    .header_two {
+        /*border: 1px solid black;*/
+        justify-content: space-between; /* 내부 요소를 양 끝으로 배치 */
+        align-items: center; /* 세로 정렬을 중앙으로 */
+        width: 100%;
+    }
+    .btn_haeder{
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    .back{
+        background: lightgray;
+    }
+    .icon_white{
+        color: white;
+    }
+    .icon_grey{
+        color: lightgray;
+    }
+    .icon_blue{
+        color: skyblue;
+    }
+</style>
 
 <header th:fragment="bodyHeader">
-    <div class="heaer_right">
-        <img class="back" src="" href="/member/members">
-        <img class="home" src="" href="/member/members">
-    </div>
-    <div class="header_left">
-        <img class="cart" src="" href="/member/members">
-        <img class="myPage" src="" href="/member/members">
+    <div class="header_two">
+        <div class="header_left">
+            <div class="btn_haeder back" onclick="history.back()">
+                <i class="fa-solid fa-rotate-left icon_white"></i>
+            </div>
+            <div class="btn_haeder home" onclick="location.href='/home'">
+                <i class="fa-solid fa-house icon_grey"></i>
+            </div>
+        </div>
+        <div class="header_right">
+            <div class="btn_haeder cart" onclick="location.href='/member/members'">
+                <i class="fa-solid fa-cart-shopping icon_blue"></i>
+            </div>
+            <div class="btn_haeder mine" onclick="location.href='/member/members'">
+                <i class="fa-solid fa-user icon_blue"></i>
+            </div>
+        </div>
     </div>
 </header>
 </html>
