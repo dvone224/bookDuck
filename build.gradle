@@ -76,6 +76,10 @@ dependencies {
     implementation 'javax.mail:javax.mail-api:1.6.2'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
+    // 엑셀
+    implementation 'org.apache.poi:poi:5.2.5' // 최신 버전 확인 후 사용
+    implementation 'org.apache.poi:poi-ooxml:5.2.5' // 최신 버전 확인 후 사용
+
 }
 
 tasks.named('test') {
