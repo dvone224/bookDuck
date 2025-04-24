@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>별명 정하기</title>
 </head>
+
+
+
 <body>
 
-</body>
-</html>
+<div class="form-container">
+    <form id="socialjoinform" action="/user/socialaddinfo" method="post">
+
+
+        <div>
+            <label for="joinNickname"> <span th:text="${joinSocial}">null</span>닉네임</label>
+            <input type="text" id="joinNickname" name="nickName" placeholder="별명을 입력해주세요" required autocomplete="off">
+        </div>
+        <div>
+            <label for="joinImg"> <span th:text="${joinSocial}">null</span>닉네임</label>
+            <input type="text" id="joinImg" name="img" placeholder="별명을 입력해주세요" required autocomplete="off">
+        </div>
+
+
+        <button type="submit" class="btn btn-submit">가입완료하기</button>
+
+    </form>
+
+
+
+
+
+</div>

@@ -1,20 +1,21 @@
 package com.my.bookduck.controller;
 
 
+import com.my.bookduck.config.auth.BDUserDetails;
 import com.my.bookduck.controller.request.AddUserRequest;
+import com.my.bookduck.controller.request.SocialJoinUpdateRequest;
+import com.my.bookduck.controller.request.UpdateUserRequest;
 import com.my.bookduck.controller.response.UserSearchResultResponse;
 import com.my.bookduck.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
-
-import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -34,20 +35,64 @@ public class UserController {
             return "member/joinForm";
         }
 
-        return "redirect:/home";
+        return "member/joinSuccess";
+    }
+
+
+    @PostMapping("/socialaddinfo")
+    public String socialAddInfo(final @ModelAttribute SocialJoinUpdateRequest info,Model model, @AuthenticationPrincipal BDUserDetails userDetails) throws InterruptedException {
+        log.info("social update info: {}", info);
+
+        long id = userDetails.getUser().getId();
+        String result;
+
+        try{
+             result = userService.socialJoinUpdate(id,info);
+        }catch(Exception e){
+            log.error("errMsg: {}", e.getMessage());
+            model.addAttribute("errMsg", e.getMessage());
+            return "member/login";
+        }
+
+
+        if(!result.equals("success")){
+            return "member/login";
+        }else{
+            return "redirect:/logininfo";
+
+        }
+
 
     }
+
 
     @GetMapping("/del/{id}")
     public String delUser(@PathVariable Long id) {
         System.out.println("delUser: " + id);
-        return "redirect:/home";
+        return "redirect:/logout";
     }
 
     @PostMapping("/update")
-    public String updateUser(final @ModelAttribute AddUserRequest user, Model model){
+    public String updateUser(final @ModelAttribute UpdateUserRequest user, Model model, @AuthenticationPrincipal BDUserDetails userDetails){
         log.info("update User: {}", user);
-        return "redirect:/home";
+
+        long id = userDetails.getUser().getId();
+        String result;
+
+        try{
+            result = userService.userInfoUpdate(id,user);
+        }catch(Exception e){
+            log.error("errMsg: {}", e.getMessage());
+            model.addAttribute("errMsg", e.getMessage());
+            return "member/login";
+        }
+
+        if(!result.equals("success")){
+            return "member/login";
+        }else{
+            return "redirect:/logininfo";
+
+        }
     }
 
 

@@ -1,6 +1,8 @@
 package com.my.bookduck.service;
 
 import com.my.bookduck.controller.request.AddUserRequest;
+import com.my.bookduck.controller.request.SocialJoinUpdateRequest;
+import com.my.bookduck.controller.request.UpdateUserRequest;
 import com.my.bookduck.controller.response.UserSearchResultResponse;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.repository.UserRepository;
@@ -14,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,58 @@ public class UserService {
             throw new IllegalStateException("이미 가입된 이메일 정보입니다.");
         }
         return user;
+    }
+
+    public User getUserByLoginId(Long id) throws IllegalStateException {
+        log.info("getUserByLoginId: {}", id);
+        User user = userRepository.findByid(id);
+        if(user == null){
+            throw new IllegalStateException("회원 정보를 가져오는데 실패했습니다.");
+        }
+        return user;
+    }
+
+    @Transactional
+    public String userInfoUpdate(Long userId, UpdateUserRequest info) throws IllegalStateException {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if(user == null){
+            throw new IllegalStateException("회원 정보 수정에 실패하였습니다.");
+            //return "false";
+        }
+        log.info("socialJoinUpdateRequest: {}", info);
+
+        if(info.getPw() != null) user.setPassword(bCryptPasswordEncoder.encode(info.getPw()));
+        if(info.getEmail() != null) user.setEmail(info.getEmail());
+        if(info.getNickName() != null) user.setNickName(info.getNickName());
+        if(info.getImg() != null) user.setImg(info.getImg());
+
+        log.info("new user: {}", user);
+        userRepository.save(user);
+
+        return "success";
+
+    }
+
+    @Transactional
+    public String socialJoinUpdate(Long userId, SocialJoinUpdateRequest socialJoinUpdateRequest) throws IllegalStateException {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if(user == null){
+            throw new IllegalStateException("추가 정보 입력에 실패하였습니다.");
+            //return "false";
+        }
+        log.info("socialJoinUpdateRequest: {}", socialJoinUpdateRequest);
+
+        if(socialJoinUpdateRequest.getNickName() != null) user.setNickName(socialJoinUpdateRequest.getNickName());
+        if(socialJoinUpdateRequest.getImg() != null) user.setImg(socialJoinUpdateRequest.getImg());
+
+        log.info("new user: {}", user);
+        userRepository.save(user);
+
+
+        return "success";
+
     }
 
     // --- 사용자 이름 검색 서비스 메소드 추가 ---
