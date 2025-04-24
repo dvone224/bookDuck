@@ -1,6 +1,7 @@
 package com.my.bookduck.controller;
 
 // ... (기존 import 유지) ...
+
 import com.my.bookduck.controller.response.BookLIstViewResponse;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.book.Category;
@@ -9,10 +10,17 @@ import com.my.bookduck.service.CategoryService;
 import com.my.bookduck.service.EBookService; // 필요시 유지
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,5 +134,48 @@ public class BookController {
         return "book/booklist";
     }
 
+
+    // 1. 뷰어 HTML 페이지를 반환하는 메소드
+    @GetMapping("/read/{id}")
+    public String ebookReaderPage(@PathVariable Long id, Model model) {
+        // Book book = bookService.getBookById(id);
+        // if (book == null) { return "error/404"; /* 404 페이지 반환 */ }
+        // model.addAttribute("bookTitle", book.getTitle());
+
+        model.addAttribute("bookId", id); // JavaScript에서 사용할 수 있도록 ID 전달
+        return "book/reader"; // src/main/resources/templates/reader.html 파일을 렌더링하여 반환
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/books/epub/{id}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveEpub(@PathVariable Long id) {
+        Path filePath = eBookService.getBookPath(id); // 서비스에서 Path 객체 가져오기
+        if (filePath == null) {
+            System.err.println("File path not found for id: " + id);
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() || resource.isReadable()) {
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType("application/epub+zip"))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                System.err.println("Could not read file: " + filePath);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (MalformedURLException e) {
+            System.err.println("Error creating URL for file path: " + filePath + " - " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            System.err.println("Error accessing file: " + filePath + " - " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     // ... (CategoryApiController 및 다른 BookController 메소드 유지) ...
 }
+
+

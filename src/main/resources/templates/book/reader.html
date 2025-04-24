@@ -146,33 +146,48 @@
 
         /* --- Settings Bar Styles --- */
         #settings-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(40, 40, 40, 0.9);
-            color: white;
-            padding: 10px 15px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
-            z-index: 900;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transform: translateY(100%); /* Start hidden */
-            transition: transform 0.3s ease-in-out;
-            font-size: 0.9em;
+
+
         }
-        #settings-bar.settings-visible {
-            transform: translateY(0); /* Slide in */
-        }
+
+
         .settings-content {
+            width: 100%;
+            background-color: rgba(40, 40, 40, 1);
+            color: white;
+            padding: 10px 15px;
+            /*box-shadow: 0 -2px 5px rgba(0,0,0,0.3);*/
+            z-index: 900;
+            font-size: 0.9em;
+            position: fixed;
+
+            left: 0;
             display: flex;
             align-items: center;
             gap: 20px;
             flex-grow: 1;
             justify-content: center;
             flex-wrap: wrap; /* Allow wrapping on small screens */
+            transition: transform 0.3s ease-in-out;
         }
+
+        .settings-content.bottom{
+            bottom: 0;
+            transform: translateY(100%);
+        }
+
+        .settings-content.top{
+            top: 0;
+            transform: translateY(-100%);
+        }
+
+        .settings-content.settings-visible {
+            transform: translateY(0); /* Slide in */
+        }
+
         .setting-group {
             display: flex;
             align-items: center;
@@ -223,12 +238,10 @@
 <body>
 
 <div class="page-container">
-    <header class="app-header">
+<!--    <header class="app-header">
         <h1 th:text="${bookTitle != null ? bookTitle : 'Ebook Reader'}">Ebook Reader</h1>
-        <!-- <button id="debug-prev">Debug Prev</button> -->
-        <!-- <button id="debug-next">Debug Next</button> -->
         <button id="toggle-toc">목차</button>
-    </header>
+    </header>-->
 
     <div id="viewer-container">
         <div id="viewer"></div> <!-- iframe will be rendered inside here -->
@@ -246,7 +259,9 @@
 
 <!-- *** Settings UI (with Font Size and Dark Mode) *** -->
 <div id="settings-bar">
-    <div class="settings-content">
+    <div class="settings-content top">
+    </div>
+    <div class="settings-content bottom">
         <div class="setting-group">
             <label>Font Size:</label>
             <button id="decrease-font" aria-label="Decrease font size">-</button>
@@ -256,8 +271,15 @@
         <div class="setting-group">
             <button id="toggle-dark-mode">Dark Mode</button>
         </div>
+        <button id="close-settings" aria-label="Close settings">×</button>
     </div>
-    <button id="close-settings" aria-label="Close settings">×</button>
+
+
+
+</div>
+
+
+
 </div>
 
 
@@ -271,7 +293,7 @@
     const loadingIndicator = document.getElementById('loading-indicator');
     const tocContainer = document.getElementById('toc-container');
     const tocList = document.getElementById('toc-list');
-    const toggleTocButton = document.getElementById('toggle-toc');
+    // const toggleTocButton = document.getElementById('toggle-toc'); // Header commented out, so button doesn't exist
     const tocOverlay = document.getElementById('toc-overlay');
     const settingsBar = document.getElementById('settings-bar');
     const decreaseFontButton = document.getElementById('decrease-font');
@@ -287,7 +309,7 @@
     // --- State Variables ---
     let rendition = null;
     let book = null;
-    let currentBookTitle = 'Ebook Reader';
+    let currentBookTitle = 'Ebook Reader'; // Default title
     let isModifyingSelection = false;
     let currentFontSizePercent = 100;
     const FONT_SIZE_STEP = 10;
@@ -303,16 +325,24 @@
         document.body.classList.remove('toc-visible');
     }
     function openToc() {
+        // This function might still be useful if triggered by other means in the future,
+        // but it won't be triggered by the commented-out button.
         if (tocContainer) tocContainer.style.left = '0';
         if (tocOverlay) tocOverlay.style.opacity = '1';
         if (tocOverlay) tocOverlay.style.visibility = 'visible';
         document.body.classList.add('toc-visible');
     }
     function showSettings() {
-        if (settingsBar) settingsBar.classList.add('settings-visible');
+        if (settingsBar){
+            settingsBar.classList.add('settings-visible');
+            settingsBar.querySelectorAll('.settings-content').forEach(e => e.classList.add('settings-visible')) ;
+        }
     }
     function hideSettings() {
-        if (settingsBar) settingsBar.classList.remove('settings-visible');
+        if (settingsBar){
+            settingsBar.classList.remove('settings-visible');
+            settingsBar.querySelectorAll('.settings-content').forEach(e => e.classList.remove('settings-visible')) ;
+        }
     }
 
     // --- Font Size Function ---
@@ -354,8 +384,19 @@
     function toggleDarkMode() {
         applyDarkMode(!isDarkMode);
         console.log('!!!!!!!!!!!!!Dark Mode!!!!!!!!!!!!!!!!!!!');
-        rendition.display(localStorage.getItem(storageKey));
-        // rendition.display(rendition.currentLocation());
+        // Re-display to ensure theme applies correctly immediately, using saved location
+        const storageKey = `ebookReaderPosition_${bookId}`;
+        try {
+            const savedCfi = localStorage.getItem(storageKey);
+            if (savedCfi) {
+                rendition.display(savedCfi);
+            } else {
+                rendition.display(); // Display from start if no saved CFI
+            }
+        } catch(e) {
+            console.error("Error re-displaying after theme change:", e);
+            rendition.display(); // Fallback
+        }
     }
 
     function applyInitialDarkModeState() {
@@ -378,7 +419,12 @@
             book.ready.then(() => {
                 console.log(">>> book.ready resolved.");
                 const metadata = book.package.metadata;
-                if (metadata.title) { currentBookTitle = metadata.title; document.querySelector('.app-header h1').textContent = currentBookTitle; document.title = currentBookTitle; }
+                // Update the document title, but not the non-existent header h1
+                if (metadata.title) {
+                    currentBookTitle = metadata.title;
+                    // document.querySelector('.app-header h1').textContent = currentBookTitle; // Header is commented out
+                    document.title = currentBookTitle + " (Reader)"; // Set browser tab title
+                }
                 const toc = book.navigation.toc;
                 tocList.innerHTML = ''; const fragment = document.createDocumentFragment();
                 toc.forEach(function(chapter) {
@@ -389,8 +435,11 @@
                 });
                 tocList.appendChild(fragment);
                 console.log("TOC processed.");
-                toggleTocButton.disabled = false;
-            }).catch(err => { console.error("Error book.ready:", err); toggleTocButton.disabled = true; });
+                // toggleTocButton.disabled = false; // Button doesn't exist
+            }).catch(err => {
+                console.error("Error book.ready:", err);
+                // toggleTocButton.disabled = true; // Button doesn't exist
+            });
 
             rendition = book.renderTo("viewer", {
                 width: "100%", height: "100%", spread: "none", allowScriptedContent: true
@@ -473,7 +522,7 @@
                     }
 
                     // Link Check
-                    targetElement = originalEvent.target;
+                    let targetElement = originalEvent.target; // Renamed to avoid conflict
                     let isActualLink = false;
                     let linkCheckDepth = 0;
                     while (targetElement && targetElement !== viewerElement && linkCheckDepth < 10) {
@@ -563,7 +612,7 @@
                 }
                 console.log("Attached settings button listeners.");
 
-                // --- Word Selection Handler (Optional, can be removed if not needed) ---
+                // --- Word Selection Handler (Optional) ---
                 let isModifyingSelectionWord = false;
                 rendition.on('displayed', function(view) {
                     const iframeDoc = view.document;
@@ -592,11 +641,13 @@
                 loadingIndicator.style.display = 'none';
             });
 
-            // --- Existing Event Listeners (TOC etc.) ---
+            // --- Existing Event Listeners (TOC overlay etc.) ---
+            /* // This listener is for the button which is now commented out
             toggleTocButton.addEventListener("click", function() {
                 if (document.body.classList.contains('toc-visible')) { closeToc(); } else { openToc(); }
             });
-            tocOverlay.addEventListener("click", closeToc);
+            */
+            tocOverlay.addEventListener("click", closeToc); // Keep this, TOC might open other ways
             rendition.on("relocated", function(location){
                 // console.log("Relocated to:", location.start.cfi); // Optional log
             });
@@ -605,14 +656,14 @@
             console.error("Error during epub.js initialization:", e);
             viewerElement.innerHTML = "<p style='padding: 20px; text-align: center;'>Failed to initialize reader.</p>";
             loadingIndicator.style.display = 'none';
-            toggleTocButton.disabled = true;
+            // toggleTocButton.disabled = true; // Button doesn't exist
         }
 
     } else {
         console.error("Invalid bookId or bookUrl.");
         viewerElement.innerHTML = "<p style='padding: 20px; text-align: center;'>Invalid Book ID.</p>";
         loadingIndicator.style.display = 'none';
-        toggleTocButton.disabled = true;
+        // toggleTocButton.disabled = true; // Button doesn't exist
     }
 
     // --- Keyboard Navigation Function ---
@@ -636,7 +687,7 @@
         }
     }
 
-    toggleTocButton.disabled = true; // Initially disabled
+    // toggleTocButton.disabled = true; // Initially disabled - Button doesn't exist
 
     /*]]>*/
 </script>
