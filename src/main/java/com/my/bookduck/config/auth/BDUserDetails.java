@@ -2,6 +2,7 @@ package com.my.bookduck.config.auth;
 
 import com.my.bookduck.domain.user.User;
 import lombok.Data;
+import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

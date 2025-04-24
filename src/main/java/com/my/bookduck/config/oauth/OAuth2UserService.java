@@ -76,13 +76,13 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
         if(userOptional.isEmpty()){
             //log.info("진행여부 판단");
-            HttpSession session = getSession();
-            String joinNickname = session.getAttribute("joinNickName") == null? "임시별명" : session.getAttribute("joinNickName").toString();
+            //HttpSession session = getSession();
+            //String joinNickname = session.getAttribute("joinNickName") == null? "임시별명" : session.getAttribute("joinNickName").toString();
 
             user = user.builder()
                     .loginId(oAuth2UserInfo.getProvider()+"_"+oAuth2UserInfo.getProviderId())
                     .name(oAuth2UserInfo.getName())
-                    .nickName(joinNickname) // 값이 입력 되는지 확인 할 것.
+                    //.nickName(joinNickname) // 값이 입력 되는지 확인 할 것.
                     .email(oAuth2UserInfo.getEmail())
                     .password("socialLogin")
                     .provider(oAuth2UserInfo.getProvider())

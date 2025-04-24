@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>회원탈퇴</title>
 </head>
 <body>
+    <div>
+        <h2><span th:if="${session.loginuser != null}" th:text="${session.loginuser.nickName}">고객</span>님 서비스 종료 진행</h2>
+        <div>약관 내용</div>
+        <div>
+
+            <a class="link btn btn-delete" th:href="@{/user/del/{id}(id=${session.loginuser.id})}">탈퇴하기</a>
+
+        </div>
+    </div>
 
 </body>
 </html>

@@ -21,6 +21,7 @@ public class InitialDataLoader {
                     .password(bCryptPasswordEncoder.encode("4321"))
                     .name("admin")
                     .email("bookduck@buckduck.com")
+                    .nickName("admin")
                     .role(String.valueOf(User.Role.ROLE_ADMIN))
                     .build();
             userRepository.save(admin);
@@ -35,6 +36,7 @@ public class InitialDataLoader {
                         .password(bCryptPasswordEncoder.encode("1234"))
                         .name(name)
                         .email(name + "@bookduck.com")
+                        .nickName(name)
                         .role(String.valueOf(User.Role.ROLE_USER))
                         .build();
                 userRepository.save(user);
