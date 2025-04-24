@@ -6,6 +6,7 @@ import com.my.bookduck.domain.book.Category;
 import com.my.bookduck.service.BookService;
 import com.my.bookduck.service.CategoryService;
 // import com.my.bookduck.service.EBookService; // 필요하면 주석 해제
+import com.my.bookduck.service.EBookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors; // Collectors 임포트
 public class BookController {
 
     private final BookService bookService;
-    // private final EBookService eBookService; // 필요하면 주석 해제
+    private final EBookService eBookService;
     private final CategoryService categoryService;
 
     /**
@@ -184,7 +185,6 @@ public class BookController {
         }
     }
     // ... (CategoryApiController 및 다른 BookController 메소드 유지) ...
-}
 
 
     /**
@@ -242,7 +242,7 @@ public class BookController {
     }
 
     // ... 기타 필요한 API 엔드포인트 (예: 소분류 목록 조회 API) ...
-    // 예시:
+// 예시:
     @GetMapping("/api/categories/{parentId}/subcategories")
     @ResponseBody // JSON 반환 명시
     public List<Category> getSubCategoriesApi(@PathVariable Long parentId) {
