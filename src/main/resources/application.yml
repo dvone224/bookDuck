@@ -2,11 +2,18 @@ spring:
   profiles:
     include: secret
     active: dev
+
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     database: mysql
     hibernate:
       ddl-auto: none
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    cache: false
 
     # JDBC TimeZone Setting
     properties:
