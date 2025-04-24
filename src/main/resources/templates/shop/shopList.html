@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알라딘 도서 검색</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .search-container input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-container input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .search-container button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .search-container button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .search-container button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Container */
+        #results {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Book Item Card */
+        .book-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .book-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-item img {
+            max-width: 80px;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+
+        .book-item.clickable-book-item { /* 클릭 가능한 아이템에만 적용 */
+            cursor: pointer;
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .book-info h3 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin: 0 0 10px;
+        }
+
+        .book-info p {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .book-info a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .book-info a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        /* Status Messages */
+        .loading, .error, .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+        }
+
+        .loading {
+            background-color: #e8f4fd;
+            color: #3498db;
+        }
+
+        .error {
+            background-color: #ffe6e6;
+            color: #e74c3c;
+        }
+
+        .no-results {
+            background-color: #f0f0f0;
+            color: #777;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container button {
+                width: 100%;
+            }
+
+            #results {
+                grid-template-columns: 1fr;
+            }
+
+            .book-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .book-item img {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Accessibility */
+        input:focus, button:focus, a:focus {
+            outline: 2px solid #3498db;
+            outline-offset: 2px;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+<h1>도서 검색</h1>
+
+<div class="search-container">
+    <input type="text" id="searchQuery" placeholder="책 제목, 저자 등으로 검색" aria-label="도서 검색">
+    <button id="searchButton">검색</button>
+</div>
+
+<div id="results">
+    <!-- 검색 결과가 여기에 표시됩니다 -->
+</div>
+<div id="paginationContainer">
+    <!-- 페이지 번호 버튼이 여기에 동적으로 생성됩니다 -->
+</div>
+
+<!-- HTML 부분은 변경 없음. Results 와 Pagination 컨테이너 유지 -->
+<div id="results">
+    <!-- 검색 결과가 여기에 표시됩니다 -->
+</div>
+<div id="paginationContainer">
+    <!-- 페이지 번호 버튼이 여기에 동적으로 생성됩니다 -->
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchQuery');
+    const searchButton = document.getElementById('searchButton');
+    const resultsContainer = document.getElementById('results');
+    const paginationContainer = document.getElementById('paginationContainer');
+
+    let currentPage = 1;
+    let currentQuery = '';
+    let totalResults = 0;
+    const itemsPerPage = 10;
+    const defaultQuery = "베스트셀러";
+
+    // --- 공통: API 호출 함수 (변경 없음) ---
+    async function fetchBooks(query, page) {
+        const apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
+        console.log("Fetching books with URL:", apiUrl);
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            console.error("API Response Status:", response.status, response.statusText);
+            const errorBody = await response.text();
+            console.error("API Error Body:", errorBody);
+            throw new Error(`HTTP 오류! 상태: ${response.status}`);
+        }
+        return await response.json();
+    }
+
+    // --- 공통: 검색 결과 표시 함수 (수정: ISBN, Link 제거) ---
+    function displayResults(paginatedResponse) {
+        resultsContainer.innerHTML = '';
+        const books = paginatedResponse.books;
+
+        if (!books || books.length === 0) {
+            // ... (결과 없음 메시지 처리 부분 동일) ...
+            if (currentPage === 1 && paginatedResponse.totalResults === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+            } else if (currentPage > 1 && (!books || books.length === 0)) {
+                resultsContainer.innerHTML = '<div class="no-results">해당 페이지에 결과가 없습니다.</div>';
+            } else {
+                resultsContainer.innerHTML = '<div class="no-results">결과를 불러올 수 없습니다.</div>';
+            }
+            return;
+        }
+
+        books.forEach(book => {
+            const bookElement = document.createElement('div');
+            bookElement.classList.add('book-item');
+            // ✨ 클릭 가능하도록 클래스 추가 및 필요한 데이터 속성 설정 ✨
+            bookElement.classList.add('clickable-book-item');
+            bookElement.dataset.title = book.title || '제목 없음';
+            bookElement.dataset.price = (typeof book.priceStandard === 'number' && book.priceStandard > 0) ? book.priceStandard : '0';
+            // data-isbn 제거
+
+            // 데이터 필드 안전하게 가져오기
+            const coverUrl = book.cover || '';
+            const title = book.title || '제목 없음';
+            const author = book.author || '';
+            const publisher = book.publisher || '';
+            const price = book.priceStandard;
+            // isbn, link 변수 제거
+
+            // HTML 문자열 구성 (ISBN, Link 제거)
+            let coverHtml = coverUrl ? `<img src="${coverUrl}" alt="${title} 표지">` : '<span>(이미지 없음)</span>';
+            let authorHtml = author ? `<p><strong>저자:</strong> ${author}</p>` : '';
+            let publisherHtml = publisher ? `<p><strong>출판사:</strong> ${publisher}</p>` : '';
+            let priceHtml = (typeof price === 'number' && price > 0)
+                ? `<p><strong>가격:</strong> ${price.toLocaleString()}원</p>` : '';
+            // isbnHtml, linkHtml 제거
+
+            // bookElement의 innerHTML 설정 (ISBN, Link 제거)
+            bookElement.innerHTML = `
+                ${coverHtml}
+                <div class="book-info">
+                    <h3>${title}</h3>
+                    ${authorHtml}
+                    ${publisherHtml}
+                    ${priceHtml}
+                </div>
+            `;
+            resultsContainer.appendChild(bookElement);
+        });
+    }
+
+    // --- 페이지네이션 UI 렌더링 함수 (변경 없음) ---
+    function renderPagination(totalResults, currentPage, itemsPerPage) {
+        // ... (이전 코드와 동일) ...
+        paginationContainer.innerHTML = '';
+        if (totalResults <= itemsPerPage) return;
+        const totalPages = Math.ceil(totalResults / itemsPerPage);
+        const paginationGroup = document.createElement('div');
+        paginationGroup.classList.add('pagination');
+
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '이전';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => goToPage(currentPage - 1));
+        paginationGroup.appendChild(prevButton);
+
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            const firstButton = document.createElement('button');
+            firstButton.textContent = '1';
+            firstButton.addEventListener('click', () => goToPage(1));
+            paginationGroup.appendChild(firstButton);
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                paginationGroup.appendChild(ellipsis);
+            }
+        }
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.disabled = i === currentPage;
+            pageButton.classList.toggle('current', i === currentPage);
+            pageButton.addEventListener('click', () => goToPage(i));
+            paginationGroup.appendChild(pageButton);
+        }
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                paginationGroup.appendChild(ellipsis);
+            }
+            const lastButton = document.createElement('button');
+            lastButton.textContent = totalPages;
+            lastButton.addEventListener('click', () => goToPage(totalPages));
+            paginationGroup.appendChild(lastButton);
+        }
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '다음';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => goToPage(currentPage + 1));
+        paginationGroup.appendChild(nextButton);
+
+        paginationContainer.appendChild(paginationGroup);
+    }
+
+    // --- 특정 페이지로 이동하는 함수 (변경 없음) ---
+    async function goToPage(pageNumber) {
+        // ... (이전 코드와 동일) ...
+        if (pageNumber < 1 || pageNumber > Math.ceil(totalResults / itemsPerPage) || pageNumber === currentPage) {
+            console.log(`Invalid page navigation attempt to page ${pageNumber}. Current: ${currentPage}, Total: ${totalResults}`);
+            return;
+        }
+        console.log(`Navigating to page ${pageNumber} for query "${currentQuery}"`);
+        currentPage = pageNumber;
+        resultsContainer.innerHTML = '<div class="loading">페이지 로딩 중...</div>';
+        paginationContainer.innerHTML = '';
+        searchButton.disabled = true;
+        try {
+            const paginatedResponse = await fetchBooks(currentQuery, currentPage);
+            displayResults(paginatedResponse);
+            renderPagination(totalResults, currentPage, itemsPerPage);
+        } catch (error) {
+            console.error(`페이지 ${pageNumber} 로드 오류:`, error);
+            resultsContainer.innerHTML = `<div class="error">페이지 ${pageNumber}를 불러오는 중 오류가 발생했습니다.</div>`;
+            renderPagination(totalResults, currentPage, itemsPerPage);
+        } finally {
+            searchButton.disabled = false;
+        }
+    }
+
+    // --- 사용자 검색 실행 함수 (변경 없음) ---
+    async function performSearch() {
+        // ... (이전 코드와 동일, 빈 값 처리 포함) ...
+        let query = searchInput.value.trim();
+        if (!query) {
+            console.log("빈 검색어 입력 감지. 기본 검색어 '베스트셀러'로 검색합니다.");
+            query = defaultQuery;
+        }
+        currentPage = 1;
+        currentQuery = query;
+        resultsContainer.innerHTML = '<div class="loading">검색 중...</div>';
+        paginationContainer.innerHTML = '';
+        searchButton.disabled = true;
+        try {
+            const paginatedResponse = await fetchBooks(currentQuery, currentPage);
+            totalResults = paginatedResponse.totalResults;
+            displayResults(paginatedResponse);
+            renderPagination(totalResults, currentPage, itemsPerPage);
+        } catch (error) {
+            console.error('검색 오류:', error);
+            resultsContainer.innerHTML = '<div class="error">검색 중 오류가 발생했습니다. 관리자에게 문의하세요.</div>';
+            totalResults = 0;
+            renderPagination(totalResults, currentPage, itemsPerPage);
+        } finally {
+            searchButton.disabled = false;
+        }
+    }
+
+    // --- 페이지 로드 시 초기 도서 목록 로드 함수 (변경 없음) ---
+    async function loadInitialBooks() {
+        // ... (이전 코드와 동일) ...
+        currentQuery = defaultQuery;
+        currentPage = 1;
+        console.log(`Loading initial books with default query: "${defaultQuery}"`);
+        resultsContainer.innerHTML = '<div class="loading">추천 도서를 불러오는 중...</div>';
+        paginationContainer.innerHTML = '';
+        try {
+            const paginatedResponse = await fetchBooks(currentQuery, currentPage);
+            totalResults = paginatedResponse.totalResults;
+            displayResults(paginatedResponse);
+            renderPagination(totalResults, currentPage, itemsPerPage);
+        } catch (error) {
+            console.error('초기 도서 로드 오류:', error);
+            resultsContainer.innerHTML = '<div class="error">추천 도서를 불러오는 데 실패했습니다. 나중에 다시 시도해주세요.</div>';
+            totalResults = 0;
+            renderPagination(totalResults, currentPage, itemsPerPage);
+        }
+    }
+
+    // --- 이벤트 리스너 설정 (✨ Book Item 클릭 리스너 수정) ---
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // ✨ 결과 영역에 클릭 이벤트 리스너 추가 (수정: ISBN 제거) ✨
+    resultsContainer.addEventListener('click', function(event) {
+        const clickedItem = event.target.closest('.clickable-book-item');
+
+        if (clickedItem) {
+            // 데이터 속성에서 책 정보 추출 (ISBN 제거)
+            const title = clickedItem.dataset.title;
+            const price = clickedItem.dataset.price;
+            // const isbn = clickedItem.dataset.isbn; 제거
+
+            console.log(`Book clicked: Title=${title}, Price=${price}`); // 로그에서 ISBN 제거
+
+            // 결제 페이지 URL 생성 (쿼리 파라미터 사용 - ISBN 제거)
+            const paymentUrl = '/payment';
+            const params = new URLSearchParams();
+            params.append('title', title);
+            params.append('price', price);
+            // params.append('isbn', isbn); 제거
+
+            const urlWithParams = `${paymentUrl}?${params.toString()}`;
+            console.log("Navigating to payment page:", urlWithParams);
+
+            window.location.href = urlWithParams;
+        }
+    });
+
+    // --- 페이지 로드 완료 시 초기 도서 목록 로드 실행 (변경 없음) ---
+    document.addEventListener('DOMContentLoaded', loadInitialBooks);
+
+</script>
+</body>
+</html>

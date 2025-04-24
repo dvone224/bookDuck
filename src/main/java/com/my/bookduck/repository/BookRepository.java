@@ -27,6 +27,13 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("categoryIds") Set<Long> categoryIds
     );
 
+    @Query("SELECT DISTINCT b FROM Book b LEFT JOIN b.categories bc " + // BookCategory 조인 (bc)
+            "WHERE (bc.categoryId IN :categoryIds)")// 카테고리 조건 (조인된 BookCategory의 categoryId 사용)
+    List<Book> findBooksByQueryAndCategoryIdsIn2(
+            @Param("query") String query,
+            @Param("categoryIds") Long categoryIds
+    );
+
     // 만약 카테고리 필터링 없이 검색어만으로 검색하는 경우 (카테고리 선택 안했을 때)
     @Query("SELECT b FROM Book b WHERE :query IS NULL OR :query = '' OR LOWER(b.title) LIKE LOWER(concat('%', :query, '%')) OR LOWER(b.writer) LIKE LOWER(concat('%', :query, '%'))")
     List<Book> findBooksByQuery(@Param("query") String query);

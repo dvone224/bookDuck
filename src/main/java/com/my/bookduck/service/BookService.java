@@ -36,6 +36,7 @@ public class BookService {
     public List<Book> searchBooks(String query, Long mainCategoryId, Long subCategoryId) {
         String trimmedQuery = (query != null) ? query.trim() : null; // 비어있으면 null로 처리
         Set<Long> targetCategoryIds = null; // 필터링할 최종 카테고리 ID 목록
+        Long targetId = subCategoryId != null ? subCategoryId:mainCategoryId;
 
         log.info("Searching books - Query: '{}', MainCategory: {}, SubCategory: {}",
                 trimmedQuery, mainCategoryId, subCategoryId);
