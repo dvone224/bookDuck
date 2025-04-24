@@ -28,6 +28,7 @@ public class CategoryApiController {
                 .map(CategorySimpleDto::new) // 생성자 참조 사용
                 .collect(Collectors.toList());
 
+
         return ResponseEntity.ok(subCategoriesDto); // DTO 리스트 반환
     }
 }

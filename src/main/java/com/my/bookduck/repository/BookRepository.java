@@ -1,3 +1,4 @@
+// BookRepository.java 인터페이스에 추가
 package com.my.bookduck.repository;
 
 import com.my.bookduck.domain.book.Book;
@@ -6,28 +7,33 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Set; // List 대신 Set 사용 가능
+import java.util.Set;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
+    // 다른 메소드들...
+
     /**
-     * 검색어(제목 또는 저자)와 카테고리 ID 목록(IN 절 사용)으로 책 목록을 조회합니다.
-     * 카테고리 ID 목록이 비어있거나 null이면 카테고리 필터링을 적용하지 않습니다.
-     * 검색어가 비어있거나 null이면 텍스트 검색을 적용하지 않습니다.
-     *
-     * @param query 검색어 (제목 또는 저자, null 또는 빈 문자열 가능)
-     * @param categoryIds 필터링할 카테고리 ID 목록 (null 또는 비어있을 수 있음)
-     * @return 조건을 만족하는 책 엔티티 리스트
+     * 검색어(제목 또는 저자)와 카테고리 ID 목록으로 책을 검색합니다. (ManyToMany 고려)
+     * @param query 검색어 (null 이거나 비어있으면 무시)
+     * @param categoryIds 필터링할 카테고리 ID 목록 (null 이거나 비어있으면 카테고리 필터링 안 함)
+     * @return 검색 조건에 맞는 책 목록
      */
-    @Query("SELECT DISTINCT b FROM Book b LEFT JOIN b.categories bc WHERE " +
-            "(:categoryIds IS NULL OR bc.categoryId IN :categoryIds) AND " + // categoryIds가 null이면 true, 아니면 IN 절 적용
-            "(:query IS NULL OR :query = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(b.writer) LIKE LOWER(CONCAT('%', :query, '%')))")
-    List<Book> findBooksByQueryAndCategoryIdsIn(@Param("query") String query, @Param("categoryIds") Set<Long> categoryIds); // 파라미터 List 또는 Set 가능
+    @Query("SELECT DISTINCT b FROM Book b LEFT JOIN b.categories bc " + // BookCategory 조인 (bc)
+            "WHERE (:query IS NULL OR :query = '' OR LOWER(b.title) LIKE LOWER(concat('%', :query, '%')) OR LOWER(b.writer) LIKE LOWER(concat('%', :query, '%'))) " + // 검색어 조건
+            "AND (:categoryIds IS NULL OR bc.categoryId IN :categoryIds)") // 카테고리 조건 (조인된 BookCategory의 categoryId 사용)
+    List<Book> findBooksByQueryAndCategoryIdsIn(
+            @Param("query") String query,
+            @Param("categoryIds") Set<Long> categoryIds
+    );
 
-    // 제목 또는 저자 검색 (카테고리 필터 없을 때 사용 가능)
-    List<Book> findByTitleContainingIgnoreCaseOrWriterContainingIgnoreCase(String titleQuery, String writerQuery);
+    // 만약 카테고리 필터링 없이 검색어만으로 검색하는 경우 (카테고리 선택 안했을 때)
+    @Query("SELECT b FROM Book b WHERE :query IS NULL OR :query = '' OR LOWER(b.title) LIKE LOWER(concat('%', :query, '%')) OR LOWER(b.writer) LIKE LOWER(concat('%', :query, '%'))")
+    List<Book> findBooksByQuery(@Param("query") String query);
 
-    // 특정 카테고리 ID 목록에 해당하는 책 ID만 조회 (Service에서 사용하기 위함)
-    @Query("SELECT DISTINCT bc.bookId FROM BookCategory bc WHERE bc.categoryId IN :categoryIds")
-    Set<Long> findBookIdsByCategoryIdsIn(@Param("categoryIds") Set<Long> categoryIds);
+    // 만약 검색어 없이 카테고리만으로 필터링하는 경우
+    @Query("SELECT DISTINCT b FROM Book b JOIN b.categories bc WHERE bc.categoryId IN :categoryIds")
+    List<Book> findBooksByCategoryIdsIn(@Param("categoryIds") Set<Long> categoryIds);
+
+    // 모든 책 조회 (findAll() 사용 가능)
 }
