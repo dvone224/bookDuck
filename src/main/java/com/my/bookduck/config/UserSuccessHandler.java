@@ -31,6 +31,10 @@ public class UserSuccessHandler implements AuthenticationSuccessHandler {
         log.info("user: {}", user);
         log.info("user.getProvider: {}", user.getProvider());
         log.info("user.getProviderId: {}", user.getProviderId());
-        response.sendRedirect("/home");
+        if(user.getNickName() != null) {
+            response.sendRedirect("/logininfo");
+        }else{
+            response.sendRedirect("/addNickname");
+        }
     }
 }

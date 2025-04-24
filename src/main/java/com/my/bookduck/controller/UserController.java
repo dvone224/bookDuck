@@ -38,6 +38,19 @@ public class UserController {
 
     }
 
+    @GetMapping("/del/{id}")
+    public String delUser(@PathVariable Long id) {
+        System.out.println("delUser: " + id);
+        return "redirect:/home";
+    }
+
+    @PostMapping("/update")
+    public String updateUser(final @ModelAttribute AddUserRequest user, Model model){
+        log.info("update User: {}", user);
+        return "redirect:/home";
+    }
+
+
     // --- 사용자 검색 API 엔드포인트 추가 ---
     /**
      * 닉네임으로 사용자를 검색하는 API (JavaScript에서 호출됨).

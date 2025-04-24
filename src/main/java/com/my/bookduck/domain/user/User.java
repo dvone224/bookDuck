@@ -61,8 +61,10 @@ public class User {
         else if(role == null) this.role = ROLE_USER;
         else this.role = Role.valueOf(role);
 
-        if(nickName == null) this.nickName = name;
-        else this.nickName = nickName;
+        //if(nickName == null) this.nickName = name;
+        //else this.nickName = nickName;
+
+        this.nickName = nickName;
 
         this.img = img;
 
