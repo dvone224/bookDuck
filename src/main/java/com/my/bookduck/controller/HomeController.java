@@ -3,6 +3,7 @@ package com.my.bookduck.controller;
 import com.my.bookduck.config.auth.BDUserDetails;
 import com.my.bookduck.controller.response.loginUserInfo;
 import com.my.bookduck.domain.user.User;
+import com.my.bookduck.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -23,13 +24,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
+    private final UserService userService;
+
     @GetMapping({"","/","/home"})
     public String home(){return "home";}
 
     @GetMapping("/logininfo")
     public String logininfo(@AuthenticationPrincipal BDUserDetails user,HttpSession session){
         log.info("user: {}", user);
-        User u = user.getUser();
+        //User u = user.getUser();
+        User u = userService.getUserByLoginId(user.getUser().getId());
         log.info("u: {}", u);
         loginUserInfo loginuser = new loginUserInfo(u);
         session.setAttribute("loginuser", loginuser);
@@ -45,10 +49,13 @@ public class HomeController {
     public String signUp(){return "member/joinForm";}
 
     @GetMapping("/addNickname")
-    public String addNickname(){return "member/addNickname";}
+    public String addNickname(@AuthenticationPrincipal BDUserDetails user){
+        log.info("user: {}", user);
+        return "member/joinSocialForm";
+    }
 
     @GetMapping("/userupdate")
-    public String userUpdate(){return "member/mypage";}
+    public String userUpdate(){return "member/fix";}
 
     @GetMapping("/error")
     public String handleError(@RequestParam(value="message",required=false) String message, Model model){
