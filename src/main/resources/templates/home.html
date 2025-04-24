@@ -1,13 +1,73 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="~{fragments/header :: header}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+        /* Global 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 기본 설정 */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%; /* 가로를 화면에 맞게 설정 */
+        }
+
+        /* 컨테이너 스타일 */
+        .container {
+            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
+            padding: 10px; /* 적절한 여백 추가 */
+            border: 1px solid black;
+        }
+
+        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+            .container {
+                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+            }
+        }
+
+    </style>
+    <title> BookDuck² </title>
+    
+</head>
 <body>
-<div th:replace="~{fragments/bodyHeader :: bodyHeader}" ></div>
+<h1>다 읽었어요</h1>
+<div th:replace="~{fragments/mainHeader :: bodyHeader}" ></div>
+<div class="line_point">
+    <div class="line"></div>
+    <div class="point_menu"></div>
+</div>
 <section class="content">
-    <h1>HOME</h1>
     <div class="container">
-
-
+       <!-- <img class="make_crew">-->
+        <div class="serch_box">
+            <input class="input_serch" type="text">
+<!--            <img class="icon_serch" src="" href="/member/members">-->
+        </div>
+        <div class="fake_toggle">
+            <div class="toggle_allBook">모든 책 최신순 보기</div>
+            <div class="fake_toggle_bar"></div>
+            <div class="toggle_myBook">내가 보유한 책 보기</div>
+            <div class="board_list">
+                <div class="board" th:if="${list.isEmpty()}">
+                    교환독서를 공개한 CREW가 없습니다.
+                </div>
+                <div class="board" th:if="${!list.isEmpty()}" th:each="board : ${list}">
+                    <img th:src="${board}">
+                    <p th:text="${board}">크루이름<span>crew</span></p>
+                    <p th:text="${board}">도서이름</p>
+                    <img src=""><!--하트 이모티콘-->
+                    <p th:text="${board}">0</p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 <!-- /container -->
