@@ -1,3 +1,173 @@
+
+/*아이콘 임포트*/
+/* Fontawesome 4.7 */
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+/*로고용 폰트: cafe24슈퍼매직*/
+@font-face {
+    font-family: 'Cafe24Supermagic-Bold-v1.0';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/*홈페이지 메인 폰트: 고운바탕*/
+@font-face {
+    font-family: 'GowunBatang-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*고운돋움*/
+@font-face {
+    font-family: 'GowunDodum-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*조선굴림*/
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*온글잎콘콘*/
+@font-face {
+    font-family: 'Ownglyph_corncorn-Rg';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*나눔손글씨펜*/
+@import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+/*font-family: 'NanumPen';*/
+
+/*학교안심꼬꼬마*/
+@font-face {
+    font-family: 'TTHakgyoansimKkokkomaR';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*심경하*/
+@font-face {
+    font-family: 'SimKyungha';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*다이어리*/
+@font-face {
+    font-family: 'EarlyFontDiary';
+    src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 컬러 파레트 */
+:root{
+    --main-color-dark: #00479B;
+    --main-color-middle: #83C7FF;
+    --main-color-light: #E3F4FF;
+    --assist-color-dark: #CE7000;
+    --assist-color-middle: #FFB90B;
+    --assist-color-light: #FFF7E6;
+    --cancle-color-dark: #9B9B9B;
+    --cancle-color-middle: #D3D3D3;
+    --cancle-color-light: #EAEAEA;
+
+    /*사용법: var(--main-color-middle)*/
+    --border-big: 20px;
+    --border-middle: 10px;
+    --border-circle: 50%;
+
+    /*폰트 사이즈 정의*/
+    --font-size-0: 30px;
+    --font-size-1: 25px;
+    --font-size-2: 20px;
+    --font-size-3: 15px;
+    --font-size-4: 10px;
+
+    /*쪽지 색상 지정*/
+    --memo1-color-dark: #00479B;
+    --memo1-color-middle: #83C7FF;
+    --memo1-color-light: #E3F4FF;
+    --memo1-color-back: #B0CAD6;
+
+    --memo2-color-dark: #CE7000;
+    --memo2-color-middle: #FFB90B;
+    --memo2-color-light: #FFF7E6;
+    --memo2-color-back: #EAD4AD;
+
+    --memo3-coler-dark: #841A1A;
+    --memo3-coler-middle: #FF9494;
+    --memo3-coler-light: #FFE9E9;
+    --memo3-coler-back: #D6B0B0;
+
+    --memo4-coler-dark: #325900;
+    --memo4-coler-middle: #97CE41;
+    --memo4-coler-light: #F6FFD9;
+    --memo4-coler-back: #CCD3AE;
+
+    --memo5-coler-dark: #A04800;
+    --memo5-coler-middle: #FF8B00;
+    --memo5-coler-light: #FFE3CA;
+    --memo5-coler-back: #C9A88D;
+
+    --memo6-coler-dark: #6A297A;
+    --memo6-coler-middle: #AF80CE;
+    --memo6-coler-light: #F5EEFF;
+    --memo6-coler-back: #CDC3DD;
+
+    --memo7-coler-dark: #1F1F77;
+    --memo7-coler-middle: #7A8CE5;
+    --memo7-coler-light: #E9ECFF;
+    --memo7-coler-back: #B2B8D3;
+
+    --memo8-coler-dark: #006466;
+    --memo8-coler-middle: #66C6DD;
+    --memo8-coler-light: #EBFFFF;
+    --memo8-coler-back: #B8D3D2;
+}
+
+/*버튼 기본 규격*/
+.btn_circle{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+.btn_long{
+    width: 100%;
+    height: 25px;
+    border-radius: 50%;
+}
+.blue{
+    background: var(--main-color-middle);
+}
+.yellow{
+    background: var(--assist-color-middle);
+}
+.dark_blue{
+    color: var(--main-color-dark);
+}
+.dark_yellow{
+    color: var(--assist-color-dark);
+}
+.light_blue{
+    background: var(--main-color-light);
+}
+.light_yellow{
+    background: var(--assist-color-light);
+}
+
 /* Global 스타일 초기화 */
 * {
     margin: 0;
@@ -30,5 +200,4 @@ body {
         font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
     }
 }
-
 /* 헤더용 CSS들 */

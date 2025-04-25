@@ -3,9 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <style>
+        /* Fontawesome 4.7 */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+        /*홈페이지 메인 폰트: 고운바탕*/
+        @font-face {
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --main-color-dark: #00479B;
+            --main-color-middle: #83C7FF;
+            --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000;
+            --assist-color-middle: #FFB90B;
+            --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B;
+            --cancle-color-middle: #D3D3D3;
+            --cancle-color-light: #EAEAEA;
+
+            /*사용법: var(--main-color-middle)*/
+            --border-big: 20px;
+            --border-middle: 10px;
+            --border-circle: 50%;
+
+            --font-size-1: 25px;
+            --font-size-2: 20px;
+            --font-size-3: 15px;
+            --font-size-4: 10px;
+        }
+
+        .font_1{
+            font-size: var(--font-size-1);
+        }
+        .font_2{
+            font-size: var(--font-size-2);
+        }
+        .font_3{
+            font-size: var(--font-size-3);
+        }
+        .font_4{
+            font-size: var(--font-size-4);
+        }
+
+
+        body{
+            font-family: 'GowunBatang-Regular';
+            font-size: var(--font-size-2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile_img{
+            border: 2px solid var(--assist-color-middle);
+            border-radius: var(--border-big);
+            width: 200px;
+            height: 200px;
+        }
+        .btn_circle{
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon_white{
+            color: white;
+        }
+
+        .yellow{
+            background: var(--assist-color-middle);
+        }
+
+        .crew_book_img, .book_img{
+            border: 1px solid black;
+            width: 75px;
+            height: 100px;
+            border-radius: var(--border-middle);
+        }
+
+        .crew_box, .book_box{
+            border-radius: var(--border-middle);
+            margin: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .crew_one, .book_one, .title{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .light_blue{
+            background: var(--main-color-light);
+        }
+        .light_yellow{
+            background: var(--assist-color-light);
+        }
+
+        .line_blue{
+            width: 120%;
+            height: 1px;
+            margin-top: 2px;
+            margin-bottom: 10px;
+            background: var(--main-color-dark);
+        }
+
+        .line_yellow{
+            width: 120%;
+            height: 1px;
+            margin-top: 2px;
+            margin-bottom: 10px;
+            background: var(--assist-color-dark);
+        }
+
+    </style>
     <title> BookDuck²::My Page </title>
 </head>
 <body>
+
+<div class="profile_img_box">
+    <div class="profile_img"><!--<img src="">--></div>
+    <div class="btn_circle yellow fix"><i class="fa-solid fa-pen icon_white"></i></div>
+</div>
+<div class="nickname font_1">닉네임님</div>
+<div class="crew_box light_blue">
+    <div class="title">MY CREW<div class="line_blue"></div></div>
+    <div class="crew_list">
+        <!--each로 반복-->
+        <div class="crew_one">
+            <div class="crew_book_img"></div>
+            <div class="crew_tag font_3">CREW</div>
+            <div class="crew_name">독서 어벤저스</div>
+        </div>
+        <!--each로 반복-->
+    </div>
+    <div class="btn_more">더보기</div>
+</div>
+
+<div class="book_box light_yellow">
+    <div class="title">MY BOOK<div class="line_yellow"></div></div>
+    <div class="book_list">
+        <!--each로 반복-->
+        <div class="book_one">
+            <div class="book_img"></div>
+        </div>
+        <!--each로 반복-->
+    </div>
+    <div class="btn_more">더보기</div>
+</div>
+
+<div class="btn_yellow">LOGOUT</div>
+
 </body>
 </html>

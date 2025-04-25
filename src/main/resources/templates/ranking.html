@@ -8,70 +8,181 @@
         /* Fontawesome 4.7 */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
-        body{}
+        /*홈페이지 메인 폰트: 고운바탕*/
+        @font-face {
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root{
+            --main-color-dark: #00479B;
+            --main-color-middle: #83C7FF;
+            --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000;
+            --assist-color-middle: #FFB90B;
+            --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B;
+            --cancle-color-middle: #D3D3D3;
+            --cancle-color-light: #EAEAEA;
+
+            /*사용법: var(--main-color-middle)*/
+            --border-big: 20px;
+            --border-middle: 10px;
+            --border-circle: 50%;
+
+            /*폰트 사이즈 정의*/
+            --font-size-1: 25px;
+            --font-size-2: 20px;
+            --font-size-3: 15px;
+            --font-size-4: 10px;
+
+            --memo1-color-dark: #00479B;
+            --memo1-color-middle: #83C7FF;
+            --memo1-color-light: #E3F4FF;
+            --memo1-color-back: #B0CAD6;
+
+            --memo2-color-dark: #CE7000;
+            --memo2-color-middle: #FFB90B;
+            --memo2-color-light: #FFF7E6;
+            --memo2-color-back: #EAD4AD;
+        }
+
+        body{
+            font-family: 'GowunBatang-Regular';
+            font-size: var(--font-size-2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
         .rankingBox{
-            width: 80%;
+            width: auto;
             height: auto;
             clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
             /*clip-path: polygon(0% 0%, 100% 0%, calc(100% - 10px) calc(100% - 0px), calc(75% - 10px) 100%, calc(48% - 10px) 100%, 0 100%);*/
             position: relative; /* paper의 기준점 설정 */
             margin: 20px;
             padding: 10px;
+
+        }
+        .best_like{
+            padding: 0px;
         }
         .blue{
-            background: skyblue;
+            background: var(--main-color-light);
         }
         .yellow{
-            background: sandybrown;
+            background: var(--assist-color-light);
         }
         .paper{
-            width: 10px;
-            height: 10px;
-            background: #007bff;
+            width: 20px;
+            height: 20px;
             clip-path: polygon(100% 0, 0% 100%, 0 0);
             position: absolute; /* 상위 div 기준으로 위치 설정 */
             bottom: 0;
             right: 0;
         }
-        .best_like{
-            border: 1px solid blue;
+        .blue_back{
+            background: var(--memo1-color-back);
         }
-        p{
-            border: 1px solid blue;
+        .yellow_back{
+            background: var(--memo2-color-back);
+        }
+
+        .best_like{
+            /*border: 1px solid blue;*/
         }
         .book_img{
             border: 1px solid black;
             width: 75px;
             height: 100px;
-            border-radius: 5px;
+            border-radius: var(--border-middle);
         }
         .icon_red{
             color: red;
         }
+
+        .place{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .best_like, .first_place, .second_place, .third_place{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin: 0px 10px;
+            font-size: var(--font-size-3);
+        }
+
+        .title{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+           /* border: 1px solid red;*/
+            text-align: center;
+            font-weight: bold;
+        }
+        .line{
+            width: 120%;
+            height: 1px;
+            margin-top: 2px;
+            margin-bottom: 10px;
+        }
+        .dark_blue{
+            background: var(--main-color-dark);
+        }
+        .dark_yellow{
+            background: var(--assist-color-dark);
+        }
+
+        .medal{
+            width: 20px;
+            height: 20px;
+            border-radius: var(--border-circle);
+            color: white;
+        }
+        .silver{
+            background: #5a6268;
+        }
+        .gold{
+            background: orange;
+        }
+        .bronze{
+            background: saddlebrown;
+        }
+
     </style>
     <title> BookDuck²::명예의 전당 </title>
 </head>
 <body>
-<div class="rankingBox blue">
-    <div class="best_like">
-        <p class="title">가장 많은 사람들이 좋아요를 누른 책</p>
+<div class="rankingBox blue"><!--메모지 전체-->
+    <div class="best_like"><!--랭킹 페이지-->
+        <div class="title">가장 많은 사람들이 좋아요를 누른 책<div class="line dark_blue"></div></div>
         <div class="place">
             <div class="second_place">
-                <div class="silver">2</div>
+                <div class="medal silver">2</div>
                 <div class="book_img"><!--<img class="bookImg" src="">--></div>
                 <div class="crew_name">뽀닥뽀닥책읽기crew</div>
                 <div class="book_name">해리포터:비밀의 방1</div>
                 <div class="like_cnt"><i class="fa-solid fa-heart icon_red"></i>0</div>
             </div>
             <div class="first_place">
-                <div class="gold">1</div>
+                <div class="medal gold">1</div>
                 <div class="book_img"><!--<img class="bookImg" src="">--></div>
                 <div class="crew_name">뽀닥뽀닥책읽기crew</div>
                 <div class="book_name">해리포터:비밀의 방1</div>
                 <div class="like_cnt"><i class="fa-solid fa-heart icon_red"></i>0</div>
             </div>
-            <div class="therd_place">
-                <div class="bronze">3</div>
+            <div class="third_place">
+                <div class="medal bronze">3</div>
                 <div class="book_img"><!--<img class="bookImg" src="">--></div>
                 <div class="crew_name">뽀닥뽀닥책읽기crew</div>
                 <div class="book_name">해리포터:비밀의 방1</div>
@@ -79,11 +190,55 @@
             </div>
         </div>
     </div>
-    <div class="paper"></div>
+    <div class="paper blue_back"></div>
 </div>
 <div class="rankingBox yellow">
+    <div class="best_like"><!--랭킹 페이지-->
+        <div class="title">이번 주에 가장 많은 사람들이 읽은 책<div class="line dark_yellow"></div></div>
+
+        <div class="place">
+            <div class="second_place">
+                <div class="medal silver">2</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+            </div>
+            <div class="first_place">
+                <div class="medal gold">1</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+            </div>
+            <div class="third_place">
+                <div class="medal bronze">3</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+            </div>
+        </div>
+    </div>
+    <div class="paper yellow_back"></div>
 </div>
 <div class="rankingBox blue">
+    <div class="best_like"><!--랭킹 페이지-->
+        <div class="title">이번 주에 가장 많이 판매된 책<div class="line dark_blue"></div></div>
+
+        <div class="place">
+            <div class="second_place">
+                <div class="medal silver">2</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+            </div>
+            <div class="first_place">
+                <div class="medal gold">1</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+            </div>
+            <div class="third_place">
+                <div class="medal bronze">3</div>
+                <div class="book_img"><!--<img class="bookImg" src="">--></div>
+                <div class="book_name">해리포터:비밀의 방1</div>
+            </div>
+        </div>
+    </div>
+    <div class="paper blue_back"></div>
 </div>
 </body>
 </html>
