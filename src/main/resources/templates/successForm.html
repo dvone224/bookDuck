@@ -1,32 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- Thymeleaf 네임스페이스 추가 -->
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
     <title> BookDuck²::결제 완료 </title>
+    <style>
+        /* 간단한 스타일 추가 */
+        body { font-family: sans-serif; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .order-info {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .order-info p { margin: 8px 0; }
+        .order-info strong { display: inline-block; width: 100px; }
+        .error-message { color: red; font-weight: bold; margin-bottom: 15px; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-<!-- 결제 정보를 출력할 영역 -->
-<p>주문 번호: <span id="order-id"></span></p>
-<p>상품명: <span id="product-name"></span></p>
-<p>가격: <span id="amount"></span>원</p>
-<p>구매자 이름: <span id="customer-name"></span></p>
+<h1>결제 완료</h1>
 
-<script>
-    // URL에서 쿼리 파라미터를 가져오는 함수
-    const urlParams = new URLSearchParams(window.location.search);
-/*    function getQueryParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-    }*/
+<!-- 컨트롤러에서 전달된 오류 메시지 표시 (있는 경우) -->
+<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
 
-    // 쿼리 파라미터를 가져와서 HTML에 표시
-    document.getElementById("order-id").textContent = urlParams.get("orderId");
-    document.getElementById("product-name").textContent = urlParams.get("orderName");
-    document.getElementById("amount").textContent = urlParams.get("amount");
-    document.getElementById("customer-name").textContent = urlParams.get("customerName");
-</script>
+<div class="order-info">
+    <p>주문해주셔서 감사합니다!</p>
+    <hr>
+    <!-- Model에서 전달된 값 표시 -->
+    <p><strong>주문 번호:</strong> <span th:text="${orderId}"></span></p>
+    <p><strong>상품명:</strong> <span th:text="${productName}"></span></p>
+    <p><strong>가격:</strong> <span th:text="${#numbers.formatInteger(amount, 0, 'COMMA')} + '원'"></span></p>
+    <p><strong>구매자 이름:</strong> <span th:text="${customerName}"></span></p>
+    <!-- ISBN 등 필요한 다른 정보도 같은 방식으로 표시 가능 -->
+    <!-- <p><strong>ISBN:</strong> <span th:text="${isbn}"></span></p> -->
+</div>
 
+<!-- 메인 페이지 또는 다른 페이지로 이동하는 링크 -->
+<p><a href="/">메인 페이지로 돌아가기</a></p>
 </body>
 </html>
