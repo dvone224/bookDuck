@@ -33,4 +33,14 @@ public class MailApiController {
         return isVerified ? "Verified" : "Verification failed";
     }
 
+    @PostMapping("/findid")
+    public void findId(String mail) {
+        mailService.findIdMail(mail);
+    }
+
+    @PostMapping("/issuepw")
+    public void issuePassword(String mail) {
+        mailService.issuePwMail(mail);
+    }
+
 }
