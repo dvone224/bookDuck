@@ -68,6 +68,11 @@ public class HomeController {
         return "error";
     }
 
+    @GetMapping("/findinfo")
+    public String findUser(){
+        return "member/findinfo";
+    }
+
     @GetMapping("/deleteuser")
     public String deleteUser(){
         return "member/del";

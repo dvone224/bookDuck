@@ -12,11 +12,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private Long id;
-
-    private Integer cid;
 
     private String name;
 
@@ -33,7 +30,8 @@ public class Category {
     private List<BookCategory> bookCategories;
 
     // 생성자 (편의 메서드)
-    public Category(String name, Category parent) {
+    public Category(Long id, String name, Category parent) {
+        this.id = id;
         this.name = name;
         this.parent = parent;
     }

@@ -12,4 +12,7 @@ public interface MailService {
 
     CompletableFuture<Integer> sendMail(String mail);
 
+    void findIdMail(String mail);
+
+    void issuePwMail(String mail);
 }
