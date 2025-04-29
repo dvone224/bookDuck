@@ -2,12 +2,14 @@
 package com.my.bookduck.repository;
 
 import com.my.bookduck.domain.book.Book;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Set;
+
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
@@ -43,4 +45,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findBooksByCategoryIdsIn(@Param("categoryIds") Set<Long> categoryIds);
 
     // 모든 책 조회 (findAll() 사용 가능)
+
+
+    // 책 1권 정보 가져오기
+    Book findBookById(Long id);
 }

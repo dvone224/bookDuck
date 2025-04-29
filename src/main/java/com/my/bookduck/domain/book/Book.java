@@ -10,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"categories", "bookInfos"})
 public class Book {

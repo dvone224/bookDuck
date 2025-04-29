@@ -62,4 +62,15 @@ public class BookService {
         // Repository 호출: 검색어(null 가능)와 카테고리 ID 목록(null 가능) 전달
         return bookRepository.findBooksByQueryAndCategoryIdsIn(trimmedQuery, targetCategoryIds);
     }
+
+    public Book getBookById(Long id) throws IllegalStateException {
+        log.info("getBookById: {}", id);
+        Book book = bookRepository.findBookById(id);
+        if (book == null) {
+            throw new IllegalStateException("책 정보를 가져오는데 실패했습니다.");
+        }
+        return book;
+    }
+
+
 }

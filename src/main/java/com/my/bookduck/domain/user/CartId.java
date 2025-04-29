@@ -1,5 +1,6 @@
 package com.my.bookduck.domain.user;
 
+import com.my.bookduck.domain.book.Book;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,6 +13,6 @@ import java.io.Serializable;
 @Getter
 @EqualsAndHashCode
 public class CartId implements Serializable {
-    private Long userId;
-    private Long bookId;
+    private User user;
+    private Book book;
 }
