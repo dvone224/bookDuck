@@ -1,22 +1,11 @@
+
+/*여기서부터 독자*/
 .logo{
     font-size: 50px;
     font-family: "Cafe24Supermagic-Bold-v1.0";
     margin-bottom: 10px;
 }
 
-.seperate{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    max-width: 600px;
-}
-.seperate_one{
-    width: 79%;
-}
-.seperate_two{
-    width: 20%;
-}
 
 .input_img{
     width: 250px;
@@ -35,10 +24,6 @@
 .profile_img img{
     width: 100%;
     height: 100%;
-}
-
-.form_box{
-    width: 100%;
 }
 
 form{
@@ -60,4 +45,12 @@ input[type="checkbox"] + label{
 }
 input[type="checkbox"]:checked + label::after{
     background: var(--main-color-middle);
+}
+
+.box_none{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

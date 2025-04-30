@@ -3,19 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
+    <style>
+        /*아이콘 임포트*/
+        /* Fontawesome 4.7 */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+        /*홈페이지 메인 폰트: 고운바탕*/
+        @font-face {
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        /* 컬러 파레트 */
+        :root {
+            --main-color-dark: #00479B;
+            --main-color-middle: #83C7FF;
+            --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000;
+            --assist-color-middle: #FFB90B;
+            --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B;
+            --cancle-color-middle: #D3D3D3;
+            --cancle-color-light: #EAEAEA;
+
+            /*사용법: var(--main-color-middle)*/
+            --border-big: 20px; /*큰거...뭐가잇지...*/
+            --border-middle: 10px; /*img*/
+            --border-circle: 50%; /*동그리버튼*/
+
+            /*폰트 사이즈 정의*/
+            --font-size-0: 28px;
+            --font-size-1: 23px;
+            --font-size-2: 18px;
+            --font-size-3: 13px;
+            --font-size-4: 8px;
+        }
+
+
+        /* Global 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Gowun Batang";
+            font-size: var(--font-size-2);
+        }
+
+        /* 기본 설정 */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%; /* 가로를 화면에 맞게 설정 */
+        }
+
+        /* 컨테이너 스타일 */
+        .container {
+            border: 1px solid slateblue;
+            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn_long{
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            max-width: 600px;
+        }
+
+        .box{
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-middle);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .title{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        .dot{
+            width: 15px;
+            height: 15px;
+            border-radius: var(--border-circle);
+            display: flex;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+
+        .underline{
+            width: 130%;
+            height: 1px;
+        }
+
+        .yellow{
+            background: var(--assist-color-middle);
+        }
+        .dark_yellow1{
+            background: var(--assist-color-dark);
+        }
+        .dark_yellow2{
+            color: var(--assist-color-dark);
+        }
+        .light_yellow{
+            background: var(--assist-color-light);
+        }
+        .gray{
+            background: var(--cancle-color-middle);
+        }
+
+        /*체크박스 CSS*/
+        input[type="checkbox"]{
+            display: none;
+        }
+        input[type="checkbox"] + label{
+            margin-right: 5px;
+            display: inline-block;
+            background: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+        }
+        input[type="checkbox"] + label{
+            border:3px solid var(--assist-color-middle);
+        }
+        input[type="checkbox"]:checked + label::after {
+            content: '✔';
+            font-size: 16px; /* 체크 아이콘 크기 조정 */
+            width: 22px; /* 내부 원 크기 */
+            height: 22px; /* 내부 원 크기 */
+            border: none; /* 중복 테두리 제거 */
+            color: white;
+            text-align: center;
+            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+            position: absolute;
+            left: 50%; /* 중앙 정렬 */
+            top: 50%; /* 중앙 정렬 */
+            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
+            border-radius: 50%; /* 내부 원형 유지 */
+        }
+        input[type="checkbox"]:checked + label::after {
+            background: var(--assist-color-middle);
+        }
+
+        /*이거 main에 넣어도 되겠다 일단 생각해보기*/
+        .agree{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .one_withDot{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .text{
+            flex: 1;
+        }
+
+    </style>
     <title> BookDuck²::회원탈퇴 </title>
 </head>
 <body>
-    <div>
-        <h2><span th:if="${session.loginuser != null}" th:text="${session.loginuser.nickName}">고객</span>님 서비스 종료 진행</h2>
-        <div>약관 내용</div>
-        <div>
-
-            <a class="link btn btn-delete" th:href="@{/user/del/{id}(id=${session.loginuser.id})}">탈퇴하기</a>
-
+<!--<div th:replace="~{fragments/secondHeader :: bodyHeader}" ></div>-->
+    <div class="container">
+        <!--<h2><span th:if="${session.loginuser != null}" th:text="${session.loginuser.nickName}">고객</span>님 서비스 종료 진행</h2>-->
+        <div class="box light_yellow">
+            <div class="title dark_yellow2">정말 탈퇴하시겠습니까?<div class="underline dark_yellow1"></div></div>
+            <div class="all_caution">
+                <div class="one_withDot">
+                    <div class="dotcase"><div class="dot yellow"></div></div>
+                    <div class="text dark_yellow2">회원탈퇴 시, 해당 사이트의 서비스 이용이 불가합니다.</div>
+                </div>
+                <div class="one_withDot">
+                    <div class="dotcase"><div class="dot yellow"></div></div>
+                    <div class="text dark_yellow2">회원탈퇴 시, 회원 자격을 즉시 상실합니다. 동일 이메일로 재가입 후에도 서비스 이용 기록 및 설정이 복구되지 않습니다.</div>
+                </div>
+                <div class="one_withDot">
+                    <div class="dotcase"><div class="dot yellow"></div></div>
+                    <div class="text dark_yellow2">회원탈퇴 시, 구매한 서적은 더 이상 이용이 불가합니다.</div>
+                </div>
+                <div class="one_withDot">
+                    <div class="dotcase"><div class="dot yellow"></div></div>
+                    <div class="text dark_yellow2">Leader였던 크루의 Leader 역할은 다른 크루원에게 위임됩니다.</div>
+                </div>
+                <div class="one_withDot">
+                    <div class="dotcase"><div class="dot yellow"></div></div>
+                    <div class="text dark_yellow2">사이트에서 작성한 쪽지는 자동 삭제되지 않습니다. 삭제를 원하신다면 탈퇴 전에 확인해주세요.</div>
+                </div>
+            </div>
         </div>
-    </div>
+        <div class="box">
+            <div class="agree dark_yellow2">
+                <input type="checkbox" id="agree">
+                <label for="agree"></label>위 내용을 모두 확인했습니다.
+            </div>
+        </div>
+        <button class="btn_long gray">탈퇴하기</button>
+<!--    <div>
+            <a class="link btn btn-delete" th:href="@{/user/del/{id}(id=${session.loginuser.id})}">탈퇴하기</a>
+        </div>-->
 
+</div>
 </body>
 </html>

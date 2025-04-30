@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style> 
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/member/joinSocialForm.css">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <style></style>
     <title> BookDuck²::회원가입 </title>
 </head>
-
-
-
 <body>
-
-<div class="form-container">
+<div th:replace="~{fragments/therdHeader :: bodyHeader}" ></div>
+<div class="container">
+    <div class="logo dark_blue2" onclick="location.href='/home'">BookDuck²</div>
     <form id="socialjoinform" action="/user/socialaddinfo" method="post">
 
-
-        <div>
-            <label for="joinNickname"> <span th:text="${joinSocial}">null</span>닉네임</label>
-            <input type="text" id="joinNickname" name="nickName" placeholder="별명을 입력해주세요" required autocomplete="off">
+        <div class="box_none">
+            <!--<label for="joinNickname"> <span th:text="${joinSocial}">null</span>닉네임</label>-->
+            <label for="joinNickname"></label>
+            <input type="text" class="input_long blue_line" id="joinNickname" name="nickName" placeholder="닉네임(2~7자, 한글, 대/소문자, 숫자)" required autocomplete="off">
         </div>
-        <div>
-            <label for="joinImg"> <span th:text="${joinSocial}">null</span>이미지 임시</label>
-            <input type="text" id="joinImg" name="img" placeholder="사진을 넣어주세요" required autocomplete="off">
+        <div class="input_img">
+            <!--<label for="joinImg"> <span th:text="${joinSocial}">null</span>이미지 임시</label>
+            <input type="text" id="joinImg" name="img" placeholder="사진을 넣어주세요" required autocomplete="off">-->
+            <div class="profile_img"> <img src="/img/bookduck_login.png"> </div>
+            <button class="btn_long yellow">프로필 이미지 등록</button>
         </div>
-
-
-        <button type="submit" class="btn btn-submit">가입완료하기</button>
-
     </form>
-
+</div>
+<div class="box">
+    <div class="agree dark_blue2">
+        <input type="checkbox" id="agree">
+        <label for="agree"></label>개인정보 수집 및 이용 동의(필수)
+        <button class="btn_mini blue">약관보기</button>
+    </div>
+</div>
+<div class="box">
+    <button type="submit" class="btn_long blue">가입하기</button>
 </div>
