@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Fontawesome 4.7 */
+    @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+    /* Global 스타일 초기화 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* 기본 설정 */
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%; /* 가로를 화면에 맞게 설정 */
+    }
+
+    /* 컨테이너 스타일 */
+    .container {
+      border: 1px solid slateblue;
+      max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
+      padding: 10px;
+    }
+
+    /* 컬러 파레트 */
+    :root {
+      --main-color-dark: #00479B;
+      --main-color-middle: #83C7FF;
+      --main-color-light: #E3F4FF;
+      --assist-color-dark: #CE7000;
+      --assist-color-middle: #FFB90B;
+      --assist-color-light: #FFF7E6;
+      --cancle-color-dark: #9B9B9B;
+      --cancle-color-middle: #D3D3D3;
+      --cancle-color-light: #EAEAEA;
+
+      /*사용법: var(--main-color-middle)*/
+      --border-big: 20px; /*큰거...뭐가잇지...*/
+      --border-middle: 10px; /*img*/
+      --border-circle: 50%; /*동그리버튼*/
+
+      /*폰트 사이즈 정의*/
+      --font-size-0: 30px;
+      --font-size-1: 25px;
+      --font-size-2: 20px;
+      --font-size-3: 15px;
+      --font-size-4: 10px;
+    }
+
+    .btn_circle_big{
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      font-size: 45px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .yellow{
+      background: var(--assist-color-middle);
+    }
+
+    .light_blue{
+      background: var(--main-color-light);
+    }
+    .light_yellow{
+      background: var(--assist-color-light);
+    }
+    .dark_blue1{
+      background: var(--main-color-dark);
+    }
+    .dark_yellow1{
+      background: var(--assist-color-dark);
+    }
+    .dark_blue2{
+      color: var(--main-color-dark);
+    }
+    .dark_yellow2{
+      color: var(--assist-color-dark);
+    }
+
+    .line{
+      width: 100%;
+      height: 1px;
+    }
+
+    .title{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 10px;
+    }
+
+    .crown{
+      color: var(--assist-color-middle);
+    }
+
+    .crew_name, .book_title{
+      color: var(--main-color-dark);
+    }
+
+    .crew_name{
+      font-weight: bold;
+    }
+
+    .crew_box_case_mine{
+      width: 100%;
+    }
+
+    .box{
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-middle);
+      display: flex;
+      /*flex-direction: column;*/
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .crew_name span{
+      font-size: var(--font-size-4);
+    }
+
+    .book_img{
+      border: 1px solid red;
+      width: 80px;
+      height: 100px;
+      border-radius: var(--border-middle);
+      margin: 5px;
+    }
+    .crew_info{
+      border: 1px solid blue;
+      flex: 1;
+    }
+
+
+  </style>
+  <title> BookDuck²::MY CREW </title>
+</head>
+<body>
+<div class="container">
+  <div class="btn_circle_big yellow"><i class="fa-solid fa-plus"></i></div>
+  <!--내가 오너인 그룹 반복-->
+  <div class="crew_box_case_mine">
+    <div class="crown big"><i class="fa-solid fa-crown"></i></div>
+    <div class="btn_circle fix"></div>
+    <div class="box crew_box light_blue">
+      <div class="book_img"><!--<img src="">--></div>
+      <div class="crew_info">
+        <div class="title">
+          <div class="crew_name dark_blue2">크루이름<span>CREW</span></div>
+          <div class="line dark_blue1"></div>
+          <div class="book_title">책 제목</div>
+          <div class="profile_box">
+            <div class="crown mini"><i class="fa-solid fa-crown"></i></div>
+            <div class="profile_leader">
+              <div class="profile"></div>
+            </div>
+            <!--멤버 리스트 반복-->
+            <div class="profile_member">
+              <div class="profile"></div>
+            </div>
+            <!--끝-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--끝-->
+  <!--내가 오너가 아닌 그룹 반복-->
+  <div class="crew_box_case_not_mine">
+    <div class="crew_box"></div>
+  </div>
+<!--끝-->
+</div>
+</body>
+</html>
+
+<div class="one">
+  <div class="point"></div>
+</div>

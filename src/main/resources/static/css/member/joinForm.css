@@ -1,0 +1,56 @@
+.logo{
+    font-size: 50px;
+    font-family: "Cafe24Supermagic-Bold-v1.0";
+    margin-bottom: 10px;
+}
+
+.seperate{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 600px;
+}
+.seperate_one{
+    width: 79%;
+}
+.seperate_two{
+    width: 20%;
+}
+
+.input_img{
+    width: 250px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.profile_img{
+    width: 100%;
+    height: 100%;
+    background: var(--assist-color-light);
+    border: 3px solid var(--assist-color-middle);
+    border-radius: var(--border-big);
+    margin-bottom: 10px;
+}
+.profile_img img{
+    width: 100%;
+    height: 100%;
+}
+
+.form_box{
+    width: 100%;
+}
+
+form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.agree{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

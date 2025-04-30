@@ -1,43 +1,40 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
-
+<!--<head th:replace="~{fragments/header :: header}">-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/member/login.css">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title> BookDuck²::Login </title>
+    <style></style>
 </head>
-
-
-
 <body>
-
-<div class="form-container">
-    <h1>북덕 로그인</h1>
-
+<div th:replace="~{fragments/therdHeader :: bodyHeader}" ></div>
+<div class="container">
+    <div class="logoImg" onclick="location.href='/home'"><img src="/img/bookduck_login.png"></div>
+    <div class="logo dark_blue2" onclick="location.href='/home'">BookDuck²</div>
     <form id="userLoginform" action="/login" method="post">
         <!-- 아이디 입력 영역 -->
-        <div>
-            <label for="username">아이디</label>
-            <input type="text" id="username" name="username" placeholder="ID를 입력해주세요" required autocomplete="off">
-        </div>
-        <div>
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" placeholder="PASSWORD를 입력해주세요" required autocomplete="off">
-        </div>
+        <input type="text" class="input_long blue_line" id="username" name="username" placeholder="ID를 입력해주세요" required autocomplete="off">
+        <input type="password" class="input_long blue_line" id="password" name="password" placeholder="PASSWORD를 입력해주세요" required autocomplete="off">
 
-        <div>
-            <button type="submit" class="btn login-btn">로그인</button>
-            <label><input type="checkbox" class="rememberid" name="rememberid">아이디 저장 </label>
-            <button>아이디 또는 비밀번호 찾기</button>
+        <button type="submit" class="login blue btn_long">로그인</button>
+
+        <div class="aboutId dark_blue2">
+            <div class="saveId">
+                <input type="checkbox" id="rememberid">
+                <label for="rememberid"></label>아이디저장
+            </div>
+            <div class="findId" onclick="location.href='/findinfo'">아이디 또는 비밀번호 찾기</div>
         </div>
 
         <div class="social-login">
-            <button type="button" class="btn social-btn google-btn" onclick='location.href="/oauth2/authorization/google"'>Google로 로그인</button>
-            <button type="button" class="btn social-btn naver-btn" onclick='location.href="/oauth2/authorization/naver"'>Naver로 로그인</button>
+            <div class="btn social-btn naver-btn" onclick='location.href="/oauth2/authorization/naver"'><img src="/img/btnW_icon_circle.png"></div>
+            <div class="btn social-btn google-btn" onclick='location.href="/oauth2/authorization/google"'><img src="/img/web_light_rd_na@4x.png"></div>
         </div>
-        <button type="button" class="btn signup-btn" onclick="location.href='/sign-up'">회원가입</button>
+        <button type="button" class="yellow btn_long" onclick="location.href='/sign-up'">회원가입</button>
 
     </form>
 
