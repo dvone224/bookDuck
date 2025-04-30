@@ -1,8 +1,8 @@
 package com.my.bookduck.service;
 
-// ... (다른 import)
-
+import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.group.Group;
+import com.my.bookduck.domain.group.GroupBook;
 import com.my.bookduck.domain.group.GroupUser;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.repository.GroupRepository;
@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -21,21 +24,34 @@ import java.util.List;
 public class GroupService {
 
     private final GroupRepository groupRepository;
-    private final GroupUserRepository groupUserRepository; // 여전히 필요할 수 있음 (조회 등)
+    private final GroupUserRepository groupUserRepository;
     private final UserRepository userRepository;
+    private final BookService bookService;
 
     @Transactional
-    public Group createGroupWithMembers(String groupName, List<Long> memberIds) {
-        log.info("Creating group '{}' with member IDs: {}", groupName, memberIds);
+    public Group createGroupWithMembersAndBook(String groupName, List<Long> memberIds, Long bookId, Long creatorId) {
+        log.info("Creating group '{}' with member IDs: {} and book ID: {}", groupName, memberIds, bookId);
 
-        // 1. 그룹 생성 (아직 저장member 전)
+        // 유효성 검사
+        if (groupRepository.existsByName(groupName)) {
+            throw new IllegalArgumentException("Group name already exists: " + groupName);
+        }
+        if (!memberIds.contains(creatorId)) {
+            memberIds.add(creatorId);
+        }
+        if (memberIds.size() < 2 || memberIds.size() > 4) {
+            throw new IllegalArgumentException("Member count must be between 2 and 4, including creator");
+        }
+
+        // 그룹 생성
         Group newGroup = Group.builder()
                 .name(groupName)
                 .build();
-        // 리스트가 필드에서 초기화되지 않았다면 여기서 초기화
-        // if (newGroup.getUsers() == null) { newGroup.setUsers(new ArrayList<>()); } // Group에 setter 필요
+        newGroup.setUsers(new ArrayList<>());
+        newGroup.setBooks(new ArrayList<>());
         groupRepository.save(newGroup);
-        // 2. 멤버 ID 리스트를 순회하며 GroupUser 생성 및 Group에 추가
+
+        // 멤버 추가
         for (Long memberId : memberIds) {
             User member = userRepository.findById(memberId)
                     .orElseThrow(() -> {
@@ -43,38 +59,27 @@ public class GroupService {
                         return new IllegalArgumentException("Invalid user ID: " + memberId);
                     });
 
-            GroupUser groupUser = new GroupUser();
-            groupUser.setGroup(newGroup);
-            groupUser.setUser(member);
-
+            GroupUser groupUser = new GroupUser(newGroup, member, memberId.equals(creatorId) ? GroupUser.Role.ROLE_LEADER : GroupUser.Role.ROLE_USER);
             newGroup.addGroupUser(groupUser);
-            // *** 중요 변경: GroupUser를 Group의 리스트에 추가 (양방향 설정 포함) ***
-            // 또는 직접 추가:
-            // newGroup.getUsers().add(groupUser);
-            // groupUser.setGroup(newGroup); // 양방향 설정
-
-            // *** groupUserRepository.save(groupUser); 호출 제거 ***
-            log.info("Prepared user {} for group {}", memberId, groupName);
+            log.info("Added user {} to group {} with role {}", memberId, groupName, groupUser.getRole());
         }
 
-        // 3. Group 저장 -> CascadeType.ALL에 의해 users 리스트의 GroupUser들도 함께 저장됨
-        for(GroupUser groupUser : newGroup.getUsers()) {
-            log.info("group user {} for group {}", groupUser.getUser().getId(), groupName);
-        }
+        // 책 추가
+        Book book = bookService.findById(bookId);
+        GroupBook groupBook = new GroupBook();
+        groupBook.setGroup(newGroup);
+        groupBook.setBook(book);
+        groupBook.setCreatedAt(LocalDateTime.now());
+        newGroup.getBooks().add(groupBook);
+
+        // 그룹 저장
         Group savedGroup = groupRepository.save(newGroup);
-        log.info("Successfully saved group '{}' with ID {} and {} members.", savedGroup.getName(), savedGroup.getId(), savedGroup.getUsers().size());
+        log.info("Successfully saved group '{}' with ID {}, {} members, and book ID {}", savedGroup.getName(), savedGroup.getId(), savedGroup.getUsers().size(), bookId);
 
         return savedGroup;
     }
 
-    /**
-     * 주어진 이름의 그룹이 이미 존재하는지 확인합니다.
-     * Controller의 중복 확인 API에서 사용됩니다.
-     *
-     * @param name 확인할 그룹 이름 (앞뒤 공백 제거됨)
-     * @return 그룹이 존재하면 true, 그렇지 않으면 false
-     */
-    @Transactional(readOnly = true) // 데이터 변경이 없는 조회 작업이므로 readOnly=true 설정
+    @Transactional(readOnly = true)
     public boolean existsByName(String name) {
         return groupRepository.existsByName(name.trim());
     }

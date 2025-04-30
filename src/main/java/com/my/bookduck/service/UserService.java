@@ -53,6 +53,22 @@ public class UserService {
         return user;
     }
 
+    /**
+     * 로그인 아이디(String)로 사용자를 조회합니다.
+     * @param loginId 조회할 사용자의 로그인 아이디
+     * @return 해당 User 객체, 없으면 null 반환 (또는 Optional<User> 반환 후 컨트롤러에서 처리)
+     */
+    public User findByLoginId(String loginId) {
+        log.debug("Finding user by loginId: {}", loginId);
+        // UserRepository의 findByLoginId 메소드 사용
+        return userRepository.findByLoginId(loginId);
+        /*
+        // Optional을 사용하는 경우 (UserNotFoundException 등 예외 처리 권장)
+        return userRepository.findByLoginId(loginId)
+               .orElseThrow(() -> new UsernameNotFoundException("User not found with loginId: " + loginId));
+        */
+    }
+
     @Transactional
     public String userInfoUpdate(Long userId, UpdateUserRequest info) throws IllegalStateException {
         User user = userRepository.findById(userId).orElse(null);
@@ -120,4 +136,5 @@ public class UserService {
         log.debug("Returning {} DTOs (ID, NickName) after nickname search", result.size());
         return result;
     }
+
 }

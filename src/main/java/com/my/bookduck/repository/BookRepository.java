@@ -1,6 +1,7 @@
 // BookRepository.java 인터페이스에 추가
 package com.my.bookduck.repository;
 
+import com.my.bookduck.controller.response.BookSimpleDto;
 import com.my.bookduck.domain.book.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -42,5 +43,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT DISTINCT b FROM Book b JOIN b.categories bc WHERE bc.categoryId IN :categoryIds")
     List<Book> findBooksByCategoryIdsIn(@Param("categoryIds") Set<Long> categoryIds);
 
-    // 모든 책 조회 (findAll() 사용 가능)
+    @Query("SELECT new com.my.bookduck.controller.response.BookSimpleDto(b.id, b.title) " +
+            "FROM Book b JOIN UserBook ub ON b.id = ub.bookId " +
+            "WHERE ub.userId = :userId AND b.title LIKE %:query%")
+    List<BookSimpleDto> findMyBooksByTitleContaining(@Param("userId") Long userId, @Param("query") String query);
+
+    @Query("SELECT b FROM Book b JOIN UserBook ub ON b.id = ub.book.id WHERE ub.user.id = :userId AND LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    List<Book> findByTitleContainingIgnoreCaseAndUserId(String title, Long userId, int limit);
+
 }

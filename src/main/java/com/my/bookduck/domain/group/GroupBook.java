@@ -3,16 +3,15 @@ package com.my.bookduck.domain.group;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 @IdClass(GroupBookId.class)
 @ToString(exclude = {"group","book"})
 public class GroupBook {
@@ -34,5 +33,5 @@ public class GroupBook {
     @JoinColumn(name = "book_id")
     private Book book;
 
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 }

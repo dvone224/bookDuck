@@ -79,4 +79,21 @@ public class BDUserDetails implements UserDetails, OAuth2User {
     public boolean isEnabled() {
         return true;
     }
+
+    /**
+     * User 엔티티의 고유 ID(PK)를 반환합니다.
+     * @return 사용자 ID (Long 타입)
+     */
+    public Long getId() {
+        // User 객체가 null이 아닐 경우 User의 ID를 반환
+        return this.user != null ? this.user.getId() : null;
+    }
+
+    /**
+     * User 엔티티의 닉네임을 반환합니다. (편의 메소드 추가)
+     * @return 사용자 닉네임 (String 타입)
+     */
+    public String getNickname() {
+        return this.user != null ? this.user.getNickName() : null;
+    }
 }

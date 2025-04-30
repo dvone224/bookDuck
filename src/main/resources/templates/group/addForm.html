@@ -3,152 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> BookDuck²::CREW 생성 </title>
+    <title>BookDuck²::CREW 생성</title>
     <style>
         body { font-family: sans-serif; }
         .form-container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        .form-group { margin-bottom: 15px; /* 그룹 간 간격 조정 */ }
+        .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="search"] { width: calc(100% - 18px); /* padding 고려 */ padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;}
+        input[type="text"], input[type="search"] { width: calc(100% - 18px); padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;}
         input:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-
-        /* --- 에러 메시지 스타일 --- */
-        .error-message {
-            color: red;
-            font-size: 0.875em; /* 14px */
-            margin-top: 4px; /* 인풋 바로 아래 */
-            min-height: 1.2em; /* 메시지 없을 때 공간 확보 */
-            display: block; /* 항상 블록 요소로 */
-        }
-        /* --- 검색 결과 스타일 --- */
-        #search-results-container {
-            position: relative; /* 내부 절대 위치 요소 기준점 */
-        }
-        #searchResults {
-            position: absolute;
-            width: calc(100% - 2px); /* 테두리 고려 */
-            border: 1px solid #ccc;
-            border-top: none;
-            max-height: 150px;
-            overflow-y: auto;
-            background-color: white;
-            list-style: none;
-            padding: 0;
-            margin: -1px 0 0 0; /* 입력 필드 바로 아래 붙도록 */
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: none; /* 기본 숨김 */
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;
-        }
-        #searchResults li {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            font-size: 0.95em;
-        }
-        #searchResults li:last-child {
-            border-bottom: none;
-        }
-        #searchResults li:hover {
-            background-color: #f0f0f0;
-        }
-        #searchResults li.no-results { /* 검색 결과 없을 때 스타일 */
-            cursor: default;
-            color: #777;
-        }
-
-        /* --- 선택된 사용자 스타일 --- */
-        #selectedUsersContainer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 10px;
-            border: 1px solid #eee;
-            min-height: 40px; /* 최소 높이 */
-            border-radius: 4px;
-            margin-top: 5px;
-            background-color: #f9f9f9;
-        }
-        .selected-user-tag {
-            display: inline-flex;
-            align-items: center;
-            background-color: #e0e0e0;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.875em; /* 14px */
-        }
-        .selected-user-tag .user-nickname {
-            margin-right: 6px;
-        }
-        .selected-user-tag .remove-user {
-            display: flex; /* X 중앙 정렬 */
-            align-items: center; /* X 중앙 정렬 */
-            justify-content: center; /* X 중앙 정렬 */
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #555;
-            border: none;
-            background-color: #c0c0c0; /* 약간 다른 배경색 */
-            border-radius: 50%; /* 원형 버튼 */
-            padding: 0;
-            font-size: 12px; /* X 크기 */
-            line-height: 1; /* 라인 높이 조정 */
-            margin-left: 4px; /* 닉네임과의 간격 */
-            transition: background-color 0.2s, color 0.2s;
-        }
-        .selected-user-tag .remove-user:hover {
-            background-color: #a0a0a0;
-            color: #fff;
-        }
-
-        /* --- 버튼 --- */
+        .error-message { color: red; font-size: 0.875em; margin-top: 4px; min-height: 1.2em; display: block; }
+        #search-results-container, #book-search-results-container { position: relative; }
+        #searchResults, #bookSearchResults { position: absolute; width: calc(100% - 2px); border: 1px solid #ccc; border-top: none; max-height: 150px; overflow-y: auto; background-color: white; list-style: none; padding: 0; margin: -1px 0 0 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+        #searchResults li, #bookSearchResults li { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.95em; }
+        #searchResults li:last-child, #bookSearchResults li:last-child { border-bottom: none; }
+        #searchResults li:hover, #bookSearchResults li:hover { background-color: #f0f0f0; }
+        #searchResults li.no-results, #bookSearchResults li.no-results { cursor: default; color: #777; }
+        #selectedUsersContainer, #selectedBookContainer { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #eee; min-height: 40px; border-radius: 4px; margin-top: 5px; background-color: #f9f9f9; }
+        .selected-user-tag, .selected-book-tag { display: inline-flex; align-items: center; background-color: #e0e0e0; padding: 4px 8px; border-radius: 12px; font-size: 0.875em; }
+        .selected-user-tag.is-me { background-color: #cce5ff; font-weight: bold; }
+        .selected-user-tag .user-nickname, .selected-book-tag .book-title { margin-right: 6px; }
+        .selected-user-tag .remove-user, .selected-book-tag .remove-book { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; cursor: pointer; font-weight: bold; color: #555; border: none; background-color: #c0c0c0; border-radius: 50%; padding: 0; font-size: 12px; line-height: 1; margin-left: 4px; transition: background-color 0.2s, color 0.2s; }
+        .selected-user-tag .remove-user:hover, .selected-book-tag .remove-book:hover { background-color: #a0a0a0; color: #fff; }
         .action-buttons { text-align: center; margin-top: 25px; }
-        button[type="submit"] {
-            padding: 10px 25px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem; /* 16px */
-            transition: background-color 0.2s;
-        }
-        button[type="submit"]:hover:not(:disabled) {
-            background-color: #0056b3;
-        }
-        button[type="submit"]:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
+        button[type="submit"] { padding: 10px 25px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 1rem; transition: background-color 0.2s; }
+        button[type="submit"]:hover:not(:disabled) { background-color: #0056b3; }
+        button[type="submit"]:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.7; }
     </style>
 </head>
 <body>
 
+<!-- 로그인 사용자 정보 -->
+<input type="hidden" id="loggedInUserId" th:value="${session.loginuser?.id}" />
+<input type="hidden" id="loggedInUserNickname" th:value="${session.loginuser?.nickName}" />
+
 <div class="form-container">
     <h1>새 그룹 생성</h1>
 
-    <!-- 그룹 생성 요청을 처리할 서버의 URL -->
     <form id="createGroupForm" th:action="@{/group/create}" method="post">
 
         <!-- 1. 그룹 이름 입력 -->
         <div class="form-group">
             <label for="groupNameInput">그룹 이름:</label>
             <input type="text" id="groupNameInput" name="groupName" placeholder="그룹 이름을 입력하세요" required autocomplete="off">
-            <!-- 그룹 이름 중복/유효성 에러 메시지 영역 -->
             <span id="groupNameError" class="error-message"></span>
         </div>
 
         <!-- 2. 사용자 검색 및 선택 -->
         <div class="form-group">
-            <!-- 서버 측에서 설정한 멤버 수 제한에 맞춰 레이블 수정 (예: 본인 제외 1~3명 -> 총 2~4명) -->
-            <label for="userSearchInput">멤버 추가 (본인 제외 1명 ~ 3명):</label>
+            <label for="userSearchInput">멤버 추가 (본인 제외 <span id="min-members-label">1</span>명 ~ <span id="max-members-label">3</span>명):</label>
             <div id="search-results-container">
                 <input type="search" id="userSearchInput" placeholder="초대할 사용자 닉네임 검색 (예: 오리)" autocomplete="off">
-                <!-- 검색 결과가 표시될 리스트 -->
                 <ul id="searchResults"></ul>
             </div>
         </div>
@@ -156,279 +60,295 @@
         <!-- 3. 선택된 사용자 목록 표시 -->
         <div class="form-group">
             <label>선택된 멤버:</label>
-            <div id="selectedUsersContainer">
-                <!-- 선택된 사용자가 여기에 태그 형태로 추가됨 -->
-                <!-- 예: <span class="selected-user-tag" data-user-id="123"><span class="user-nickname">닉네임</span><button class="remove-user" type="button" data-user-id="123">×</button></span> -->
-            </div>
-            <!-- 실제 form 제출 시 사용될 숨겨진 input 필드들을 담을 곳 -->
-            <div id="hiddenMemberIdsContainer" style="display: none;">
-                <!-- 예: <input type="hidden" name="memberIds" value="123" id="hidden-user-123"> -->
-            </div>
-        </div>
-
-        <!-- 4. 멤버 수 관련 에러 메시지 표시 영역 -->
-        <div class="form-group"> <!-- 에러 메시지도 form-group으로 감싸 간격 유지 -->
+            <div id="selectedUsersContainer"></div>
+            <div id="hiddenMemberIdsContainer" style="display: none;"></div>
             <span id="memberErrorMessage" class="error-message"></span>
         </div>
 
-        <!-- 5. 그룹 생성 버튼 -->
+        <!-- 4. 책 검색 및 선택 -->
+        <div class="form-group">
+            <label for="bookSearchInput">책 선택 (1권):</label>
+            <div id="book-search-results-container">
+                <input type="search" id="bookSearchInput" placeholder="소유한 책 제목 검색 (예: 책 제목)" autocomplete="off">
+                <ul id="bookSearchResults"></ul>
+            </div>
+        </div>
+
+        <!-- 5. 선택된 책 표시 -->
+        <div class="form-group">
+            <label>선택된 책:</label>
+            <div id="selectedBookContainer"></div>
+            <input type="hidden" id="hiddenBookId" name="bookId">
+            <span id="bookErrorMessage" class="error-message"></span>
+        </div>
+
+        <!-- 6. 그룹 생성 버튼 -->
         <div class="action-buttons">
             <button type="submit" id="submitButton" disabled>그룹 생성</button>
-            <!-- 초기에는 비활성화 -->
         </div>
 
     </form>
 </div>
 
-<script>
-    // --- 요소 가져오기 ---
+<script th:inline="javascript">
+    // 요소 가져오기
     const searchInput = document.getElementById('userSearchInput');
     const searchResults = document.getElementById('searchResults');
     const selectedUsersContainer = document.getElementById('selectedUsersContainer');
     const hiddenMemberIdsContainer = document.getElementById('hiddenMemberIdsContainer');
     const groupNameInput = document.getElementById('groupNameInput');
-    const groupNameError = document.getElementById('groupNameError'); // 그룹 이름 에러 메시지 요소
+    const groupNameError = document.getElementById('groupNameError');
     const createGroupForm = document.getElementById('createGroupForm');
     const submitButton = document.getElementById('submitButton');
-    const memberErrorMessageDiv = document.getElementById('memberErrorMessage'); // 멤버 관련 에러 메시지 요소
+    const memberErrorMessageDiv = document.getElementById('memberErrorMessage');
+    const loggedInUserIdInput = document.getElementById('loggedInUserId');
+    const loggedInUserNicknameInput = document.getElementById('loggedInUserNickname');
+    const minMembersLabel = document.getElementById('min-members-label');
+    const maxMembersLabel = document.getElementById('max-members-label');
+    const bookSearchInput = document.getElementById('bookSearchInput');
+    const bookSearchResults = document.getElementById('bookSearchResults');
+    const selectedBookContainer = document.getElementById('selectedBookContainer');
+    const hiddenBookIdInput = document.getElementById('hiddenBookId');
+    const bookErrorMessageDiv = document.getElementById('bookErrorMessage');
 
-    // --- 상태 변수 ---
-    let selectedUsers = new Map(); // 선택된 사용자 관리 (ID -> NickName)
-    // *** 중요: 이 값은 백엔드 GroupController의 유효성 검사 로직과 일치해야 합니다. ***
-    const MIN_SELECTED_MEMBERS = 1; // 그룹장(본인)을 제외하고 선택해야 하는 최소 멤버 수
-    const MAX_SELECTED_MEMBERS = 3; // 그룹장(본인)을 제외하고 선택해야 하는 최대 멤버 수
-    let isGroupNameAvailable = false; // 그룹 이름 사용 가능 여부 (중복 체크 결과)
-    let isCheckingGroupName = false;  // 그룹 이름 확인 중 상태 플래그
-    let groupNameCheckTimeout; // 그룹 이름 중복 체크 디바운싱 타이머
-    let userSearchTimeout; // 사용자 검색 디바운싱 타이머
+    // 상태 변수
+    let selectedUsers = new Map();
+    let selectedBook = null;
+    const loggedInUserId = loggedInUserIdInput ? loggedInUserIdInput.value : null;
+    const loggedInUserNickname = loggedInUserNicknameInput ? loggedInUserNicknameInput.value : '나';
+    let MIN_SELECTED_MEMBERS_EXCL_OWNER = 1;
+    let MAX_SELECTED_MEMBERS_EXCL_OWNER = 3;
+    let isGroupNameAvailable = false;
+    let isCheckingGroupName = false;
+    let groupNameCheckTimeout;
+    let userSearchTimeout;
+    let bookSearchTimeout;
 
-    // --- 백엔드 엔드포인트 (실제 환경에 맞게 설정) ---
-    const USER_SEARCH_URL = '/user/search';           // 사용자 검색 API 경로 (백엔드 컨트롤러 확인 필요)
-    const GROUP_NAME_CHECK_URL = '/group/check-name'; // 그룹 이름 중복 확인 API 경로
-    // 폼의 action 속성에 이미 설정되어 있지만, 필요시 JS에서도 사용 가능
-    const CREATE_GROUP_URL = '/group/create';        // 그룹 생성 API 경로 (폼 action과 동일해야 함)
+    // 백엔드 엔드포인트
+    const USER_SEARCH_URL = /*[[@{/user/search}]]*/ '/user/search';
+    const BOOK_SEARCH_URL = /*[[@{/book/search}]]*/ '/book/search';
+    const GROUP_NAME_CHECK_URL = /*[[@{/group/check-name}]]*/ '/group/check-name';
 
-    // --- 이벤트 리스너 ---
-
-    // 1. 그룹 이름 입력 시 (디바운싱 적용된 중복 확인)
+    // 이벤트 리스너
     groupNameInput.addEventListener('input', () => {
         clearTimeout(groupNameCheckTimeout);
         const groupName = groupNameInput.value.trim();
-
-        // 입력 시작 시, 이전 중복 상태 무효화 및 에러 메시지 초기화
         isGroupNameAvailable = false;
-        groupNameError.textContent = ''; // 이전 에러 메시지 즉시 제거
-        isCheckingGroupName = false; // 확인 중 상태 초기화
+        groupNameError.textContent = '';
+        isCheckingGroupName = false;
 
-        if (groupName.length > 0) {
-            // 입력 중임을 시각적으로 표시 (선택 사항)
-            // groupNameInput.style.borderColor = '#ffc107'; // 예: 노란색 테두리
-            groupNameError.textContent = '확인 중...'; // 메시지로 확인 중 표시
-            groupNameError.style.color = '#777'; // 확인 중 메시지 색상
-            isCheckingGroupName = true; // 확인 시작 플래그
-            validateForm(); // 버튼 상태 업데이트 (확인 전이므로 보통 비활성화)
+        if (groupName.length > 0 && loggedInUserId) {
+            groupNameError.textContent = '확인 중...';
+            groupNameError.style.color = '#777';
+            isCheckingGroupName = true;
+            validateForm();
 
             groupNameCheckTimeout = setTimeout(() => {
                 checkGroupNameAvailability(groupName);
-            }, 500); // 500ms 후에 중복 체크 실행
+            }, 500);
         } else {
-            // 입력값이 없으면 에러 메시지 지우고, 확인 중 상태 해제
-            // groupNameInput.style.borderColor = ''; // 테두리 색상 원래대로
-            groupNameError.textContent = ''; // 빈 이름 에러는 required 속성 또는 validateForm에서 처리
-            validateForm(); // 버튼 상태 업데이트
+            validateForm();
         }
     });
 
-    // 2. 검색어 입력 시 (사용자 검색, 디바운싱)
     searchInput.addEventListener('input', () => {
         clearTimeout(userSearchTimeout);
         const query = searchInput.value.trim();
-        searchResults.style.display = 'none'; // 입력 시작 시 이전 결과 숨김
+        searchResults.style.display = 'none';
 
-        if (query.length > 0) {
-            // TODO: 검색 중 로딩 표시 추가 가능 (예: '검색 중...' li 항목)
+        if (query.length > 0 && loggedInUserId) {
             userSearchTimeout = setTimeout(() => {
                 fetchUsers(query);
-            }, 300); // 300ms 후에 검색 실행
+            }, 300);
         } else {
-            clearSearchResults(); // 입력 없으면 결과창 완전히 제거
-        }
-    });
-
-    // 3. 검색 결과 클릭 시 사용자 선택
-    searchResults.addEventListener('click', (event) => {
-        const targetLi = event.target.closest('li'); // li 또는 내부 요소 클릭 시 li 찾기
-        if (targetLi && targetLi.dataset.userId) {
-            const userId = targetLi.dataset.userId;
-            const userNickname = targetLi.dataset.userNickname;
-
-            // 이미 선택되었는지 확인
-            if (selectedUsers.has(userId)) {
-                showMemberError('이미 선택된 사용자입니다.');
-                searchInput.focus(); // 다시 검색할 수 있도록 포커스
-                return;
-            }
-            // 최대 인원 확인
-            if (selectedUsers.size >= MAX_SELECTED_MEMBERS) {
-                showMemberError(`멤버는 본인 제외 최대 ${MAX_SELECTED_MEMBERS}명까지만 추가할 수 있습니다.`);
-                searchInput.value = ''; // 입력값 비우기
-                clearSearchResults(); // 결과창 닫기
-                return;
-            }
-
-            // 사용자 추가
-            addSelectedUser(userId, userNickname);
-
-            // 추가 후 정리
-            searchInput.value = ''; // 검색창 비우기
-            clearSearchResults(); // 검색 결과 숨기기
-            searchInput.focus(); // 다음 사용자 검색 용이하게 포커스
-            validateForm(); // 멤버 수 변경되었으므로 유효성 검사 및 버튼 상태 업데이트
-        }
-    });
-
-    // 4. 선택된 사용자 제거 버튼 클릭 시
-    selectedUsersContainer.addEventListener('click', (event) => {
-        if (event.target.classList.contains('remove-user')) {
-            const userId = event.target.dataset.userId;
-            removeSelectedUser(userId);
-            validateForm(); // 멤버 수 변경되었으므로 유효성 검사 및 버튼 상태 업데이트
-        }
-    });
-
-    // 5. 폼 제출 시 최종 유효성 검사 (버튼 활성화 여부로 1차 체크)
-    createGroupForm.addEventListener('submit', (event) => {
-        // validateForm() 함수는 이미 버튼 활성화/비활성화를 제어함
-        // 만약 버튼이 활성화된 상태에서 제출 직전 추가 검사가 필요하다면 여기서 수행
-        // (예: 네트워크 상태 확인 등)
-
-        // 현재 로직에서는 버튼 자체가 비활성화면 제출이 안 되므로, 특별한 추가 검사는 불필요해 보임
-        // 만약 validateForm()이 true를 반환해도 제출을 막아야 하는 경우가 있다면 preventDefault() 사용
-        if (submitButton.disabled) { // 혹시 모를 상황 대비
-            event.preventDefault();
-            console.warn("제출 시도됨: 버튼이 비활성화 상태입니다.");
-            // 사용자에게 적절한 피드백 제공 (이미 에러 메시지가 있을 가능성 높음)
-            if (!groupNameInput.value.trim()) {
-                showGroupNameError("그룹 이름을 입력해주세요.");
-            } else if (isCheckingGroupName) {
-                showGroupNameError("그룹 이름 확인 중입니다. 잠시 후 다시 시도해주세요.");
-            } else if (!isGroupNameAvailable) {
-                showGroupNameError("그룹 이름이 유효하지 않거나 중복됩니다.");
-            } else if (selectedUsers.size < MIN_SELECTED_MEMBERS) {
-                showMemberError(`멤버를 본인 제외 ${MIN_SELECTED_MEMBERS}명 이상 선택해주세요.`);
-            }
-            return false; // 제출 중단
-        }
-
-        // 제출 진행 시 (버튼 활성화 상태)
-        clearMemberError(); // 성공적으로 제출 시도 시 이전 에러 클리어
-        clearGroupNameError();
-        // 여기에 로딩 인디케이터 표시 등 추가 가능
-        // 예: submitButton.textContent = '생성 중...'; submitButton.disabled = true;
-    });
-
-    // 6. 검색창/결과창 외부 클릭 시 결과 숨기기
-    document.addEventListener('click', (event) => {
-        const isClickInsideSearch = searchInput.contains(event.target) || searchResults.contains(event.target);
-        if (!isClickInsideSearch) {
             clearSearchResults();
         }
     });
 
-    // 7. 페이지 로드 시 초기화
-    function initializeForm() {
-        // 혹시 페이지 뒤로가기 등으로 인해 입력값이 남아있는 경우 처리
-        if (groupNameInput.value.trim()) {
-            // 페이지 로드 시에도 이름이 있으면 초기 확인 수행
-            checkGroupNameAvailability(groupNameInput.value.trim());
-        } else {
-            validateForm(); // 빈 상태에서 초기 유효성 검사
+    searchResults.addEventListener('click', (event) => {
+        const targetLi = event.target.closest('li');
+        if (targetLi && targetLi.dataset.userId) {
+            const userId = targetLi.dataset.userId;
+            const userNickname = targetLi.dataset.userNickname;
+
+            if (userId === loggedInUserId) return;
+            if (selectedUsers.has(userId)) {
+                showMemberError('이미 선택된 사용자입니다.');
+                searchInput.focus();
+                return;
+            }
+            const addedMemberCount = selectedUsers.size - (loggedInUserId && selectedUsers.has(loggedInUserId) ? 1 : 0);
+            if (addedMemberCount >= MAX_SELECTED_MEMBERS_EXCL_OWNER) {
+                showMemberError(`멤버는 본인 제외 최대 ${MAX_SELECTED_MEMBERS_EXCL_OWNER}명까지만 추가할 수 있습니다.`);
+                searchInput.value = '';
+                clearSearchResults();
+                return;
+            }
+
+            addSelectedUser(userId, userNickname);
+            searchInput.value = '';
+            clearSearchResults();
+            searchInput.focus();
+            validateForm();
         }
-        // 선택된 사용자가 페이지 로드 시 남아있다면 (가능성은 낮음) 초기화 필요 시 로직 추가
-        // selectedUsers.clear(); updateSelectedUserDisplay(); ...
+    });
+
+    selectedUsersContainer.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-user') && event.target.dataset.userId !== loggedInUserId) {
+            const userId = event.target.dataset.userId;
+            removeSelectedUser(userId);
+            validateForm();
+        }
+    });
+
+    bookSearchInput.addEventListener('input', () => {
+        clearTimeout(bookSearchTimeout);
+        const query = bookSearchInput.value.trim();
+        bookSearchResults.style.display = 'none';
+
+        if (query.length > 0 && loggedInUserId) {
+            bookSearchTimeout = setTimeout(() => {
+                fetchBooks(query);
+            }, 300);
+        } else {
+            clearBookSearchResults();
+        }
+    });
+
+    bookSearchResults.addEventListener('click', (event) => {
+        const targetLi = event.target.closest('li');
+        if (targetLi && targetLi.dataset.bookId) {
+            const bookId = targetLi.dataset.bookId;
+            const bookTitle = targetLi.dataset.bookTitle;
+
+            if (selectedBook && selectedBook.id === bookId) return;
+
+            addSelectedBook(bookId, bookTitle);
+            bookSearchInput.value = '';
+            clearBookSearchResults();
+            bookSearchInput.focus();
+            validateForm();
+        }
+    });
+
+    selectedBookContainer.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-book')) {
+            removeSelectedBook();
+            validateForm();
+        }
+    });
+
+    createGroupForm.addEventListener('submit', (event) => {
+        if (submitButton.disabled) {
+            event.preventDefault();
+            validateForm();
+            return false;
+        }
+        clearMemberError();
+        clearGroupNameError();
+        clearBookError();
+        submitButton.textContent = '생성 중...';
+        submitButton.disabled = true;
+    });
+
+    document.addEventListener('click', (event) => {
+        const isClickInsideUserSearch = searchInput.contains(event.target) || searchResults.contains(event.target);
+        const isClickInsideBookSearch = bookSearchInput.contains(event.target) || bookSearchResults.contains(event.target);
+        if (!isClickInsideUserSearch) clearSearchResults();
+        if (!isClickInsideBookSearch) clearBookSearchResults();
+    });
+
+    // 함수들
+    function initializeLoggedInUser() {
+        if (loggedInUserId && loggedInUserNickname) {
+            selectedUsers.set(loggedInUserId, loggedInUserNickname);
+            const tag = document.createElement('span');
+            tag.classList.add('selected-user-tag', 'is-me');
+            tag.dataset.userId = loggedInUserId;
+            const nameSpan = document.createElement('span');
+            nameSpan.classList.add('user-nickname');
+            nameSpan.textContent = `${loggedInUserNickname} (나)`;
+            tag.appendChild(nameSpan);
+            selectedUsersContainer.appendChild(tag);
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'memberIds';
+            hiddenInput.value = loggedInUserId;
+            hiddenInput.id = `hidden-user-${loggedInUserId}`;
+            hiddenMemberIdsContainer.appendChild(hiddenInput);
+        } else {
+            console.warn("로그인 사용자 정보를 찾을 수 없습니다.");
+            groupNameInput.disabled = true;
+            searchInput.disabled = true;
+            bookSearchInput.disabled = true;
+            submitButton.disabled = true;
+            showGroupNameError("그룹을 생성하려면 로그인이 필요합니다.");
+        }
     }
 
-
-    // --- 함수들 ---
-
-    // 그룹 이름 중복 확인 함수 (백엔드 API 호출)
     async function checkGroupNameAvailability(name) {
-        isCheckingGroupName = true; // 확인 시작
+        isCheckingGroupName = true;
         groupNameError.textContent = '확인 중...';
         groupNameError.style.color = '#777';
-        validateForm(); // 확인 중이므로 버튼 잠시 비활성화
+        validateForm();
 
         try {
-            const response = await fetch(`${GROUP_NAME_CHECK_URL}?name=${encodeURIComponent(name)}`);
-            if (!response.ok) {
-                // 4xx, 5xx 응답 처리
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json(); // 백엔드에서 { isAvailable: boolean } 형태 예상
-
-            if (data.isAvailable) {
-                isGroupNameAvailable = true;
-                clearGroupNameError(); // 사용 가능하면 에러 메시지 없음
-            } else {
-                isGroupNameAvailable = false;
+            const checkUrl = `${GROUP_NAME_CHECK_URL}?name=${encodeURIComponent(name)}`;
+            const response = await fetch(checkUrl);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            isGroupNameAvailable = data.isAvailable;
+            if (!isGroupNameAvailable) {
                 showGroupNameError('이미 사용 중인 그룹 이름입니다.');
+            } else {
+                clearGroupNameError();
             }
         } catch (error) {
             console.error('Error checking group name:', error);
-            isGroupNameAvailable = false; // 오류 발생 시 사용 불가능으로 간주
+            isGroupNameAvailable = false;
             showGroupNameError('이름 확인 중 오류 발생. 다시 시도해주세요.');
         } finally {
-            isCheckingGroupName = false; // 확인 완료 (성공/실패 무관)
-            // groupNameInput.style.borderColor = isGroupNameAvailable ? '' : 'red'; // 결과에 따라 테두리 색 변경 (선택)
-            validateForm(); // 최종 유효성 검사 및 버튼 상태 업데이트
+            isCheckingGroupName = false;
+            validateForm();
         }
     }
 
-    // 사용자 검색 함수 (백엔드 API 호출)
     async function fetchUsers(query) {
-        const searchUrl = `${USER_SEARCH_URL}?name=${encodeURIComponent(query)}&limit=8`; // 예: 최대 8개 결과 요청
+        const searchUrl = `${USER_SEARCH_URL}?name=${encodeURIComponent(query)}&limit=8`;
         try {
             const response = await fetch(searchUrl);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP ${response.status}`);
             }
-            // 백엔드에서 [{id: ..., nickName: ...}, ...] 형태의 JSON 반환 기대
             const users = await response.json();
             displaySearchResults(users);
         } catch (error) {
             console.error('Error fetching users:', error);
-            // 사용자에게 피드백 줄 수 있음 (예: 검색 결과 영역에 에러 메시지 표시)
-            displaySearchResults(null, '사용자 검색 중 오류 발생');
+            displaySearchResults(null, '사용자 검색 중 오류 발생. 다시 시도해주세요.');
         }
     }
 
-    // 검색 결과 표시 함수
     function displaySearchResults(users, errorMessage = null) {
-        searchResults.innerHTML = ''; // 기존 결과 초기화
-
+        searchResults.innerHTML = '';
         if (errorMessage) {
             const li = document.createElement('li');
             li.textContent = errorMessage;
-            li.classList.add('no-results'); // 스타일 적용 위해 클래스 추가
+            li.classList.add('no-results');
             searchResults.appendChild(li);
         } else if (users && users.length > 0) {
             let hasResultsToShow = false;
             users.forEach(user => {
-                // ** 중요: 자기 자신은 검색 결과에서 제외 (백엔드에서 처리하는 것이 더 효율적) **
-                // const currentUserId = getCurrentUserIdFromSomewhere(); // 현재 로그인 사용자 ID 가져오는 로직 필요
-                // if (String(user.id) === String(currentUserId)) return;
-
-                // 이미 선택된 사용자는 결과에 표시하지 않음
+                if (String(user.id) === loggedInUserId) return;
                 if (!selectedUsers.has(String(user.id))) {
                     const li = document.createElement('li');
-                    li.textContent = user.nickName; // 닉네임 표시
-                    li.dataset.userId = user.id;       // data-* 속성으로 ID 저장
-                    li.dataset.userNickname = user.nickName; // data-* 속성으로 닉네임 저장
+                    li.textContent = user.nickName;
+                    li.dataset.userId = user.id;
+                    li.dataset.userNickname = user.nickName;
                     searchResults.appendChild(li);
                     hasResultsToShow = true;
                 }
             });
-            // 표시할 결과가 하나도 없는 경우 (모두 이미 선택됨 등)
             if (!hasResultsToShow) {
                 const li = document.createElement('li');
                 li.textContent = '추가할 사용자가 없거나 이미 선택했습니다.';
@@ -436,151 +356,209 @@
                 searchResults.appendChild(li);
             }
         } else {
-            // 검색 결과가 없는 경우
             const li = document.createElement('li');
             li.textContent = '검색 결과가 없습니다.';
             li.classList.add('no-results');
             searchResults.appendChild(li);
         }
-        searchResults.style.display = 'block'; // 결과 리스트 표시
+        searchResults.style.display = 'block';
     }
 
-
-    // 검색 결과 숨기기 함수
     function clearSearchResults() {
         searchResults.innerHTML = '';
         searchResults.style.display = 'none';
     }
 
-    // 선택된 사용자 추가 함수 (UI 업데이트 및 숨겨진 필드 추가)
+    async function fetchBooks(query) {
+        const searchUrl = `${BOOK_SEARCH_URL}?title=${encodeURIComponent(query)}&limit=8`;
+        try {
+            const response = await fetch(searchUrl);
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('로그인이 필요합니다.');
+                } else if (response.status === 404) {
+                    throw new Error('사용자 정보를 찾을 수 없습니다.');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            }
+            const books = await response.json();
+            displayBookSearchResults(books);
+        } catch (error) {
+            console.error('Error fetching books:', error);
+            displayBookSearchResults(null, error.message || '책 검색 중 오류 발생. 다시 시도해주세요.');
+        }
+    }
+
+    function displayBookSearchResults(books, errorMessage = null) {
+        bookSearchResults.innerHTML = '';
+        if (errorMessage) {
+            const li = document.createElement('li');
+            li.textContent = errorMessage;
+            li.classList.add('no-results');
+            bookSearchResults.appendChild(li);
+        } else if (books && books.length > 0) {
+            books.forEach(book => {
+                const li = document.createElement('li');
+                li.textContent = book.title;
+                li.dataset.bookId = book.id;
+                li.dataset.bookTitle = book.title;
+                bookSearchResults.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = '소유한 책이 없거나 검색 결과가 없습니다.';
+            li.classList.add('no-results');
+            bookSearchResults.appendChild(li);
+        }
+        bookSearchResults.style.display = 'block';
+    }
+
+    function clearBookSearchResults() {
+        bookSearchResults.innerHTML = '';
+        bookSearchResults.style.display = 'none';
+    }
+
     function addSelectedUser(userId, userNickname) {
-        if (!selectedUsers.has(userId) && selectedUsers.size < MAX_SELECTED_MEMBERS) {
-            selectedUsers.set(userId, userNickname); // Map에 추가
-
-            // 화면에 태그 추가
-            const tag = document.createElement('span');
-            tag.classList.add('selected-user-tag');
-            tag.dataset.userId = userId;
-
-            const nameSpan = document.createElement('span');
-            nameSpan.classList.add('user-nickname');
-            nameSpan.textContent = userNickname;
-
-            const removeBtn = document.createElement('button');
-            removeBtn.classList.add('remove-user');
-            removeBtn.type = 'button'; // form 제출 방지
-            removeBtn.textContent = '×'; // 'x' 문자
-            removeBtn.dataset.userId = userId; // 제거 시 ID 사용
-            removeBtn.setAttribute('aria-label', `${userNickname} 제거`); // 접근성
-
-            tag.appendChild(nameSpan);
-            tag.appendChild(removeBtn);
-            selectedUsersContainer.appendChild(tag);
-
-            // 숨겨진 input 추가 (폼 제출용)
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'memberIds'; // 서버에서 받을 파라미터 이름
-            hiddenInput.value = userId;
-            hiddenInput.id = `hidden-user-${userId}`; // 제거 시 쉽게 찾기 위한 ID
-            hiddenMemberIdsContainer.appendChild(hiddenInput);
-
-            clearMemberError(); // 사용자 추가 성공 시 멤버 관련 에러 메시지 제거
-        }
+        if (userId === loggedInUserId || selectedUsers.has(userId)) return;
+        selectedUsers.set(userId, userNickname);
+        const tag = document.createElement('span');
+        tag.classList.add('selected-user-tag');
+        tag.dataset.userId = userId;
+        const nameSpan = document.createElement('span');
+        nameSpan.classList.add('user-nickname');
+        nameSpan.textContent = userNickname;
+        const removeBtn = document.createElement('button');
+        removeBtn.classList.add('remove-user');
+        removeBtn.type = 'button';
+        removeBtn.textContent = '×';
+        removeBtn.dataset.userId = userId;
+        removeBtn.setAttribute('aria-label', `${userNickname} 제거`);
+        tag.appendChild(nameSpan);
+        tag.appendChild(removeBtn);
+        selectedUsersContainer.appendChild(tag);
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'memberIds';
+        hiddenInput.value = userId;
+        hiddenInput.id = `hidden-user-${userId}`;
+        hiddenMemberIdsContainer.appendChild(hiddenInput);
+        clearMemberError();
     }
 
-    // 선택된 사용자 제거 함수 (UI 업데이트 및 숨겨진 필드 제거)
     function removeSelectedUser(userId) {
-        if (selectedUsers.has(userId)) {
-            selectedUsers.delete(userId); // Map에서 제거
-
-            // 화면에서 태그 제거
-            const tagToRemove = selectedUsersContainer.querySelector(`.selected-user-tag[data-user-id="${userId}"]`);
-            if (tagToRemove) {
-                selectedUsersContainer.removeChild(tagToRemove);
-            }
-
-            // 숨겨진 input 제거
-            const hiddenInputToRemove = hiddenMemberIdsContainer.querySelector(`#hidden-user-${userId}`);
-            if (hiddenInputToRemove) {
-                hiddenMemberIdsContainer.removeChild(hiddenInputToRemove);
-            }
-            // 멤버 수가 변경되었으므로 에러 상태 업데이트 필요 시 여기서 호출 또는 validateForm 내에서 처리
-            clearMemberError();
-        }
+        if (userId === loggedInUserId || !selectedUsers.has(userId)) return;
+        selectedUsers.delete(userId);
+        const tagToRemove = selectedUsersContainer.querySelector(`.selected-user-tag[data-user-id="${userId}"]`);
+        if (tagToRemove) selectedUsersContainer.removeChild(tagToRemove);
+        const hiddenInputToRemove = hiddenMemberIdsContainer.querySelector(`#hidden-user-${userId}`);
+        if (hiddenInputToRemove) hiddenMemberIdsContainer.removeChild(hiddenInputToRemove);
+        clearMemberError();
+        validateForm();
     }
 
-    // 폼 유효성 검사 및 버튼 상태 업데이트 함수
+    function addSelectedBook(bookId, bookTitle) {
+        selectedBook = { id: bookId, title: bookTitle };
+        selectedBookContainer.innerHTML = '';
+        const tag = document.createElement('span');
+        tag.classList.add('selected-book-tag');
+        tag.dataset.bookId = bookId;
+        const titleSpan = document.createElement('span');
+        titleSpan.classList.add('book-title');
+        titleSpan.textContent = bookTitle;
+        const removeBtn = document.createElement('button');
+        removeBtn.classList.add('remove-book');
+        removeBtn.type = 'button';
+        removeBtn.textContent = '×';
+        removeBtn.setAttribute('aria-label', `${bookTitle} 제거`);
+        tag.appendChild(titleSpan);
+        tag.appendChild(removeBtn);
+        selectedBookContainer.appendChild(tag);
+        hiddenBookIdInput.value = bookId;
+        clearBookError();
+    }
+
+    function removeSelectedBook() {
+        selectedBook = null;
+        selectedBookContainer.innerHTML = '';
+        hiddenBookIdInput.value = '';
+        clearBookError();
+    }
+
     function validateForm() {
-        const memberCount = selectedUsers.size;
+        if (!loggedInUserId) {
+            submitButton.disabled = true;
+            return false;
+        }
+        const addedMemberCount = selectedUsers.size - (selectedUsers.has(loggedInUserId) ? 1 : 0);
         const groupNameValue = groupNameInput.value.trim();
         const isGroupNameEntered = groupNameValue.length > 0;
-
-        // 기본 유효성 조건
-        const isMemberCountValid = memberCount >= MIN_SELECTED_MEMBERS && memberCount <= MAX_SELECTED_MEMBERS;
+        const isMemberCountValid = addedMemberCount >= MIN_SELECTED_MEMBERS_EXCL_OWNER && addedMemberCount <= MAX_SELECTED_MEMBERS_EXCL_OWNER;
         const isGroupNameReady = isGroupNameEntered && !isCheckingGroupName && isGroupNameAvailable;
-
-        // 최종 폼 유효 상태
-        const isFormValid = isGroupNameReady && isMemberCountValid;
-
-        // 버튼 상태 업데이트
+        const isBookSelected = !!selectedBook;
+        const isFormValid = isGroupNameReady && isMemberCountValid && isBookSelected;
         submitButton.disabled = !isFormValid;
 
-        // 에러 메시지 업데이트 (멤버 관련)
-        if (isGroupNameEntered && isGroupNameReady) { // 이름은 문제 없을 때 멤버 수 체크
-            if (memberCount < MIN_SELECTED_MEMBERS) {
-                showMemberError(`멤버를 본인 제외 ${MIN_SELECTED_MEMBERS}명 이상 선택해주세요.`);
-            } else if (memberCount > MAX_SELECTED_MEMBERS) {
-                // 이 경우는 addSelectedUser에서 미리 막히지만, 방어적으로 추가 가능
-                showMemberError(`멤버는 본인 제외 최대 ${MAX_SELECTED_MEMBERS}명까지 선택 가능합니다.`);
+        if (isGroupNameEntered && isGroupNameReady) {
+            if (addedMemberCount < MIN_SELECTED_MEMBERS_EXCL_OWNER) {
+                showMemberError(`멤버를 본인 제외 ${MIN_SELECTED_MEMBERS_EXCL_OWNER}명 이상 선택해주세요.`);
+            } else if (addedMemberCount > MAX_SELECTED_MEMBERS_EXCL_OWNER) {
+                showMemberError(`멤버는 본인 제외 최대 ${MAX_SELECTED_MEMBERS_EXCL_OWNER}명까지 선택 가능합니다.`);
             } else {
-                clearMemberError(); // 멤버 수 조건 만족
+                clearMemberError();
+            }
+            if (!isBookSelected) {
+                showBookError('책을 1권 선택해주세요.');
+            } else {
+                clearBookError();
             }
         } else {
-            clearMemberError(); // 이름이 유효하지 않으면 멤버 에러는 일단 숨김 (이름 문제 해결 우선)
+            clearMemberError();
+            clearBookError();
         }
 
-        // 그룹 이름 관련 에러는 checkGroupNameAvailability 에서 처리됨
-        // 단, 이름이 비어있을 때 메시지 처리
         if (!isGroupNameEntered && groupNameInput.hasAttribute('required')) {
-            // 사용자가 입력 시도 후 지웠을 때 등 메시지 필요 시
-            // showGroupNameError("그룹 이름은 필수입니다.");
-        } else if (isGroupNameEntered && !isCheckingGroupName && !isGroupNameAvailable && groupNameError.textContent === '') {
-            // 중복 체크 후 실패했는데 메시지가 없는 경우 (예: 초기 로드 시)
-            showGroupNameError('이미 사용 중인 그룹 이름입니다.');
+        } else if (isGroupNameEntered && !isCheckingGroupName && !isGroupNameAvailable && !groupNameError.textContent) {
+            showGroupNameError('이미 사용 중인 그룹 이름이거나 사용할 수 없습니다.');
+        } else if (!isGroupNameEntered) {
+            clearGroupNameError();
         }
 
-
-        return isFormValid; // 현재 폼 유효 상태 반환 (submit 이벤트 등에서 사용 가능)
+        return isFormValid;
     }
 
-    // 그룹 이름 관련 에러 메시지 표시
     function showGroupNameError(message) {
         groupNameError.textContent = message;
-        groupNameError.style.color = 'red'; // 에러 메시지 색상
-        // groupNameInput.style.borderColor = 'red'; // 입력 필드 테두리 강조 (선택)
+        groupNameError.style.color = 'red';
     }
-
-    // 그룹 이름 관련 에러 메시지 제거
     function clearGroupNameError() {
         groupNameError.textContent = '';
-        // groupNameInput.style.borderColor = ''; // 테두리 복원 (선택)
     }
-
-    // 멤버 관련 에러 메시지 표시
     function showMemberError(message) {
         memberErrorMessageDiv.textContent = message;
+        memberErrorMessageDiv.style.color = 'red';
     }
-
-    // 멤버 관련 에러 메시지 제거
     function clearMemberError() {
         memberErrorMessageDiv.textContent = '';
     }
+    function showBookError(message) {
+        bookErrorMessageDiv.textContent = message;
+        bookErrorMessageDiv.style.color = 'red';
+    }
+    function clearBookError() {
+        bookErrorMessageDiv.textContent = '';
+    }
 
-    // --- 초기화 실행 ---
-    initializeForm(); // 페이지 로드 시 폼 상태 초기화 및 검증
-
+    function initializePage() {
+        initializeLoggedInUser();
+        const initialGroupName = groupNameInput.value.trim();
+        if (initialGroupName && loggedInUserId) {
+            checkGroupNameAvailability(initialGroupName);
+        } else {
+            validateForm();
+        }
+    }
+    initializePage();
 </script>
-
 </body>
 </html>

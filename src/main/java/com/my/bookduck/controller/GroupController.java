@@ -1,15 +1,19 @@
 package com.my.bookduck.controller;
 
-// import com.my.bookduck.controller.request.AddGroupRequest; // 더 이상 직접 사용 안 함
-import com.my.bookduck.service.GroupService; // GroupService 임포트
+import com.my.bookduck.domain.user.User;
+import com.my.bookduck.service.GroupService;
+import com.my.bookduck.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes; // 리다이렉트 시 메시지 전달
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List; // List 임포트
+import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -18,76 +22,100 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GroupController {
 
-    private final GroupService groupService; // GroupService 주입
+    private final GroupService groupService;
+    private final UserService userService;
 
-    // 그룹 생성 폼을 보여주는 메소드
     @GetMapping("/addGroup")
     public String showAddGroupForm() {
-        return "group/addForm"; // 폼 페이지 경로
+        return "group/addForm";
     }
 
-    // 그룹 생성 요청을 처리하는 메소드
-    // HTML form의 action과 method에 맞춰 경로와 @PostMapping 설정
-    @PostMapping("/create") // 경로를 /create 로 변경 권장 (RESTful 규칙)
+    @PostMapping("/create")
     public String createGroup(
-            @RequestParam String groupName, // 그룹 이름 받기
-            @RequestParam List<Long> memberIds, // 멤버 ID 목록 받기
-            RedirectAttributes redirectAttributes) { // 리다이렉트 시 속성 전달
+            @RequestParam String groupName,
+            @RequestParam List<Long> memberIds,
+            @RequestParam Long bookId,
+            Principal principal, // 현재 로그인 사용자 정보
+            RedirectAttributes redirectAttributes) {
 
-        log.info("Received request to create group. Name: {}, Member IDs: {}", groupName, memberIds);
+        log.info("Received request to create group. Name: {}, Member IDs: {}, Book ID: {}", groupName, memberIds, bookId);
 
-        // 서버 측 유효성 검사 (JavaScript 검사 외 추가 검사)
+        // --- 입력값 검증 (기존 코드 유지) ---
         if (groupName == null || groupName.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMsg", "그룹 이름을 입력해주세요.");
-            return "redirect:/group/addGroup"; // 생성 폼으로 리다이렉트
+            // ...
+            return "redirect:/group/addGroup";
         }
-        if (memberIds == null || memberIds.size() < 2 || memberIds.size() > 4) {
-            redirectAttributes.addFlashAttribute("errorMsg", "멤버는 2명 이상 4명 이하로 선택해야 합니다.");
-            return "redirect:/group/addGroup"; // 생성 폼으로 리다이렉트
+        if (memberIds == null || memberIds.size() < 1 || memberIds.size() > 4) {
+            // ...
+            return "redirect:/group/addGroup";
+        }
+        if (bookId == null) {
+            // ...
+            return "redirect:/group/addGroup";
         }
 
-        try{
-            // GroupService 호출하여 그룹 생성 및 멤버 추가
-            groupService.createGroupWithMembers(groupName, memberIds);
+        // --- 그룹 생성 로직 ---
+        try {
+            log.info("Attempting to find creator user info...");
 
-            log.info("Group creation successful. Redirecting...");
+            // 1. Principal에서 로그인 아이디(username 또는 loginId) 가져오기
+            String loginId = principal.getName();
+            if (loginId == null) {
+                log.error("Principal name (loginId) is null. User might not be properly authenticated.");
+                redirectAttributes.addFlashAttribute("errorMsg", "사용자 인증 정보를 가져올 수 없습니다.");
+                return "redirect:/group/addGroup";
+            }
+            log.info("Creator loginId from Principal: {}", loginId);
+
+            // 2. UserService를 통해 로그인 아이디로 User 객체 조회
+            User creator = userService.findByLoginId(loginId); // UserService에 추가한 메소드 호출
+
+            // 3. User 객체 확인 및 고유 ID(Long) 추출
+            if (creator == null) {
+                // 해당 loginId를 가진 사용자가 DB에 없는 경우 (보통 발생하면 안 됨)
+                log.error("User with loginId '{}' not found in the database.", loginId);
+                redirectAttributes.addFlashAttribute("errorMsg", "그룹 생성자 정보를 찾을 수 없습니다.");
+                return "redirect:/group/addGroup";
+            }
+            Long creatorId = creator.getId(); // User 객체에서 실제 Long 타입 ID 가져오기
+            log.info("Found creator user. ID: {}", creatorId);
+
+            // 4. 추출한 creatorId를 사용하여 그룹 생성 서비스 호출 (주석 해제 및 수정)
+            groupService.createGroupWithMembersAndBook(groupName, memberIds, bookId, creatorId); // creatorId 사용
+
+            log.info("Group '{}' created successfully by user ID {}.", groupName, creatorId);
             redirectAttributes.addFlashAttribute("successMsg", "그룹 '" + groupName + "' 생성이 완료되었습니다.");
-            // 성공 시 리다이렉트할 경로 (예: 그룹 목록 페이지, 마이페이지 등)
-            return "redirect:/group/success"; // 예시 경로 (실제 경로로 변경 필요)
+            return "redirect:/group/success"; // 성공 페이지로 리다이렉트
 
-        }catch (Exception e) { // 그 외 예외 처리
-            log.error("Unexpected error during group creation", e);
+        } catch (IllegalArgumentException e) { // GroupService 등에서 발생시킨 특정 예외 처리
+            log.error("Error during group creation (IllegalArgumentException): {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+            return "redirect:/group/addGroup";
+        } catch (UsernameNotFoundException e) { // 만약 UserService.findByLoginId가 Optional 대신 예외를 던진 경우
+            log.error("Error finding creator user: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMsg", "그룹 생성자 정보를 찾는 중 오류가 발생했습니다.");
+            return "redirect:/group/addGroup";
+        } catch (Exception e) { // 그 외 예상치 못한 예외 처리
+            log.error("Unexpected error during group creation", e); // 스택 트레이스 로깅
             redirectAttributes.addFlashAttribute("errorMsg", "그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
-            return "redirect:/group/addForm"; // 생성 폼으로 리다이렉트
+            return "redirect:/group/addGroup";
         }
-        // 원래 코드의 successForm으로 가는 부분은 리다이렉트로 대체됨
-        // return "group/successForm";
     }
 
-    // 그룹저장 성공시 이동페이지
     @GetMapping("/success")
     public String showAddGroupSuccess() {
         return "group/success";
     }
 
-
-    // 그룹 목록 페이지 예시 (리다이렉트 타겟)
     @GetMapping("/list")
     public String showGroupList() {
-        // TODO: 그룹 목록 조회 로직 추가
-        return "group/list"; // 그룹 목록 뷰 이름
+        return "group/list";
     }
 
-    /**
-     * 그룹 이름 중복 확인 API (AJAX 호출용)
-     * @param name 확인할 그룹 이름
-     * @return JSON 형태 {"isAvailable": boolean}
-     */
     @GetMapping("/check-name")
-    @ResponseBody // JSON 응답을 위해 필요
+    @ResponseBody
     public ResponseEntity<Map<String, Boolean>> checkGroupName(@RequestParam String name) {
         if (name == null || name.trim().isEmpty()) {
-            // 빈 이름은 사용할 수 없다고 간주
             return ResponseEntity.ok(Map.of("isAvailable", false));
         }
         boolean isAvailable = !groupService.existsByName(name.trim());
