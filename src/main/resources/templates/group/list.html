@@ -3,14 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
-    <title> BookDuck²::MY CREW </title>
-</head>
+    <title>BookDuck² :: MY CREW</title>
+    <style>
+        /* --- 기본 스타일 --- */
+        body { font-family: sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        hr { border: 0; height: 1px; background-color: #e0e0e0; margin: 30px 0; }
+        .no-groups, .login-prompt { text-align: center; color: #777; margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .group-list { /* ul 태그 */ }
 
+        /* --- 그룹 아이템 링크 래퍼 --- */
+        .group-link {
+            display: block; text-decoration: none; color: inherit;
+            /* position: relative; <- 제거해도 됨 */
+            border: 1px solid #e0e0e0; margin-bottom: 20px; border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); background-color: #fff;
+            overflow: hidden; transition: box-shadow 0.2s ease-in-out;
+        }
+        .group-link:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+
+        /* --- 그룹 아이템 내부 Flex 컨테이너 --- */
+        .group-item-content { display: flex; }
+
+        /* --- 왼쪽: 큰 책 표지 영역 --- */
+        .book-cover-large {
+            flex-shrink: 0; width: 120px; padding: 15px; display: flex;
+            align-items: center; justify-content: center; background-color: #f8f8f8;
+        }
+        .book-cover-large img {
+            max-width: 100%; height: auto; max-height: 180px; object-fit: contain;
+            border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* --- 오른쪽: 그룹 상세 정보 영역 --- */
+        .group-details { flex-grow: 1; display: flex; flex-direction: column; }
+
+        /* --- 그룹 헤더 (그룹명, 책 제목, 수정 링크) --- */
+        .group-header { padding: 15px 20px; border-bottom: 1px solid #e0e0e0; background-color: #fdfdfd; }
+        /* 그룹 이름과 수정 링크를 같은 줄에 배치하기 위한 스타일 */
+        .group-header-title {
+            display: flex;
+            align-items: baseline; /* 이름과 링크의 베이스라인 맞춤 */
+            flex-wrap: wrap; /* 필요시 줄바꿈 */
+            margin-bottom: 5px; /* 책 제목과의 간격 */
+        }
+        .group-header h3 { margin: 0; font-size: 1.3em; color: #333; font-weight: 600; margin-right: 10px; /* 수정 링크와의 간격 */ }
+        .group-header p { margin: 0; font-size: 1em; color: #555; }
+
+        /* --- 수정 링크 스타일 --- */
+        .modify-link {
+            font-size: 0.85em; /* 약간 작은 글씨 */
+            color: #007bff;    /* 파란색 링크 */
+            text-decoration: underline; /* 밑줄 */
+            margin-left: auto; /* 가능한 오른쪽으로 밀착 (선택 사항) */
+            white-space: nowrap; /* 줄바꿈 방지 */
+        }
+        .modify-link:hover {
+            color: #0056b3;
+        }
+
+        /* --- 멤버 이미지 목록 영역 (이전과 동일) --- */
+        .group-members { display: flex; flex-wrap: wrap; padding: 15px 15px 10px 15px; gap: 10px; flex-grow: 1; }
+        .member-container { position: relative; display: inline-block; }
+        .member-image {
+            width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
+            border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease;
+        }
+        .member-image:hover { transform: scale(1.1); }
+        .leader-icon {
+            position: absolute; bottom: -2px; right: -2px; background-color: gold;
+            color: #333; font-size: 10px; width: 16px; height: 16px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+            border: 1px solid #fff; pointer-events: none;
+        }
+    </style>
+</head>
 <body>
 
+<!-- 로그인 정보 표시는 동일 -->
+<div th:if="${session.loginuser != null}">
+    <h1 th:text="${session.loginuser.nickName} + '님의 그룹 목록'"></h1>
+    <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
+</div>
+<div th:unless="${session.loginuser != null}">
+    <h1>My Crew</h1>
+    <h2 class="login-prompt">그룹 목록을 보려면 로그인이 필요합니다.</h2>
+</div>
 
+<hr th:if="${session.loginuser != null}" />
 
+<!-- 내가 속한 그룹 목록 (DTO 사용) -->
+<div th:if="${session.loginuser != null}">
+    <div th:if="${myGroupViews == null or #lists.isEmpty(myGroupViews)}" class="no-groups">
+        <p>속한 그룹이 없습니다.</p>
+    </div>
+
+    <ul class="group-list" th:unless="${myGroupViews == null or #lists.isEmpty(myGroupViews)}">
+        <li th:each="groupView : ${myGroupViews}">
+            <a th:href="@{/group/detail/{groupId}(groupId=${groupView.group.id})}" class="group-link">
+                <div class="group-item-content">
+                    <!-- 1. 왼쪽: 큰 책 이미지 -->
+                    <div class="book-cover-large">
+                        <th:block th:if="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book?.cover != null}">
+                            <img th:src="${groupView.group.books[0].book.cover}" alt="Book Cover"/>
+                        </th:block>
+                        <th:block th:unless="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book?.cover != null}">
+                            <img th:src="@{/images/default-book-cover.png}" alt="Default Book Cover"/>
+                        </th:block>
+                    </div>
+
+                    <!-- 2. 오른쪽: 그룹 상세 정보 -->
+                    <div class="group-details">
+                        <!-- 2a. 상단: 그룹 정보 -->
+                        <div class="group-header">
+                            <!-- 그룹 이름과 수정 링크를 묶는 div -->
+                            <div class="group-header-title">
+                                <h3 th:text="${groupView.group.name}">그룹 이름</h3>
+                                <!-- 수정 링크 (조건부 표시) -->
+                                <th:block th:if="${groupView.isCurrentUserLeader}">
+                                    <a th:href="@{/group/edit/{groupId}(groupId=${groupView.group.id})}" class="modify-link" title="그룹 수정">
+                                        수정하기
+                                    </a>
+                                </th:block>
+                            </div>
+                            <!-- 책 제목 -->
+                            <p th:if="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}"
+                               th:text="${groupView.group.books[0].book.title}">책 제목</p>
+                            <p th:unless="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}">
+                                관련된 책 정보 없음
+                            </p>
+                        </div>
+
+                        <!-- 2b. 하단: 멤버 이미지 목록 -->
+                        <div class="group-members">
+                            <th:block th:if="${groupView.group.users != null}" th:each="gu : ${groupView.group.users}">
+                                <div class="member-container" th:if="${gu.user != null}">
+                                    <img class="member-image" th:src="${gu.user.img}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}" />
+                                    <span class="leader-icon" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}">★</span>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </a> 
+        </li>
+    </ul>
+</div>
 
 </body>
 </html>
