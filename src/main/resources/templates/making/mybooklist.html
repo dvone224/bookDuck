@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+
+    .book_img{
+      width: 150px;
+      height: 200px;
+      border: 1px solid black;
+    }
+
+    .grid{
+      width: 25px;
+      height: 25px;
+      display: grid; /* Grid 레이아웃 활성화 */
+      gap: 10%; /* 각 요소 간격 */
+      margin: 10px;
+    }
+
+    .for_info{
+      grid-template-columns: repeat(1, 1fr); /* 가로 2칸 */
+      grid-template-rows: repeat(3, 1fr); /* 세로 2칸 */
+    }
+
+    .for_info_one{
+      background: black;
+    }
+
+    .for_img {
+      grid-template-columns: repeat(2, 1fr); /* 가로 2칸 */
+      grid-template-rows: repeat(2, 1fr); /* 세로 2칸 */
+    }
+
+    .for_img_one {
+      background: black; /* 배경색 */
+    }
+
+    .list{
+      width: 100%;
+    }
+
+    .book_img{
+
+    }
+
+
+  </style>
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+  <div class="list_controller">
+    <div class="left">
+      <div class="book_cnt">0건</div>
+    </div>
+    <div class="right">
+      <!--드롭다운메뉴 디자인 https://velog.io/@kauthenticity/HTML-CSS-%EB%93%9C%EB%A1%AD%EB%8B%A4%EC%9A%B4-%EB%A9%94%EB%89%B4-%EB%A7%8C%EB%93%A4%EA%B8%B0-->
+      <div class="dropdown">
+        <span class="dropbtn">최근 다운로드 순 <i class="fa-solid fa-caret-down"></i> </span>
+        <div class="dropdown-content">
+          <a href="#">최근 다운로드 순</a>
+          <a href="#">이름 순</a>
+        </div>
+      </div>
+      <div class="grid for_info">
+        <div class="for_info_one"></div>
+        <div class="for_info_one"></div>
+        <div class="for_info_one"></div>
+      </div>
+      <div class="grid for_img">
+        <div class="for_img_one"></div>
+        <div class="for_img_one"></div>
+        <div class="for_img_one"></div>
+        <div class="for_img_one"></div>
+      </div>
+    </div>
+  </div>
+  <div class="list">
+    <!--리스트 이미지형 반복-->
+    <div class="box_img">
+      <div class="book_img"><!--<img src="">--><div class="serise_cnt">총 1권</div></div>
+      <div class="book_title">책 이름</div>
+      <div class="book_writer">저자</div>
+    </div>
+    <!--반복 끝-->
+    <!--리스트 목록형 반복-->
+    <div class="box_list">
+      <div class="book_img"><!--<img src="">--><div class="serise_cnt">총 1권</div></div>
+      <div class="book_title">책 이름</div>
+      <div class="book_writer">저자</div>
+      <div class="book_publish">출간연도</div>
+    </div>
+    <!--반복 끝-->
+  </div>
+</div>
+</body>
+</html>

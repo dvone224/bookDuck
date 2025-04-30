@@ -114,21 +114,6 @@
             background: var(--assist-color-light);
         }
 
-        .line_blue{
-            width: 120%;
-            height: 1px;
-            margin-top: 2px;
-            margin-bottom: 10px;
-            background: var(--main-color-dark);
-        }
-
-        .line_yellow{
-            width: 120%;
-            height: 1px;
-            margin-top: 2px;
-            margin-bottom: 10px;
-            background: var(--assist-color-dark);
-        }
 
     </style>
     <title> BookDuck²::My Page </title>
@@ -140,8 +125,8 @@
     <div class="btn_circle yellow fix"><i class="fa-solid fa-pen icon_white"></i></div>
 </div>
 <div class="nickname font_1">닉네임님</div>
-<div class="crew_box light_blue">
-    <div class="title">MY CREW<div class="line_blue"></div></div>
+<div class="my_crew box light_blue">
+    <div class="title">MY CREW<div class="line dark_blue2"></div></div>
     <div class="crew_list">
         <!--each로 반복-->
         <div class="crew_one">
@@ -151,11 +136,11 @@
         </div>
         <!--each로 반복-->
     </div>
-    <div class="btn_more">더보기</div>
+    <button class="more btn_mini blue">더보기</button>
 </div>
 
-<div class="book_box light_yellow">
-    <div class="title">MY BOOK<div class="line_yellow"></div></div>
+<div class="my_book box light_yellow">
+    <div class="title">MY BOOK<div class="line dark_yellow2"></div></div>
     <div class="book_list">
         <!--each로 반복-->
         <div class="book_one">
@@ -163,10 +148,10 @@
         </div>
         <!--each로 반복-->
     </div>
-    <div class="btn_more">더보기</div>
+    <button class="more btn_mini yellow">더보기</button>
 </div>
 
-<div class="btn_yellow">LOGOUT</div>
+<button class="logout btn_long yellow">LOGOUT</button>
 
 </body>
 </html>
