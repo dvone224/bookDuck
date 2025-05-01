@@ -44,6 +44,7 @@ public class UserService {
         return user;
     }
 
+
     public User getUserByLoginId(Long id) throws IllegalStateException {
         log.info("getUserByLoginId: {}", id);
         User user = userRepository.findByid(id);

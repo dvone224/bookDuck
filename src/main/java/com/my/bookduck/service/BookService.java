@@ -57,4 +57,14 @@ public class BookService {
         return bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ID: " + bookId));
     }
+    public Book getBookById(Long id) throws IllegalStateException {
+        log.info("getBookById: {}", id);
+        Book book = bookRepository.findBookById(id);
+        if (book == null) {
+            throw new IllegalStateException("책 정보를 가져오는데 실패했습니다.");
+        }
+        return book;
+    }
+
+
 }

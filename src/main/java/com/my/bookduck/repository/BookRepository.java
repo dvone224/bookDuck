@@ -3,12 +3,14 @@ package com.my.bookduck.repository;
 
 import com.my.bookduck.controller.response.BookSimpleDto;
 import com.my.bookduck.domain.book.Book;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Set;
+
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
@@ -51,4 +53,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b JOIN UserBook ub ON b.id = ub.book.id WHERE ub.user.id = :userId AND LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Book> findByTitleContainingIgnoreCaseAndUserId(String title, Long userId, int limit);
 
+    // 모든 책 조회 (findAll() 사용 가능)
+
+
+    // 책 1권 정보 가져오기
+    Book findBookById(Long id);
 }
