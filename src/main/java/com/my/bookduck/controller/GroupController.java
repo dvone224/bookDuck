@@ -197,4 +197,24 @@ public class GroupController {
         // 결과를 Map에 담아 ResponseEntity로 감싸서 반환 (JSON으로 변환됨)
         return ResponseEntity.ok(Map.of("isAvailable", isAvailable));
     }
+
+    @GetMapping("/fix/{groupId}") // 경로에 {groupId} 추가
+    public String fixGroup(@PathVariable Long groupId) { // @RequestParam name 대신 @PathVariable groupId 사용
+        log.info("Received request for fix group form for groupId: {}", groupId);
+        // 실제로는 여기서 groupId로 그룹 정보를 조회하고 모델에 담아야 함
+        return "group/fix"; // "group/fix.html" 템플릿 반환
+    }
+
+    /**
+     * 그룹 상세 정보 폼 페이지 요청을 받습니다. (연결만 확인)
+     * HTTP GET 요청 "/group/groupForm/{groupId}" 처리
+     * @param groupId 경로 변수에서 추출한 그룹 ID
+     * @return 뷰 이름 "group/groupForm"
+     */
+    @GetMapping("/groupForm/{groupId}") // 경로에 {groupId} 추가
+    public String groupForm(@PathVariable Long groupId) { // @RequestParam name 대신 @PathVariable groupId 사용
+        log.info("Received request for group detail form for groupId: {}", groupId);
+        // 실제로는 여기서 groupId로 그룹 정보를 조회하고 모델에 담아야 함
+        return "group/groupForm"; // "group/groupForm.html" 템플릿 반환
+    }
 }

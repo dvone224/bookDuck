@@ -13,15 +13,42 @@
         .no-groups, .login-prompt { text-align: center; color: #777; margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 8px; border: 1px solid #e0e0e0; }
         .group-list { /* ul 태그 */ }
 
-        /* --- 그룹 아이템 링크 래퍼 --- */
-        .group-link {
-            display: block; text-decoration: none; color: inherit;
-            /* position: relative; <- 제거해도 됨 */
-            border: 1px solid #e0e0e0; margin-bottom: 20px; border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08); background-color: #fff;
-            overflow: hidden; transition: box-shadow 0.2s ease-in-out;
+        /* --- 그룹 아이템 컨테이너 (li 태그) --- */
+        .group-item-container {
+            position: relative; /* 수정 버튼의 absolute 위치 기준점 */
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            background-color: #fff;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease-in-out;
         }
-        .group-link:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+        .group-item-container:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        /* --- 수정 버튼 스타일 (li 기준 절대 위치) --- */
+        .modify-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8); border: 1px solid #ccc;
+            border-radius: 50%; width: 30px; height: 30px; display: flex;
+            align-items: center; justify-content: center; font-size: 16px;
+            color: #555; text-decoration: none; transition: all 0.2s ease;
+            z-index: 10; /* 다른 요소 위에 오도록 */
+        }
+        .modify-button:hover { background-color: #eee; color: #000; border-color: #aaa; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* --- 그룹 상세 내용 링크 (수정 버튼 제외 영역) --- */
+        .group-content-link {
+            display: block; /* 링크 영역 확장 */
+            text-decoration: none;
+            color: inherit;
+            /* 패딩 등을 조절하여 수정 버튼과 겹치지 않게 할 수 있음 */
+            /* padding-right: 45px; /* 예: 수정 버튼 공간 확보 */
+        }
 
         /* --- 그룹 아이템 내부 Flex 컨테이너 --- */
         .group-item-content { display: flex; }
@@ -38,32 +65,9 @@
 
         /* --- 오른쪽: 그룹 상세 정보 영역 --- */
         .group-details { flex-grow: 1; display: flex; flex-direction: column; }
-
-        /* --- 그룹 헤더 (그룹명, 책 제목, 수정 링크) --- */
         .group-header { padding: 15px 20px; border-bottom: 1px solid #e0e0e0; background-color: #fdfdfd; }
-        /* 그룹 이름과 수정 링크를 같은 줄에 배치하기 위한 스타일 */
-        .group-header-title {
-            display: flex;
-            align-items: baseline; /* 이름과 링크의 베이스라인 맞춤 */
-            flex-wrap: wrap; /* 필요시 줄바꿈 */
-            margin-bottom: 5px; /* 책 제목과의 간격 */
-        }
-        .group-header h3 { margin: 0; font-size: 1.3em; color: #333; font-weight: 600; margin-right: 10px; /* 수정 링크와의 간격 */ }
+        .group-header h3 { margin: 0 0 5px 0; font-size: 1.3em; color: #333; font-weight: 600; }
         .group-header p { margin: 0; font-size: 1em; color: #555; }
-
-        /* --- 수정 링크 스타일 --- */
-        .modify-link {
-            font-size: 0.85em; /* 약간 작은 글씨 */
-            color: #007bff;    /* 파란색 링크 */
-            text-decoration: underline; /* 밑줄 */
-            margin-left: auto; /* 가능한 오른쪽으로 밀착 (선택 사항) */
-            white-space: nowrap; /* 줄바꿈 방지 */
-        }
-        .modify-link:hover {
-            color: #0056b3;
-        }
-
-        /* --- 멤버 이미지 목록 영역 (이전과 동일) --- */
         .group-members { display: flex; flex-wrap: wrap; padding: 15px 15px 10px 15px; gap: 10px; flex-grow: 1; }
         .member-container { position: relative; display: inline-block; }
         .member-image {
@@ -101,8 +105,18 @@
     </div>
 
     <ul class="group-list" th:unless="${myGroupViews == null or #lists.isEmpty(myGroupViews)}">
-        <li th:each="groupView : ${myGroupViews}">
-            <a th:href="@{/group/detail/{groupId}(groupId=${groupView.group.id})}" class="group-link">
+        <!-- 각 그룹 아이템 -->
+        <li th:each="groupView : ${myGroupViews}" class="group-item-container"> <!-- li가 컨테이너 역할 + 위치 기준 -->
+
+            <!-- 수정 버튼 (조건부, li 기준 절대 위치) -->
+            <th:block th:if="${groupView.isCurrentUserLeader}">
+                <a th:href="@{/group/fix/{groupId}(groupId=${groupView.group.id})}" class="modify-button" title="그룹 수정">
+                    ⚙️ <!-- 수정 아이콘 -->
+                </a>
+            </th:block>
+
+            <!-- 그룹 상세 페이지로 가는 링크 (컨텐츠 영역만 감싸기) -->
+            <a th:href="@{/group/groupForm/{groupId}(groupId=${groupView.group.id})}" class="group-content-link">
                 <div class="group-item-content">
                     <!-- 1. 왼쪽: 큰 책 이미지 -->
                     <div class="book-cover-large">
@@ -116,19 +130,9 @@
 
                     <!-- 2. 오른쪽: 그룹 상세 정보 -->
                     <div class="group-details">
-                        <!-- 2a. 상단: 그룹 정보 -->
+                        <!-- 2a. 상단: 그룹 정보 (여기에는 수정 링크 없음) -->
                         <div class="group-header">
-                            <!-- 그룹 이름과 수정 링크를 묶는 div -->
-                            <div class="group-header-title">
-                                <h3 th:text="${groupView.group.name}">그룹 이름</h3>
-                                <!-- 수정 링크 (조건부 표시) -->
-                                <th:block th:if="${groupView.isCurrentUserLeader}">
-                                    <a th:href="@{/group/edit/{groupId}(groupId=${groupView.group.id})}" class="modify-link" title="그룹 수정">
-                                        수정하기
-                                    </a>
-                                </th:block>
-                            </div>
-                            <!-- 책 제목 -->
+                            <h3 th:text="${groupView.group.name}">그룹 이름</h3>
                             <p th:if="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}"
                                th:text="${groupView.group.books[0].book.title}">책 제목</p>
                             <p th:unless="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}">
@@ -147,7 +151,7 @@
                         </div>
                     </div>
                 </div>
-            </a> 
+            </a> <!-- // .group-content-link -->
         </li>
     </ul>
 </div>
