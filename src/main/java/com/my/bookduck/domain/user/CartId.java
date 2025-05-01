@@ -13,6 +13,6 @@ import java.io.Serializable;
 @Getter
 @EqualsAndHashCode
 public class CartId implements Serializable {
-    private User user;
-    private Book book;
+    private Long userId;
+    private Long bookId;
 }
