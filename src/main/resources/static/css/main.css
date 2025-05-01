@@ -82,6 +82,7 @@
     --cancle-color-dark: #9B9B9B;
     --cancle-color-middle: #D3D3D3;
     --cancle-color-light: #EAEAEA;
+    --crown-color: #ffa500;
 
     /*사용법: var(--main-color-middle)*/
     --border-big: 20px;/*큰거...뭐가잇지...*/
@@ -223,13 +224,14 @@ body {
 .box{
     width: 100%;
     height: auto;
-    border-radius: var(--border-middle);
+    border-radius: var(--border-big);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 10px;
     margin-bottom: 10px;
+    max-width: 600px;
 }
 
 .title{
@@ -238,6 +240,10 @@ body {
     justify-content: center;
     align-items: center;
     margin: 10px;
+    font-weight: bold;
+}
+
+.bold{
     font-weight: bold;
 }
 
@@ -298,6 +304,13 @@ body {
 }
 .white{
     background: white;
+}
+
+.blue_line_thin{
+    border: 1px solid var(--main-color-middle);
+}
+.yellow_line_thin{
+    border: 1px solid var(--assist-color-middle);
 }
 
 .input_long{

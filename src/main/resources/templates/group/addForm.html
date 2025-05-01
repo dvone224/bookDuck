@@ -61,25 +61,77 @@
 
         /* 버튼 스타일 (첫 번째 코드) */
         .btn_long{
-            width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer;
-            border: none; font-weight: bold; font-size: var(--font-size-2); transition: background-color 0.2s;
-            display: flex; justify-content: center; align-items: center; max-width: 600px;
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            font-size: var(--font-size-2);
+            transition: background-color 0.2s;/*이거 색깔 변화할 일 있나?*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 600px;
+            font-family: GowunBatang-Regular;
         }
-        .btn_long:hover:not(:disabled) { filter: brightness(110%); }
-        .btn_long:disabled { background-color: var(--cancle-color-middle) !important; /* 강제 적용 */ cursor: not-allowed; opacity: 0.7; }
+
+/*        .btn_long:hover:not(:disabled) {
+            filter: brightness(110%);
+        }*/
+
+        .btn_long:disabled {
+            background-color: var(--cancle-color-middle) !important; /* 강제 적용 */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
 
         /* 입력 필드 스타일 (첫 번째 코드) */
         .input_long{
-            margin-bottom: 5px; width: 100%; height: 45px; border-radius: 45px;
-            box-sizing: border-box; text-align: center; padding: 8px 15px;
-            font-size: var(--font-size-2); border: 2px solid; max-width: 600px;
+            margin-bottom: 5px;
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 8px 15px;
+            font-size: var(--font-size-2);
+            border: 2px solid;
+            max-width: 600px;
+            font-family: 'GowunBatang-Regular', sans-serif;
         }
-        .input_long::placeholder { color: var(--cancle-color-dark); font-size: var(--font-size-3); font-family: 'GowunDodum-Regular', sans-serif; }
-        .input_long:focus { outline: none; border-width: 3px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .blue_line{ border-color: var(--main-color-middle); color: var(--main-color-dark); }
-        .blue_line:focus{ border-color: var(--main-color-dark); }
-        .yellow_line{ border-color: var(--assist-color-middle); color: var(--assist-color-dark); }
-        .yellow_line:focus{ border-color: var(--assist-color-dark); }
+
+        .input_long::placeholder {
+            color: var(--cancle-color-dark);
+            font-size: var(--font-size-2);
+        }
+
+        .input_long:focus {
+            outline: none;
+            border-width: 3px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            font-family: 'GowunBatang-Regular', sans-serif;
+        }
+        .blue_line{
+            border-color: var(--main-color-middle);
+            color: var(--main-color-dark);
+        }
+        /*야 이자식이 니가 뭔데 이걸 막 이케 바꿔 망할~~~*/
+        .blue_line:focus{
+            border: 4px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+            outline: none;
+        }
+        .yellow_line{
+            border-color: var(--assist-color-middle);
+            color: var(--assist-color-dark);
+        }
+        .yellow_line:focus{
+            border: 4px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            outline: none;
+        }
 
         /* 색상 클래스 (첫 번째 코드) */
         .blue{ background: var(--main-color-middle); }
@@ -97,25 +149,71 @@
         .white{ background: white; }
 
         /* 프로필 이미지 섹션 (첫 번째 코드) */
-        .profile_img_box{ width: 220px; height: 220px; position: relative; margin-bottom: 10px; }
-        .crown{ color: var(--crown-color); position: absolute; top: 5px; left: 5px; transform: rotate(-30deg); z-index: 1; }
-        .crown i{ font-size: 35px; }
-        .profile_img{
-            width: 200px; height: 200px; background: var(--assist-color-light); border: 3px solid var(--assist-color-middle);
-            border-radius: var(--border-big); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden;
+        .profile_img_box{
+            width: 220px;
+            height: 220px;
+            position: relative;
+            margin-bottom: 10px;
         }
-        .profile_img img{ width: 100%; height: 100%; display: block; object-fit: cover; }
+
+        .crown{
+            color: var(--crown-color);
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            transform: rotate(-30deg);
+            z-index: 1;
+        }
+        .crown i{
+            font-size: 35px;
+        }
+
+        .profile_img{
+            width: 200px;
+            height: 200px;
+            background: var(--assist-color-light);
+            border: 3px solid var(--assist-color-middle);
+            border-radius: var(--border-big);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+        }
+
+        .profile_img img{
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
         .nickname{
-            font-family: 'Cafe24Supermagic-Bold-v1.0', sans-serif; font-size: var(--font-size-0); font-weight: bold;
-            margin-top: 10px; margin-bottom: 30px; color: var(--main-color-dark);
+            font-size: var(--font-size-0); font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            color: var(--main-color-dark);
         }
 
         /* 폼 관련 스타일 (첫 번째 코드 구조 기반) */
-        .form_box{ width: 100%; }
-        form{ width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .form_box{
+            width: 100%;
+        }
+
+        form{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
         .form-group{
             width: 100%; padding: 0px; margin: 0px 0 5px 0; /* 하단 마진 조정 */
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             position: relative; /* 검색 결과 위치 기준점 */
         }
         label:empty { display: none; } /* 비어있는 레이블 숨김 */
@@ -129,21 +227,21 @@
         }
         .error-message { /* span 태그에 적용될 스타일 */
             color: red;
-            font-size: var(--font-size-3); /* 13px */
-            font-family: 'GowunDodum-Regular', sans-serif;
+            font-size: var(--font-size-2); /* 13px */
         }
         /* span 자체는 JS에서 내용 추가/제거 */
 
         /* 검색 결과 스타일 (첫 번째 구조에 맞게 조정) */
         #searchResults, #bookSearchResults {
+            color: var(--assist-color-dark);
             position: absolute;
             /* top: 100%; */ /* 입력 필드 바로 아래 */
-            top: 45px; /* input 높이만큼 아래로 (input_long height) */
+            top: 47px; /* input 높이만큼 아래로 (input_long height) */
             left: 0;
             width: 100%; /* 부모(.form-group) 너비에 맞춤 */
             max-width: 600px; /* 최대 너비 */
-            border: 1px solid var(--cancle-color-middle);
-            border-top: none;
+            border: 1px solid var(--assist-color-middle);
+            /*border-top: none;*/
             max-height: 150px;
             overflow-y: auto;
             background-color: white;
@@ -153,31 +251,71 @@
             z-index: 10;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: none; /* 기본 숨김 */
-            border-bottom-left-radius: var(--border-middle);
-            border-bottom-right-radius: var(--border-middle);
-            font-family: 'GowunDodum-Regular', sans-serif;
+            border-radius: var(--border-middle);
+/*            border-bottom-left-radius: var(--border-middle);
+            border-bottom-right-radius: var(--border-middle);*/
         }
+
         #searchResults li, #bookSearchResults li {
-            padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--cancle-color-light); font-size: var(--font-size-3);
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--cancle-color-light);
+            font-size: var(--font-size-2);
         }
-        #searchResults li:last-child, #bookSearchResults li:last-child { border-bottom: none; }
-        #searchResults li:hover, #bookSearchResults li:hover { background-color: var(--main-color-light); }
-        #searchResults li.no-results, #bookSearchResults li.no-results { cursor: default; color: var(--cancle-color-dark); background-color: white; }
+
+        #searchResults li:last-child, #bookSearchResults li:last-child {
+            border-bottom: none;
+        }
+
+        #searchResults li:hover, #bookSearchResults li:hover {
+            background-color: var(--assist-color-light);
+        }
+
+        #searchResults li.no-results, #bookSearchResults li.no-results {
+            cursor: default;
+            color: var(--cancle-color-dark);
+            background-color: white;
+        }
 
         /* 선택된 항목 컨테이너 (첫 번째 코드 .box 스타일) */
         .box{
-            width: 100%; height: auto; border-radius: var(--border-big);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 15px; margin-bottom: 15px; /* 간격 조정 */ max-width: 600px;
-            border: 1px solid var(--main-color-middle); /* 테두리 추가 */
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-big);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px; /* 간격 조정 */
+            max-width: 600px;
+/*            border: 1px solid var(--main-color-middle); !* 테두리 추가 *!*/
         }
-        .box.white { background: white; } /* 배경색 클래스 */
+        .box.white {
+            background: white;
+        } /* 배경색 클래스 */
+        .blue_line_thin{
+            border: 1px solid var(--main-color-middle);
+        }
+        .yellow_line_thin{
+            border: 1px solid var(--assist-color-middle);
+        }
 
         .title{ /* .box 내부의 타이틀 */
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            margin-bottom: 15px; font-weight: bold; font-size: var(--font-size-1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: var(--font-size-2);
         }
-        .title .underline{ width: 80%; height: 2px; margin-top: 5px; } /* 밑줄 */
+
+        .underline{
+            width: 130%;
+            height: 1px;
+            margin-top: 5px;
+        }
 
         /* 선택된 항목 목록 컨테이너 (box 내부) */
         #selectedUsersContainer, #selectedBookContainer {
@@ -186,35 +324,69 @@
             padding: 10px 0; min-height: 40px;
             justify-content: center; /* 태그 중앙 정렬 (옵션) */
         }
-        /* 책 선택 컨테이너는 box 밖에 위치하므로 별도 스타일 */
+
+/*        !* 책 선택 컨테이너는 box 밖에 위치하므로 별도 스타일 *!
         #selectedBookContainer {
             border: 1px solid var(--assist-color-middle);
             border-radius: var(--border-middle);
             background-color: var(--assist-color-light);
             padding: 10px;
-            margin-bottom: 15px; /* 하단 간격 */
+            margin-bottom: 15px; !* 하단 간격 *!
             max-width: 600px;
             width: 100%;
-        }
+        }*/
 
         /* 선택된 항목 태그 스타일 (두 번째 코드 기반 + 첫 번째 코드 스타일) */
         .selected-user-tag, .selected-book-tag {
-            display: inline-flex; align-items: center; background-color: var(--cancle-color-light);
-            padding: 4px 10px; border-radius: 20px; font-size: var(--font-size-3);
-            font-family: 'GowunDodum-Regular', sans-serif; color: var(--cancle-color-dark);
+            width: 20px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--cancle-color-light);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: var(--font-size-2);
+            color: var(--cancle-color-dark);
         }
-        .selected-user-tag.is-me { background-color: var(--main-color-middle); color: var(--main-color-dark); font-weight: bold; }
-        .selected-book-tag { background-color: var(--assist-color-middle); color: var(--assist-color-dark); font-weight: bold; }
+        .selected-user-tag.is-me {
+            background-color: var(--main-color-middle);
+            color: var(--main-color-dark);
+            font-weight: bold;
+        }
 
-        .selected-user-tag .user-nickname, .selected-book-tag .book-title { margin-right: 6px; }
-        .selected-user-tag .remove-user, .selected-book-tag .remove-book {
-            display: flex; align-items: center; justify-content: center; width: 16px; height: 16px;
-            cursor: pointer; font-weight: bold; color: white; border: none;
-            background-color: var(--cancle-color-dark); border-radius: 50%; padding: 0;
-            font-size: 12px; line-height: 1; margin-left: 4px; transition: background-color 0.2s;
+        .selected-book-tag {
+            background-color: var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            font-weight: bold;
         }
-        .selected-user-tag .remove-user:hover { background-color: var(--main-color-dark); }
-        .selected-book-tag .remove-book:hover { background-color: var(--assist-color-dark); }
+
+        .selected-user-tag .user-nickname, .selected-book-tag .book-title {
+            margin-right: 6px;
+        }
+        .selected-user-tag .remove-user, .selected-book-tag .remove-book {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            border: none;
+            background-color: var(--cancle-color-dark);
+            border-radius: 50%; padding: 0;
+            font-size: var(--font-size-3);
+            line-height: 1;
+            margin-left: 4px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .selected-user-tag .remove-user:hover {
+            background-color: var(--main-color-dark);
+        }
+        .selected-book-tag .remove-book:hover {
+            background-color: var(--assist-color-dark);
+        }
 
         /* 제출 버튼 영역 (첫 번째 코드 구조) */
         .action-buttons {
@@ -269,8 +441,8 @@
             <!-- 3. 선택된 사용자 목록 표시 (첫 번째 코드 구조) -->
             <div class="form-group">
                 <label></label>
-                <div class="box white"> <!-- 흰색 박스 -->
-                    <div class="title dark_blue2">NEW CREW<div class="underline dark_blue1"></div> </div>
+                <div class="box white yellow_line_thin"> <!-- 흰색 박스 -->
+                    <div class="title dark_yellow2">NEW CREW<div class="underline dark_yellow1"></div> </div>
                     <div id="selectedUsersContainer">
                         <!-- 선택된 사용자가 여기에 추가됨 -->
                     </div>
@@ -294,8 +466,11 @@
             <!-- 5. 선택된 책 표시 -->
             <div class="form-group">
                 <label></label>
-                <div id="selectedBookContainer">
-                    <!-- 선택된 책이 여기에 표시됨 -->
+                <div class="box white yellow_line_thin">
+                    <div class="title dark_yellow2">NEW BOOK<div class="underline dark_yellow1"></div> </div>
+                    <div id="selectedBookContainer">
+                        <!-- 선택된 책이 여기에 표시됨 -->
+                    </div>
                 </div>
                 <input type="hidden" id="hiddenBookId" name="bookId">
                 <!-- 책 에러 메시지는 검색 input 아래로 이동됨 -->
@@ -770,7 +945,6 @@
 
         return isFormValid; // 최종 유효성 결과 반환
     }
-
 
     // 에러 메시지 표시 함수 (span 대상)
     function showGroupNameError(message) { groupNameErrorSpan.textContent = message; groupNameErrorSpan.style.color = 'red'; }
