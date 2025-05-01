@@ -17,14 +17,13 @@
     <div class="logo dark_blue2" onclick="location.href='/home'">BookDuck²</div>
     <form id="userLoginform" action="/login" method="post">
         <!-- 아이디 입력 영역 -->
-        <input type="text" class="input_long blue_line" id="username" name="username" placeholder="ID를 입력해주세요" required autocomplete="off">
+        <input type="text" class="input_long blue_line" id="username" name="username" placeholder="ID를 입력해주세요" required autocomplete="off" th:value="${userId}">
         <input type="password" class="input_long blue_line" id="password" name="password" placeholder="PASSWORD를 입력해주세요" required autocomplete="off">
-
+        <div class="login-fail" th:if="${loginFail == true}">아이디 또는 비번이 일치하지 않습니다.</div>
         <button type="submit" class="login blue btn_long">로그인</button>
-
         <div class="aboutId dark_blue2">
             <div class="saveId">
-                <input type="checkbox" id="rememberid">
+                <input type="checkbox" id="rememberid" name="rememberid" th:checked="${remember}">
                 <label for="rememberid"></label>아이디저장
             </div>
             <div class="findId" onclick="location.href='/findinfo'">아이디 또는 비밀번호 찾기</div>
