@@ -344,19 +344,22 @@ input[type="checkbox"] + label{
     background: white;
     width: 25px;
     height: 25px;
-    border:3px solid var(--main-color-middle);
     border-radius: 50%;
     cursor: pointer;
     position: relative;
 }
-
+/*input[type="checkbox"] + label{
+    border:3px solid var(--main-color-middle);
+}*/
+/*input[type="checkbox"] + label{
+    border:3px solid var(--assist-color-middle);
+}*/
 input[type="checkbox"]:checked + label::after {
     content: '✔';
     font-size: 16px; /* 체크 아이콘 크기 조정 */
     width: 22px; /* 내부 원 크기 */
     height: 22px; /* 내부 원 크기 */
     border: none; /* 중복 테두리 제거 */
-    background: var(--main-color-middle);
     color: white;
     text-align: center;
     line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
@@ -366,10 +369,14 @@ input[type="checkbox"]:checked + label::after {
     transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
     border-radius: 50%; /* 내부 원형 유지 */
 }
+/*input[type="checkbox"]:checked + label::after{
+    background: var(--main-color-middle);
+}*/
+/*input[type="checkbox"]:checked + label::after{
+    background: var(--assist-color-middle);
+}*/
 
-
-
-/*대표 이미지들 설정*/
+    /*대표 이미지들 설정*/
 .processImg{
     width: 300px;
     height: 300px;

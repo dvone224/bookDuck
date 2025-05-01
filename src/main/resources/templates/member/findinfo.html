@@ -4,22 +4,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
-    <title> BookDuck²::회원가입 </title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/member/delSuccess.css">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <style>
+
+        /*아이콘 임포트*/
+        /* Fontawesome 4.7 */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+        /*로고용 폰트: cafe24슈퍼매직*/
+        @font-face {
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        /*홈페이지 메인 폰트: 고운바탕*/
+        @font-face {
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 컬러 파레트 */
+        :root {
+            --main-color-dark: #00479B;
+            --main-color-middle: #83C7FF;
+            --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000;
+            --assist-color-middle: #FFB90B;
+            --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B;
+            --cancle-color-middle: #D3D3D3;
+            --cancle-color-light: #EAEAEA;
+
+            /*사용법: var(--main-color-middle)*/
+            --border-big: 20px; /*큰거...뭐가잇지...*/
+            --border-middle: 10px; /*img*/
+            --border-circle: 50%; /*동그리버튼*/
+
+            /*폰트 사이즈 정의*/
+            --font-size-0: 28px;
+            --font-size-1: 23px;
+            --font-size-2: 18px;
+            --font-size-3: 13px;
+            --font-size-4: 8px;
+        }
+
+
+        /* Global 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Gowun Batang";
+            font-size: var(--font-size-2);
+        }
+
+        /* 기본 설정 */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%; /* 가로를 화면에 맞게 설정 */
+        }
+
+        /* 컨테이너 스타일 */
+        .container {
+            border: 1px solid slateblue;
+            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn_long{
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            max-width: 600px;
+        }
+
+        .title{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .underline{
+            width: 130%;
+            height: 1px;
+        }
+
+
+        .blue{
+            background: var(--main-color-middle);
+        }
+        .yellow{
+            background: var(--assist-color-middle);
+        }
+        .dark_blue1{
+            background: var(--main-color-dark);
+        }
+        .dark_blue2{
+            color: var(--main-color-dark);
+        }
+
+        .input_long{
+            margin-bottom: 10px;
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            box-sizing: border-box;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .blue_line{
+            border: 2px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+        }
+
+        .blue_line:focus{
+            border: 4px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+            outline: none;
+        }
+
+        .seperate{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 600px;
+        }
+        .seperate_one{
+            width: 79%;
+        }
+        .seperate_two{
+            width: 20%;
+        }
+        .seperate_same{
+            width: 49.5%;
+        }
+        .text{
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+    </style>
+    <title> BookDuck²::회원정보 찾기 </title>
 </head>
-
 <body>
-
-<div class="find-info">
-
-    <div>
+<!--<div th:replace="~{fragments/secondHeader :: bodyHeader}" ></div>-->
+<div class="container">
+<!--    <div>
         <label for="findemail"> 회원정보 찾기</label>
         <input type="email" id="findemail" name="mail" placeholder="가입한 이메일을 입력하세요" required autocomplete="off">
+    </div>-->
+    <div class="box dark_blue2">
+        <div class="title">ID 또는 PASSWORD 찾기<div class="underline dark_blue1"></div> </div>
+        <div class="text">
+            가입할 때 사용한 E-mail을 입력하세요. <br>
+            해당 E-mail로 ID 또는 임시 PASSWORD를 발송합니다.
+        </div>
     </div>
+    <div class="box">
+            <label for="joinEmail"></label>
+            <input type="text" class="input_long blue_line" id="joinEmail" name="email" placeholder="가입한 E-mail을 입력하세요" required autocomplete="off">
+    </div>
+<!--
+    <div class="seperate">
+        <div class="seperate_one">
+            <label for="joinCode"></label>
+            <input type="text" class="input_long blue_line" id="joinCode" name="verifyCode" placeholder="인증번호를 입력하세요" required autocomplete="off">
+        </div>
+        <div class="seperate_two">
+            <button class="btn_long blue">인증완료</button>
+        </div>
+    </div>-->
 
-    <input type="button" class="btn btn-findid" value="아이디찾기">
-    <input type="button" class="btn btn-findinfo" value="비번찾기">
-
+    <div class="seperate">
+        <div class="seperate_same"><button class="btn_long blue">ID찾기</button></div>
+        <div class="seperate_same"><button class="btn_long yellow">임시 PASSWORD 발송</button></div>
+    </div>
+<!--    <input type="button" class="btn btn-findid" value="아이디찾기">
+    <input type="button" class="btn btn-findinfo" value="비번찾기">-->
 </div>
 
 </body>

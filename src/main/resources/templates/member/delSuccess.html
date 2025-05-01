@@ -3,10 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/member/delSuccess.css">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <style>
+
+/*        !*아이콘 임포트*!
+        !* Fontawesome 4.7 *!*/
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+/*        !*로고용 폰트: cafe24슈퍼매직*!*/
+        @font-face {
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+/*        !*홈페이지 메인 폰트: 고운바탕*!*/
+        @font-face {
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+
+/*        !* 컬러 파레트 *!*/
+        :root {
+            --main-color-dark: #00479B;
+            --main-color-middle: #83C7FF;
+            --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000;
+            --assist-color-middle: #FFB90B;
+            --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B;
+            --cancle-color-middle: #D3D3D3;
+            --cancle-color-light: #EAEAEA;
+
+/*            !*사용법: var(--main-color-middle)*!*/
+            --border-big: 20px; /*!*큰거...뭐가잇지...*!*/
+            --border-middle: 10px; /*!*img*!*/
+            --border-circle: 50%; /*!*동그리버튼*!*/
+
+/*            !*폰트 사이즈 정의*!*/
+            --font-size-0: 28px;
+            --font-size-1: 23px;
+            --font-size-2: 18px;
+            --font-size-3: 13px;
+            --font-size-4: 8px;
+        }
+
+
+/*        !* Global 스타일 초기화 *!*/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Gowun Batang";
+            font-size: var(--font-size-2);
+        }
+
+/*        !* 기본 설정 *!*/
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%; /*!* 가로를 화면에 맞게 설정 *!*/
+        }
+
+/*        !* 컨테이너 스타일 *!*/
+        .container {
+            border: 1px solid slateblue;
+            max-width: 100%; /*!* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .btn_long{
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            max-width: 600px;
+        }
+
+        .blue{
+            background: var(--main-color-middle);
+        }
+
+        .dark_blue2{
+            color: var(--main-color-dark);
+        }
+
+/*        !*대표 이미지들 설정*!*/
+        .processImg{
+            width: 300px;
+            height: 300px;
+        }
+        .processImg img{
+            width: 100%;
+            height: 100%;
+        }
+
+        .text{
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
     <title> BookDuck²::회원탈퇴 성공 </title>
 </head>
 <body>
-
+<!--<div th:replace="~{fragments/therdHeader :: bodyHeader}" ></div>-->
+<div class="container">
+    <!--processImg: 페이지 하나 다 차지하는 이미지 클래스-->
+    <div class="processImg"><img src="/static/img/bookduck_userDelSuccess.png"></div>
+    <div class="text dark_blue2" style="line-height:170%;">탈퇴가 완료되었습니다.<br>지금까지 <span class="logo">BookDuck²</span>을<br>이용해주셔서 감사합니다.</div>
+    <button class="goStore blue btn_long" onclick="location.href='/home'">Good bye</button>
+</div>
 </body>
 </html>
