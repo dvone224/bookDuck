@@ -34,10 +34,8 @@ public class UserController {
             model.addAttribute("errMsg", e.getMessage());
             return "member/joinForm";
         }
-
         return "member/joinSuccess";
     }
-
 
     @PostMapping("/socialaddinfo")
     public String socialAddInfo(final @ModelAttribute SocialJoinUpdateRequest info,Model model, @AuthenticationPrincipal BDUserDetails userDetails) throws InterruptedException {

@@ -3,31 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck²::CREW 생성</title>
     <style>
-        body { font-family: sans-serif; }
-        .form-container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="search"] { width: calc(100% - 18px); padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;}
-        input:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-        .error-message { color: red; font-size: 0.875em; margin-top: 4px; min-height: 1.2em; display: block; }
-        #search-results-container, #book-search-results-container { position: relative; }
-        #searchResults, #bookSearchResults { position: absolute; width: calc(100% - 2px); border: 1px solid #ccc; border-top: none; max-height: 150px; overflow-y: auto; background-color: white; list-style: none; padding: 0; margin: -1px 0 0 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
-        #searchResults li, #bookSearchResults li { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.95em; }
-        #searchResults li:last-child, #bookSearchResults li:last-child { border-bottom: none; }
-        #searchResults li:hover, #bookSearchResults li:hover { background-color: #f0f0f0; }
-        #searchResults li.no-results, #bookSearchResults li.no-results { cursor: default; color: #777; }
-        #selectedUsersContainer, #selectedBookContainer { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #eee; min-height: 40px; border-radius: 4px; margin-top: 5px; background-color: #f9f9f9; }
-        .selected-user-tag, .selected-book-tag { display: inline-flex; align-items: center; background-color: #e0e0e0; padding: 4px 8px; border-radius: 12px; font-size: 0.875em; }
-        .selected-user-tag.is-me { background-color: #cce5ff; font-weight: bold; }
-        .selected-user-tag .user-nickname, .selected-book-tag .book-title { margin-right: 6px; }
-        .selected-user-tag .remove-user, .selected-book-tag .remove-book { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; cursor: pointer; font-weight: bold; color: #555; border: none; background-color: #c0c0c0; border-radius: 50%; padding: 0; font-size: 12px; line-height: 1; margin-left: 4px; transition: background-color 0.2s, color 0.2s; }
-        .selected-user-tag .remove-user:hover, .selected-book-tag .remove-book:hover { background-color: #a0a0a0; color: #fff; }
-        .action-buttons { text-align: center; margin-top: 25px; }
-        button[type="submit"] { padding: 10px 25px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 1rem; transition: background-color 0.2s; }
-        button[type="submit"]:hover:not(:disabled) { background-color: #0056b3; }
-        button[type="submit"]:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.7; }
+        /* --- 첫 번째 코드의 스타일 시작 (대부분 유지) --- */
+
+        /* 아이콘 임포트 및 폰트 정의 */
+        /* @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'); */ /* Font Awesome 5+ 사용 중 */
+
+        @font-face { /* Cafe24Supermagic-Bold-v1.0 */
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+            font-weight: 700; font-style: normal;
+        }
+        @font-face { /* GowunBatang-Regular */
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal; font-style: normal;
+        }
+        @font-face { /* GowunDodum-Regular */
+            font-family: 'GowunDodum-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+            font-weight: normal; font-style: normal;
+        }
+        /* ... (다른 폰트 정의) ... */
+
+        /* 컬러 파레트 및 변수 */
+        :root{
+            --main-color-dark: #00479B; --main-color-middle: #83C7FF; --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000; --assist-color-middle: #FFB90B; --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B; --cancle-color-middle: #D3D3D3; --cancle-color-light: #EAEAEA;
+            --crown-color: #ffa500;
+            --border-big: 20px; --border-middle: 10px; --border-circle: 50%;
+            --font-size-0: 28px; --font-size-1: 23px; --font-size-2: 18px; --font-size-3: 13px; --font-size-4: 8px;
+        }
+
+        /* Global 스타일 초기화 및 기본 설정 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'GowunBatang-Regular', sans-serif;
+            font-size: var(--font-size-2);
+            background: var(--main-color-light);
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* 컨테이너 스타일 (첫 번째 코드) */
+        .container {
+            /* border: 1px solid slateblue; */ /* 디버깅용 테두리 제거 */
+            max-width: 600px; /* 최대 너비 추가 */
+            margin: 0 auto; /* 중앙 정렬 추가 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 버튼 스타일 (첫 번째 코드) */
+        .btn_long{
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            font-size: var(--font-size-2);
+            transition: background-color 0.2s;/*이거 색깔 변화할 일 있나?*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 600px;
+            font-family: GowunBatang-Regular;
+        }
+
+/*        .btn_long:hover:not(:disabled) {
+            filter: brightness(110%);
+        }*/
+
+        .btn_long:disabled {
+            background-color: var(--cancle-color-middle) !important; /* 강제 적용 */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* 입력 필드 스타일 (첫 번째 코드) */
+        .input_long{
+            margin-bottom: 5px;
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 8px 15px;
+            font-size: var(--font-size-2);
+            border: 2px solid;
+            max-width: 600px;
+            font-family: 'GowunBatang-Regular', sans-serif;
+        }
+
+        .input_long::placeholder {
+            color: var(--cancle-color-dark);
+            font-size: var(--font-size-2);
+        }
+
+        .input_long:focus {
+            outline: none;
+            border-width: 3px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            font-family: 'GowunBatang-Regular', sans-serif;
+        }
+        .blue_line{
+            border-color: var(--main-color-middle);
+            color: var(--main-color-dark);
+        }
+        /*야 이자식이 니가 뭔데 이걸 막 이케 바꿔 망할~~~*/
+        .blue_line:focus{
+            border: 4px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+            outline: none;
+        }
+        .yellow_line{
+            border-color: var(--assist-color-middle);
+            color: var(--assist-color-dark);
+        }
+        .yellow_line:focus{
+            border: 4px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            outline: none;
+        }
+
+        /* 색상 클래스 (첫 번째 코드) */
+        .blue{ background: var(--main-color-middle); }
+        .yellow{ background: var(--assist-color-middle); }
+        .dark_blue1{ background: var(--main-color-dark); }
+        .dark_yellow1{ background: var(--assist-color-dark); }
+        .dark_blue2{ color: var(--main-color-dark); }
+        .dark_yellow2{ color: var(--assist-color-dark); }
+        .light_blue{ background: var(--main-color-light); }
+        .light_yellow{ background: var(--assist-color-light); }
+        .dark_gray1{ background: var(--cancle-color-dark); }
+        .dark_gray2{ color: var(--cancle-color-dark); }
+        .gray{ background: var(--cancle-color-middle); }
+        .light_gray{ background: var(--cancle-color-light); }
+        .white{ background: white; }
+
+        /* 프로필 이미지 섹션 (첫 번째 코드) */
+        .profile_img_box{
+            width: 220px;
+            height: 220px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .crown{
+            color: var(--crown-color);
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            transform: rotate(-30deg);
+            z-index: 1;
+        }
+        .crown i{
+            font-size: 35px;
+        }
+
+        .profile_img{
+            width: 200px;
+            height: 200px;
+            background: var(--assist-color-light);
+            border: 3px solid var(--assist-color-middle);
+            border-radius: var(--border-big);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+        }
+
+        .profile_img img{
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .nickname{
+            font-size: var(--font-size-0); font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            color: var(--main-color-dark);
+        }
+
+        /* 폼 관련 스타일 (첫 번째 코드 구조 기반) */
+        .form_box{
+            width: 100%;
+        }
+
+        form{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-group{
+            width: 100%; padding: 0px; margin: 0px 0 5px 0; /* 하단 마진 조정 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative; /* 검색 결과 위치 기준점 */
+        }
+        label:empty { display: none; } /* 비어있는 레이블 숨김 */
+
+        /* 에러 메시지 스타일 (첫 번째 코드 구조) */
+        .error {
+            width: 100%;
+            min-height: 1.2em; /* 최소 높이 */
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .error-message { /* span 태그에 적용될 스타일 */
+            color: red;
+            font-size: var(--font-size-2); /* 13px */
+        }
+        /* span 자체는 JS에서 내용 추가/제거 */
+
+        /* 검색 결과 스타일 (첫 번째 구조에 맞게 조정) */
+        #searchResults, #bookSearchResults {
+            color: var(--assist-color-dark);
+            position: absolute;
+            /* top: 100%; */ /* 입력 필드 바로 아래 */
+            top: 47px; /* input 높이만큼 아래로 (input_long height) */
+            left: 0;
+            width: 100%; /* 부모(.form-group) 너비에 맞춤 */
+            max-width: 600px; /* 최대 너비 */
+            border: 1px solid var(--assist-color-middle);
+            /*border-top: none;*/
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: white;
+            list-style: none;
+            padding: 0;
+            margin: 0; /* 마진 제거 */
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: none; /* 기본 숨김 */
+            border-radius: var(--border-middle);
+/*            border-bottom-left-radius: var(--border-middle);
+            border-bottom-right-radius: var(--border-middle);*/
+        }
+
+        #searchResults li, #bookSearchResults li {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--cancle-color-light);
+            font-size: var(--font-size-2);
+        }
+
+        #searchResults li:last-child, #bookSearchResults li:last-child {
+            border-bottom: none;
+        }
+
+        #searchResults li:hover, #bookSearchResults li:hover {
+            background-color: var(--assist-color-light);
+        }
+
+        #searchResults li.no-results, #bookSearchResults li.no-results {
+            cursor: default;
+            color: var(--cancle-color-dark);
+            background-color: white;
+        }
+
+        /* 선택된 항목 컨테이너 (첫 번째 코드 .box 스타일) */
+        .box{
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-big);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px; /* 간격 조정 */
+            max-width: 600px;
+/*            border: 1px solid var(--main-color-middle); !* 테두리 추가 *!*/
+        }
+        .box.white {
+            background: white;
+        } /* 배경색 클래스 */
+        .blue_line_thin{
+            border: 1px solid var(--main-color-middle);
+        }
+        .yellow_line_thin{
+            border: 1px solid var(--assist-color-middle);
+        }
+
+        .title{ /* .box 내부의 타이틀 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: var(--font-size-2);
+        }
+
+        .underline{
+            width: 130%;
+            height: 1px;
+            margin-top: 5px;
+        }
+
+        /* 선택된 항목 목록 컨테이너 (box 내부) */
+        #selectedUsersContainer, #selectedBookContainer {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            width: 100%; /* 너비 채우기 */
+            padding: 10px 0; min-height: 40px;
+            justify-content: center; /* 태그 중앙 정렬 (옵션) */
+        }
+
+/*        !* 책 선택 컨테이너는 box 밖에 위치하므로 별도 스타일 *!
+        #selectedBookContainer {
+            border: 1px solid var(--assist-color-middle);
+            border-radius: var(--border-middle);
+            background-color: var(--assist-color-light);
+            padding: 10px;
+            margin-bottom: 15px; !* 하단 간격 *!
+            max-width: 600px;
+            width: 100%;
+        }*/
+
+        /* 선택된 항목 태그 스타일 (두 번째 코드 기반 + 첫 번째 코드 스타일) */
+        .selected-user-tag, .selected-book-tag {
+            width: 20px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--cancle-color-light);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: var(--font-size-2);
+            color: var(--cancle-color-dark);
+        }
+        .selected-user-tag.is-me {
+            background-color: var(--main-color-middle);
+            color: var(--main-color-dark);
+            font-weight: bold;
+        }
+
+        .selected-book-tag {
+            background-color: var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            font-weight: bold;
+        }
+
+        .selected-user-tag .user-nickname, .selected-book-tag .book-title {
+            margin-right: 6px;
+        }
+        .selected-user-tag .remove-user, .selected-book-tag .remove-book {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            border: none;
+            background-color: var(--cancle-color-dark);
+            border-radius: 50%; padding: 0;
+            font-size: var(--font-size-3);
+            line-height: 1;
+            margin-left: 4px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .selected-user-tag .remove-user:hover {
+            background-color: var(--main-color-dark);
+        }
+        .selected-book-tag .remove-book:hover {
+            background-color: var(--assist-color-dark);
+        }
+
+        /* 제출 버튼 영역 (첫 번째 코드 구조) */
+        .action-buttons {
+            width: 100%; /* 부모(.form-group) 너비 */
+            text-align: center;
+            margin-top: 25px; /* 상단 간격 */
+        }
+
+        /* --- 첫 번째 코드의 스타일 끝 --- */
     </style>
 </head>
 <body>
@@ -36,82 +405,109 @@
 <input type="hidden" id="loggedInUserId" th:value="${session.loginuser?.id}" />
 <input type="hidden" id="loggedInUserNickname" th:value="${session.loginuser?.nickName}" />
 
-<div class="form-container">
-    <h1>새 그룹 생성</h1>
+<div class="container"> <!-- 첫 번째 코드의 메인 컨테이너 -->
 
-    <form id="createGroupForm" th:action="@{/group/create}" method="post">
+    <!-- 프로필 이미지 및 리더 닉네임 (첫 번째 코드 구조) -->
+    <div class="profile_img_box">
+        <div class="profile_img"><img th:src="@{/img/bookduck_login.png}" alt="BookDuck Logo"></div>
+        <div class="crown"><i class="fa-solid fa-crown"></i></div>
+    </div>
+    <div class="nickname dark_blue2">[[${session.loginuser?.nickName} ?: 'LEADER']]</div> <!-- 닉네임 표시 -->
 
-        <!-- 1. 그룹 이름 입력 -->
-        <div class="form-group">
-            <label for="groupNameInput">그룹 이름:</label>
-            <input type="text" id="groupNameInput" name="groupName" placeholder="그룹 이름을 입력하세요" required autocomplete="off">
-            <span id="groupNameError" class="error-message"></span>
-        </div>
+    <div class="form_box"> <!-- 폼 감싸는 div (첫 번째 코드) -->
+        <form id="createGroupForm" th:action="@{/group/create}" method="post">
 
-        <!-- 2. 사용자 검색 및 선택 -->
-        <div class="form-group">
-            <label for="userSearchInput">멤버 추가 (본인 제외 <span id="min-members-label">1</span>명 ~ <span id="max-members-label">3</span>명):</label>
-            <div id="search-results-container">
-                <input type="search" id="userSearchInput" placeholder="초대할 사용자 닉네임 검색 (예: 오리)" autocomplete="off">
-                <ul id="searchResults"></ul>
+            <!-- 1. 그룹 이름 입력 -->
+            <div class="form-group">
+                <label for="groupNameInput"></label> <!-- 비어있는 레이블 -->
+                <input class="input_long blue_line" type="text" id="groupNameInput" name="groupName"
+                       placeholder="CREW 이름 (2~7자, 한글/영문/숫자)" required autocomplete="off">
+                <div class="error">
+                    <span id="groupNameError" class="error-message"></span> <!-- 에러 메시지 위치 -->
+                </div>
             </div>
-        </div>
 
-        <!-- 3. 선택된 사용자 목록 표시 -->
-        <div class="form-group">
-            <label>선택된 멤버:</label>
-            <div id="selectedUsersContainer"></div>
-            <div id="hiddenMemberIdsContainer" style="display: none;"></div>
-            <span id="memberErrorMessage" class="error-message"></span>
-        </div>
-
-        <!-- 4. 책 검색 및 선택 -->
-        <div class="form-group">
-            <label for="bookSearchInput">책 선택 (1권):</label>
-            <div id="book-search-results-container">
-                <input type="search" id="bookSearchInput" placeholder="소유한 책 제목 검색 (예: 책 제목)" autocomplete="off">
-                <ul id="bookSearchResults"></ul>
+            <!-- 2. 사용자 검색 및 선택 -->
+            <div class="form-group">
+                <label for="userSearchInput"></label>
+                <!-- 검색 결과 컨테이너 제거 (input 아래 ul로 대체) -->
+                <input class="input_long yellow_line" type="search" id="userSearchInput"
+                       placeholder="CREW에 초대할 닉네임 검색 (본인 제외 1~3명)" autocomplete="off">
+                <ul id="searchResults"></ul> <!-- 검색 결과 목록 -->
+                <div class="error"> <!-- 에러 메시지 div 추가 -->
+                    <span id="memberErrorMessage" class="error-message"></span>
+                </div>
             </div>
-        </div>
 
-        <!-- 5. 선택된 책 표시 -->
-        <div class="form-group">
-            <label>선택된 책:</label>
-            <div id="selectedBookContainer"></div>
-            <input type="hidden" id="hiddenBookId" name="bookId">
-            <span id="bookErrorMessage" class="error-message"></span>
-        </div>
+            <!-- 3. 선택된 사용자 목록 표시 (첫 번째 코드 구조) -->
+            <div class="form-group">
+                <label></label>
+                <div class="box white yellow_line_thin"> <!-- 흰색 박스 -->
+                    <div class="title dark_yellow2">NEW CREW<div class="underline dark_yellow1"></div> </div>
+                    <div id="selectedUsersContainer">
+                        <!-- 선택된 사용자가 여기에 추가됨 -->
+                    </div>
+                </div>
+                <div id="hiddenMemberIdsContainer" style="display: none;"></div>
+                <!-- 멤버 에러 메시지는 검색 input 아래로 이동됨 -->
+            </div>
 
-        <!-- 6. 그룹 생성 버튼 -->
-        <div class="action-buttons">
-            <button type="submit" id="submitButton" disabled>그룹 생성</button>
-        </div>
+            <!-- 4. 책 검색 및 선택 -->
+            <div class="form-group">
+                <label for="bookSearchInput"></label>
+                <!-- 검색 결과 컨테이너 제거 -->
+                <input class="input_long yellow_line" type="search" id="bookSearchInput"
+                       placeholder="함께 읽을 책 검색 (1권 필수)" autocomplete="off">
+                <ul id="bookSearchResults"></ul> <!-- 검색 결과 목록 -->
+                <div class="error"> <!-- 에러 메시지 div 추가 -->
+                    <span id="bookErrorMessage" class="error-message"></span>
+                </div>
+            </div>
 
-    </form>
-</div>
+            <!-- 5. 선택된 책 표시 -->
+            <div class="form-group">
+                <label></label>
+                <div class="box white yellow_line_thin">
+                    <div class="title dark_yellow2">NEW BOOK<div class="underline dark_yellow1"></div> </div>
+                    <div id="selectedBookContainer">
+                        <!-- 선택된 책이 여기에 표시됨 -->
+                    </div>
+                </div>
+                <input type="hidden" id="hiddenBookId" name="bookId">
+                <!-- 책 에러 메시지는 검색 input 아래로 이동됨 -->
+            </div>
+
+            <!-- 6. 그룹 생성 버튼 (첫 번째 코드 구조) -->
+            <div class="form-group action-buttons"> <!-- form-group 안에 버튼 위치 -->
+                <button class="btn_long blue" type="submit" id="submitButton" disabled>CREW 생성</button>
+            </div>
+
+        </form>
+    </div> <!-- /.form_box -->
+</div> <!-- /.container -->
 
 <script th:inline="javascript">
-    // 요소 가져오기
+    // --- JavaScript (두 번째 코드 기반, 첫 번째 HTML 구조에 맞게 조정) ---
+
+    // 요소 가져오기 (ID 기반은 대부분 동일)
     const searchInput = document.getElementById('userSearchInput');
-    const searchResults = document.getElementById('searchResults');
+    const searchResults = document.getElementById('searchResults'); // ul 요소
     const selectedUsersContainer = document.getElementById('selectedUsersContainer');
     const hiddenMemberIdsContainer = document.getElementById('hiddenMemberIdsContainer');
     const groupNameInput = document.getElementById('groupNameInput');
-    const groupNameError = document.getElementById('groupNameError');
+    const groupNameErrorSpan = document.getElementById('groupNameError'); // span 요소
     const createGroupForm = document.getElementById('createGroupForm');
     const submitButton = document.getElementById('submitButton');
-    const memberErrorMessageDiv = document.getElementById('memberErrorMessage');
+    const memberErrorMessageSpan = document.getElementById('memberErrorMessage'); // span 요소
     const loggedInUserIdInput = document.getElementById('loggedInUserId');
     const loggedInUserNicknameInput = document.getElementById('loggedInUserNickname');
-    const minMembersLabel = document.getElementById('min-members-label');
-    const maxMembersLabel = document.getElementById('max-members-label');
     const bookSearchInput = document.getElementById('bookSearchInput');
-    const bookSearchResults = document.getElementById('bookSearchResults');
+    const bookSearchResults = document.getElementById('bookSearchResults'); // ul 요소
     const selectedBookContainer = document.getElementById('selectedBookContainer');
     const hiddenBookIdInput = document.getElementById('hiddenBookId');
-    const bookErrorMessageDiv = document.getElementById('bookErrorMessage');
+    const bookErrorMessageSpan = document.getElementById('bookErrorMessage'); // span 요소
 
-    // 상태 변수
+    // 상태 변수 (동일)
     let selectedUsers = new Map();
     let selectedBook = null;
     const loggedInUserId = loggedInUserIdInput ? loggedInUserIdInput.value : null;
@@ -124,30 +520,44 @@
     let userSearchTimeout;
     let bookSearchTimeout;
 
-    // 백엔드 엔드포인트
+    // 백엔드 엔드포인트 (동일)
     const USER_SEARCH_URL = /*[[@{/user/search}]]*/ '/user/search';
     const BOOK_SEARCH_URL = /*[[@{/book/search}]]*/ '/book/search';
     const GROUP_NAME_CHECK_URL = /*[[@{/group/check-name}]]*/ '/group/check-name';
 
-    // 이벤트 리스너
+    // --- 이벤트 리스너 (로직은 동일, 일부 조정) ---
     groupNameInput.addEventListener('input', () => {
         clearTimeout(groupNameCheckTimeout);
         const groupName = groupNameInput.value.trim();
-        isGroupNameAvailable = false;
-        groupNameError.textContent = '';
-        isCheckingGroupName = false;
+        const namePattern = /^[a-zA-Z0-9가-힣]{2,7}$/;
 
-        if (groupName.length > 0 && loggedInUserId) {
-            groupNameError.textContent = '확인 중...';
-            groupNameError.style.color = '#777';
-            isCheckingGroupName = true;
+        clearGroupNameError(); // 입력 시 이전 에러 초기화
+        isGroupNameAvailable = false;
+        isCheckingGroupName = false; // 상태 초기화
+
+        if (groupName.length === 0) {
             validateForm();
+            return;
+        }
+
+        if (!namePattern.test(groupName)) {
+            showGroupNameError('그룹 이름은 2~7자 한글, 영문, 숫자만 사용 가능합니다.');
+            validateForm();
+            return;
+        }
+
+        // 유효성 통과 시 서버 체크
+        if (loggedInUserId) {
+            groupNameErrorSpan.textContent = '이름 확인 중...'; // span에 직접 텍스트 설정
+            groupNameErrorSpan.style.color = '#777';
+            isCheckingGroupName = true;
+            validateForm(); // 버튼 비활성화
 
             groupNameCheckTimeout = setTimeout(() => {
                 checkGroupNameAvailability(groupName);
             }, 500);
         } else {
-            validateForm();
+            validateForm(); // 로그인 안된 경우 validation만
         }
     });
 
@@ -155,6 +565,7 @@
         clearTimeout(userSearchTimeout);
         const query = searchInput.value.trim();
         searchResults.style.display = 'none';
+        clearMemberError(); // 입력 시작 시 멤버 에러 클리어
 
         if (query.length > 0 && loggedInUserId) {
             userSearchTimeout = setTimeout(() => {
@@ -165,21 +576,22 @@
         }
     });
 
+    // 검색 결과 클릭 (사용자) - 로직 동일
     searchResults.addEventListener('click', (event) => {
         const targetLi = event.target.closest('li');
-        if (targetLi && targetLi.dataset.userId) {
+        if (targetLi && targetLi.dataset.userId && !targetLi.classList.contains('no-results')) {
             const userId = targetLi.dataset.userId;
             const userNickname = targetLi.dataset.userNickname;
 
             if (userId === loggedInUserId) return;
             if (selectedUsers.has(userId)) {
-                showMemberError('이미 선택된 사용자입니다.');
+                showMemberError('이미 선택된 CREW 입니다.'); // 메시지 수정
                 searchInput.focus();
                 return;
             }
-            const addedMemberCount = selectedUsers.size - (loggedInUserId && selectedUsers.has(loggedInUserId) ? 1 : 0);
+            const addedMemberCount = selectedUsers.size - (selectedUsers.has(loggedInUserId) ? 1 : 0);
             if (addedMemberCount >= MAX_SELECTED_MEMBERS_EXCL_OWNER) {
-                showMemberError(`멤버는 본인 제외 최대 ${MAX_SELECTED_MEMBERS_EXCL_OWNER}명까지만 추가할 수 있습니다.`);
+                showMemberError(`CREW는 리더 제외 최대 ${MAX_SELECTED_MEMBERS_EXCL_OWNER}명까지 추가할 수 있습니다.`); // 메시지 수정
                 searchInput.value = '';
                 clearSearchResults();
                 return;
@@ -193,6 +605,7 @@
         }
     });
 
+    // 선택된 사용자 제거 - 로직 동일
     selectedUsersContainer.addEventListener('click', (event) => {
         if (event.target.classList.contains('remove-user') && event.target.dataset.userId !== loggedInUserId) {
             const userId = event.target.dataset.userId;
@@ -201,10 +614,12 @@
         }
     });
 
+    // 책 검색 - 로직 동일
     bookSearchInput.addEventListener('input', () => {
         clearTimeout(bookSearchTimeout);
         const query = bookSearchInput.value.trim();
         bookSearchResults.style.display = 'none';
+        clearBookError(); // 입력 시작 시 책 에러 클리어
 
         if (query.length > 0 && loggedInUserId) {
             bookSearchTimeout = setTimeout(() => {
@@ -215,42 +630,58 @@
         }
     });
 
+    // 검색 결과 클릭 (책) - 로직 동일
     bookSearchResults.addEventListener('click', (event) => {
         const targetLi = event.target.closest('li');
-        if (targetLi && targetLi.dataset.bookId) {
+        if (targetLi && targetLi.dataset.bookId && !targetLi.classList.contains('no-results')) {
             const bookId = targetLi.dataset.bookId;
             const bookTitle = targetLi.dataset.bookTitle;
 
-            if (selectedBook && selectedBook.id === bookId) return;
-
-            addSelectedBook(bookId, bookTitle);
+            addSelectedBook(bookId, bookTitle); // 하나만 선택 가능하므로 바로 추가/교체
             bookSearchInput.value = '';
             clearBookSearchResults();
-            bookSearchInput.focus();
             validateForm();
         }
     });
 
+    // 선택된 책 제거 - 로직 동일
     selectedBookContainer.addEventListener('click', (event) => {
         if (event.target.classList.contains('remove-book')) {
             removeSelectedBook();
             validateForm();
+            bookSearchInput.focus();
         }
     });
 
+    // 폼 제출 - 로직 동일
     createGroupForm.addEventListener('submit', (event) => {
-        if (submitButton.disabled) {
+        // 최종 유효성 검사 추가
+        if (!validateForm(true)) { // isSubmitting = true
             event.preventDefault();
-            validateForm();
+            console.log("폼 제출 실패: 최종 유효성 검사 실패");
+            // 필요시 각 필드 에러 다시 표시
+            if (!isGroupNameValid(groupNameInput.value.trim())) {
+                showGroupNameError('그룹 이름 형식을 확인해주세요.');
+            } else if (!isGroupNameAvailable) {
+                showGroupNameError('사용할 수 없는 그룹 이름입니다.');
+            }
+            if (!isMemberCountValid()) {
+                showMemberError(`리더 제외 ${MIN_SELECTED_MEMBERS_EXCL_OWNER}~${MAX_SELECTED_MEMBERS_EXCL_OWNER}명의 CREW를 선택해주세요.`);
+            }
+            if (!selectedBook) {
+                showBookError('함께 읽을 책을 선택해주세요.');
+            }
             return false;
         }
+        // 통과 시
         clearMemberError();
         clearGroupNameError();
         clearBookError();
-        submitButton.textContent = '생성 중...';
+        submitButton.textContent = 'CREW 생성 중...';
         submitButton.disabled = true;
     });
 
+    // 외부 클릭 시 검색 결과 닫기 - 로직 동일
     document.addEventListener('click', (event) => {
         const isClickInsideUserSearch = searchInput.contains(event.target) || searchResults.contains(event.target);
         const isClickInsideBookSearch = bookSearchInput.contains(event.target) || bookSearchResults.contains(event.target);
@@ -258,40 +689,37 @@
         if (!isClickInsideBookSearch) clearBookSearchResults();
     });
 
-    // 함수들
+    // --- 함수들 (두 번째 코드 기반, 에러 메시지 처리 방식 수정) ---
+
+    // 로그인 사용자 초기화 - 로직 동일, 태그 생성 부분 클래스 확인
     function initializeLoggedInUser() {
         if (loggedInUserId && loggedInUserNickname) {
             selectedUsers.set(loggedInUserId, loggedInUserNickname);
             const tag = document.createElement('span');
-            tag.classList.add('selected-user-tag', 'is-me');
+            tag.classList.add('selected-user-tag', 'is-me'); // CSS 클래스 적용
             tag.dataset.userId = loggedInUserId;
             const nameSpan = document.createElement('span');
             nameSpan.classList.add('user-nickname');
-            nameSpan.textContent = `${loggedInUserNickname} (나)`;
+            nameSpan.textContent = `${loggedInUserNickname} (리더)`;
             tag.appendChild(nameSpan);
+            // 리더는 제거 버튼 없음
             selectedUsersContainer.appendChild(tag);
 
             const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'memberIds';
-            hiddenInput.value = loggedInUserId;
-            hiddenInput.id = `hidden-user-${loggedInUserId}`;
+            hiddenInput.type = 'hidden'; hiddenInput.name = 'memberIds';
+            hiddenInput.value = loggedInUserId; hiddenInput.id = `hidden-user-${loggedInUserId}`;
             hiddenMemberIdsContainer.appendChild(hiddenInput);
         } else {
             console.warn("로그인 사용자 정보를 찾을 수 없습니다.");
-            groupNameInput.disabled = true;
-            searchInput.disabled = true;
-            bookSearchInput.disabled = true;
-            submitButton.disabled = true;
-            showGroupNameError("그룹을 생성하려면 로그인이 필요합니다.");
+            groupNameInput.disabled = true; searchInput.disabled = true; bookSearchInput.disabled = true; submitButton.disabled = true;
+            showGroupNameError("CREW를 생성하려면 로그인이 필요합니다.");
         }
     }
 
+    // 그룹 이름 유효성 (서버 체크) - 로직 동일
     async function checkGroupNameAvailability(name) {
         isCheckingGroupName = true;
-        groupNameError.textContent = '확인 중...';
-        groupNameError.style.color = '#777';
-        validateForm();
+        // validateForm(); // 이미 호출됨
 
         try {
             const checkUrl = `${GROUP_NAME_CHECK_URL}?name=${encodeURIComponent(name)}`;
@@ -300,27 +728,26 @@
             const data = await response.json();
             isGroupNameAvailable = data.isAvailable;
             if (!isGroupNameAvailable) {
-                showGroupNameError('이미 사용 중인 그룹 이름입니다.');
+                showGroupNameError('이미 사용 중인 CREW 이름입니다.');
             } else {
-                clearGroupNameError();
+                clearGroupNameError(); // 사용 가능하면 에러 클리어
             }
         } catch (error) {
             console.error('Error checking group name:', error);
-            isGroupNameAvailable = false;
+            isGroupNameAvailable = false; // 오류 시 사용 불가 처리
             showGroupNameError('이름 확인 중 오류 발생. 다시 시도해주세요.');
         } finally {
-            isCheckingGroupName = false;
-            validateForm();
+            isCheckingGroupName = false; // 확인 완료
+            validateForm(); // 최종 상태로 버튼 업데이트
         }
     }
 
+    // 사용자 검색 (fetch) - 로직 동일
     async function fetchUsers(query) {
         const searchUrl = `${USER_SEARCH_URL}?name=${encodeURIComponent(query)}&limit=8`;
         try {
             const response = await fetch(searchUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const users = await response.json();
             displaySearchResults(users);
         } catch (error) {
@@ -329,58 +756,46 @@
         }
     }
 
+    // 사용자 검색 결과 표시 - 로직 동일
     function displaySearchResults(users, errorMessage = null) {
-        searchResults.innerHTML = '';
+        searchResults.innerHTML = ''; // 내용 초기화
         if (errorMessage) {
-            const li = document.createElement('li');
-            li.textContent = errorMessage;
-            li.classList.add('no-results');
-            searchResults.appendChild(li);
+            const li = document.createElement('li'); li.textContent = errorMessage; li.classList.add('no-results'); searchResults.appendChild(li);
         } else if (users && users.length > 0) {
             let hasResultsToShow = false;
             users.forEach(user => {
-                if (String(user.id) === loggedInUserId) return;
-                if (!selectedUsers.has(String(user.id))) {
+                if (String(user.id) === loggedInUserId) return; // 자신 제외
+                if (!selectedUsers.has(String(user.id))) { // 선택되지 않은 사용자만
                     const li = document.createElement('li');
                     li.textContent = user.nickName;
-                    li.dataset.userId = user.id;
-                    li.dataset.userNickname = user.nickName;
+                    li.dataset.userId = user.id; li.dataset.userNickname = user.nickName;
                     searchResults.appendChild(li);
                     hasResultsToShow = true;
                 }
             });
             if (!hasResultsToShow) {
-                const li = document.createElement('li');
-                li.textContent = '추가할 사용자가 없거나 이미 선택했습니다.';
-                li.classList.add('no-results');
-                searchResults.appendChild(li);
+                const li = document.createElement('li'); li.textContent = '추가할 사용자가 없거나 이미 선택했습니다.'; li.classList.add('no-results'); searchResults.appendChild(li);
             }
         } else {
-            const li = document.createElement('li');
-            li.textContent = '검색 결과가 없습니다.';
-            li.classList.add('no-results');
-            searchResults.appendChild(li);
+            const li = document.createElement('li'); li.textContent = '검색 결과가 없습니다.'; li.classList.add('no-results'); searchResults.appendChild(li);
         }
-        searchResults.style.display = 'block';
+        searchResults.style.display = 'block'; // 목록 보이기
     }
 
+    // 사용자 검색 결과 숨기기 - 로직 동일
     function clearSearchResults() {
-        searchResults.innerHTML = '';
-        searchResults.style.display = 'none';
+        searchResults.innerHTML = ''; searchResults.style.display = 'none';
     }
 
+    // 책 검색 (fetch) - 로직 동일
     async function fetchBooks(query) {
         const searchUrl = `${BOOK_SEARCH_URL}?title=${encodeURIComponent(query)}&limit=8`;
         try {
             const response = await fetch(searchUrl);
             if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('로그인이 필요합니다.');
-                } else if (response.status === 404) {
-                    throw new Error('사용자 정보를 찾을 수 없습니다.');
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+                if (response.status === 401) throw new Error('로그인이 필요합니다.');
+                else if (response.status === 404) throw new Error('사용자 정보를 찾을 수 없습니다.');
+                else throw new Error(`HTTP ${response.status}`);
             }
             const books = await response.json();
             displayBookSearchResults(books);
@@ -390,62 +805,57 @@
         }
     }
 
+    // 책 검색 결과 표시 - 로직 동일
     function displayBookSearchResults(books, errorMessage = null) {
         bookSearchResults.innerHTML = '';
         if (errorMessage) {
-            const li = document.createElement('li');
-            li.textContent = errorMessage;
-            li.classList.add('no-results');
-            bookSearchResults.appendChild(li);
+            const li = document.createElement('li'); li.textContent = errorMessage; li.classList.add('no-results'); bookSearchResults.appendChild(li);
         } else if (books && books.length > 0) {
             books.forEach(book => {
                 const li = document.createElement('li');
-                li.textContent = book.title;
-                li.dataset.bookId = book.id;
-                li.dataset.bookTitle = book.title;
+                li.textContent = `${book.title} (${book.author})`; // 저자 정보 추가 (서버에서 author 필드 필요)
+                li.dataset.bookId = book.id; li.dataset.bookTitle = book.title;
                 bookSearchResults.appendChild(li);
             });
         } else {
-            const li = document.createElement('li');
-            li.textContent = '소유한 책이 없거나 검색 결과가 없습니다.';
-            li.classList.add('no-results');
-            bookSearchResults.appendChild(li);
+            const li = document.createElement('li'); li.textContent = '소유한 책이 없거나 검색 결과가 없습니다.'; li.classList.add('no-results'); bookSearchResults.appendChild(li);
         }
         bookSearchResults.style.display = 'block';
     }
 
+    // 책 검색 결과 숨기기 - 로직 동일
     function clearBookSearchResults() {
-        bookSearchResults.innerHTML = '';
-        bookSearchResults.style.display = 'none';
+        bookSearchResults.innerHTML = ''; bookSearchResults.style.display = 'none';
     }
 
+    // 선택된 사용자 추가 - 로직 동일, 태그 생성 시 클래스 확인
     function addSelectedUser(userId, userNickname) {
         if (userId === loggedInUserId || selectedUsers.has(userId)) return;
         selectedUsers.set(userId, userNickname);
+
         const tag = document.createElement('span');
-        tag.classList.add('selected-user-tag');
+        tag.classList.add('selected-user-tag'); // CSS 클래스 적용
         tag.dataset.userId = userId;
+
         const nameSpan = document.createElement('span');
-        nameSpan.classList.add('user-nickname');
-        nameSpan.textContent = userNickname;
+        nameSpan.classList.add('user-nickname'); nameSpan.textContent = userNickname;
+
         const removeBtn = document.createElement('button');
-        removeBtn.classList.add('remove-user');
-        removeBtn.type = 'button';
-        removeBtn.textContent = '×';
-        removeBtn.dataset.userId = userId;
-        removeBtn.setAttribute('aria-label', `${userNickname} 제거`);
-        tag.appendChild(nameSpan);
-        tag.appendChild(removeBtn);
-        selectedUsersContainer.appendChild(tag);
+        removeBtn.classList.add('remove-user'); removeBtn.type = 'button'; removeBtn.textContent = '×';
+        removeBtn.dataset.userId = userId; removeBtn.setAttribute('aria-label', `${userNickname} 제거`);
+
+        tag.appendChild(nameSpan); tag.appendChild(removeBtn);
+        selectedUsersContainer.appendChild(tag); // 컨테이너에 추가
+
         const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'memberIds';
-        hiddenInput.value = userId;
+        hiddenInput.type = 'hidden'; hiddenInput.name = 'memberIds'; hiddenInput.value = userId;
         hiddenInput.id = `hidden-user-${userId}`;
         hiddenMemberIdsContainer.appendChild(hiddenInput);
-        clearMemberError();
+
+        clearMemberError(); // 추가 성공 시 에러 메시지 제거
     }
 
+    // 선택된 사용자 제거 - 로직 동일
     function removeSelectedUser(userId) {
         if (userId === loggedInUserId || !selectedUsers.has(userId)) return;
         selectedUsers.delete(userId);
@@ -453,112 +863,113 @@
         if (tagToRemove) selectedUsersContainer.removeChild(tagToRemove);
         const hiddenInputToRemove = hiddenMemberIdsContainer.querySelector(`#hidden-user-${userId}`);
         if (hiddenInputToRemove) hiddenMemberIdsContainer.removeChild(hiddenInputToRemove);
-        clearMemberError();
-        validateForm();
+        clearMemberError(); // 제거 시 에러 메시지 제거
+        validateForm(); // 제거 후 유효성 재검사
     }
 
+    // 선택된 책 추가 - 로직 동일, 태그 생성 시 클래스 확인
     function addSelectedBook(bookId, bookTitle) {
         selectedBook = { id: bookId, title: bookTitle };
-        selectedBookContainer.innerHTML = '';
+        selectedBookContainer.innerHTML = ''; // 기존 책 제거 (하나만 선택)
+
         const tag = document.createElement('span');
-        tag.classList.add('selected-book-tag');
+        tag.classList.add('selected-book-tag'); // CSS 클래스 적용
         tag.dataset.bookId = bookId;
+
         const titleSpan = document.createElement('span');
-        titleSpan.classList.add('book-title');
-        titleSpan.textContent = bookTitle;
+        titleSpan.classList.add('book-title'); titleSpan.textContent = bookTitle;
+
         const removeBtn = document.createElement('button');
-        removeBtn.classList.add('remove-book');
-        removeBtn.type = 'button';
-        removeBtn.textContent = '×';
+        removeBtn.classList.add('remove-book'); removeBtn.type = 'button'; removeBtn.textContent = '×';
         removeBtn.setAttribute('aria-label', `${bookTitle} 제거`);
-        tag.appendChild(titleSpan);
-        tag.appendChild(removeBtn);
-        selectedBookContainer.appendChild(tag);
-        hiddenBookIdInput.value = bookId;
-        clearBookError();
+
+        tag.appendChild(titleSpan); tag.appendChild(removeBtn);
+        selectedBookContainer.appendChild(tag); // 컨테이너에 추가
+        hiddenBookIdInput.value = bookId; // 숨겨진 필드 값 설정
+
+        clearBookError(); // 추가 성공 시 에러 메시지 제거
     }
 
+    // 선택된 책 제거 - 로직 동일
     function removeSelectedBook() {
         selectedBook = null;
-        selectedBookContainer.innerHTML = '';
-        hiddenBookIdInput.value = '';
-        clearBookError();
+        selectedBookContainer.innerHTML = ''; // 태그 제거
+        hiddenBookIdInput.value = ''; // 숨겨진 필드 값 제거
+        clearBookError(); // 제거 시 에러 메시지 제거
+        validateForm(); // 제거 후 유효성 재검사
     }
 
-    function validateForm() {
+    // --- 유효성 검사 및 에러 처리 함수 ---
+
+    // 그룹 이름 형식 검사 (클라이언트)
+    function isGroupNameValid(name) {
+        const namePattern = /^[a-zA-Z0-9가-힣]{2,7}$/;
+        return namePattern.test(name);
+    }
+
+    // 멤버 수 검사 (본인 제외)
+    function isMemberCountValid() {
+        const addedMemberCount = selectedUsers.size - (selectedUsers.has(loggedInUserId) ? 1 : 0);
+        return addedMemberCount >= MIN_SELECTED_MEMBERS_EXCL_OWNER && addedMemberCount <= MAX_SELECTED_MEMBERS_EXCL_OWNER;
+    }
+
+    // 전체 폼 유효성 검사 및 버튼 상태 업데이트
+    function validateForm(isSubmitting = false) {
         if (!loggedInUserId) {
             submitButton.disabled = true;
-            return false;
+            return false; // 로그인 안되면 항상 유효하지 않음
         }
-        const addedMemberCount = selectedUsers.size - (selectedUsers.has(loggedInUserId) ? 1 : 0);
+
         const groupNameValue = groupNameInput.value.trim();
-        const isGroupNameEntered = groupNameValue.length > 0;
-        const isMemberCountValid = addedMemberCount >= MIN_SELECTED_MEMBERS_EXCL_OWNER && addedMemberCount <= MAX_SELECTED_MEMBERS_EXCL_OWNER;
-        const isGroupNameReady = isGroupNameEntered && !isCheckingGroupName && isGroupNameAvailable;
-        const isBookSelected = !!selectedBook;
-        const isFormValid = isGroupNameReady && isMemberCountValid && isBookSelected;
+        const groupNameFormatValid = isGroupNameValid(groupNameValue);
+
+        // 유효성 조건들
+        const isNameEntered = groupNameValue.length > 0;
+        const isNameFormatOk = !isNameEntered || groupNameFormatValid; // 입력 안했거나 형식이 맞거나
+        const isNameAvailableOrChecking = !isNameEntered || isCheckingGroupName || (groupNameFormatValid && isGroupNameAvailable); // 입력안했거나, 확인중이거나, 형식맞고 사용가능하거나
+        const isMemberOk = isMemberCountValid();
+        const isBookOk = !!selectedBook;
+
+        // 최종 유효성 (버튼 활성화 기준)
+        const isFormValid = groupNameFormatValid && isGroupNameAvailable && !isCheckingGroupName && isMemberOk && isBookOk;
         submitButton.disabled = !isFormValid;
 
-        if (isGroupNameEntered && isGroupNameReady) {
-            if (addedMemberCount < MIN_SELECTED_MEMBERS_EXCL_OWNER) {
-                showMemberError(`멤버를 본인 제외 ${MIN_SELECTED_MEMBERS_EXCL_OWNER}명 이상 선택해주세요.`);
-            } else if (addedMemberCount > MAX_SELECTED_MEMBERS_EXCL_OWNER) {
-                showMemberError(`멤버는 본인 제외 최대 ${MAX_SELECTED_MEMBERS_EXCL_OWNER}명까지 선택 가능합니다.`);
-            } else {
-                clearMemberError();
-            }
-            if (!isBookSelected) {
-                showBookError('책을 1권 선택해주세요.');
-            } else {
-                clearBookError();
-            }
-        } else {
-            clearMemberError();
-            clearBookError();
+        // 에러 메시지 처리 (제출 시 또는 입력 중 문제 발생 시)
+        if (isSubmitting || (isNameEntered && !groupNameFormatValid)) {
+            if (!groupNameFormatValid && isNameEntered) showGroupNameError('그룹 이름은 2~7자 한글, 영문, 숫자만 사용 가능합니다.');
+            else if (isNameEntered && !isCheckingGroupName && !isGroupNameAvailable) showGroupNameError('이미 사용 중이거나 사용할 수 없는 이름입니다.');
+            else if (isNameEntered && isCheckingGroupName) { /* 확인 중 메시지는 input 이벤트에서 */ }
+            // else clearGroupNameError(); // 문제가 없을 때 클리어는 각 함수에서 처리
         }
+        // 멤버 수 에러는 추가/제거 시 즉시 표시/제거되도록 변경
+        // 책 에러는 추가/제거 시 즉시 표시/제거되도록 변경
 
-        if (!isGroupNameEntered && groupNameInput.hasAttribute('required')) {
-        } else if (isGroupNameEntered && !isCheckingGroupName && !isGroupNameAvailable && !groupNameError.textContent) {
-            showGroupNameError('이미 사용 중인 그룹 이름이거나 사용할 수 없습니다.');
-        } else if (!isGroupNameEntered) {
-            clearGroupNameError();
-        }
-
-        return isFormValid;
+        return isFormValid; // 최종 유효성 결과 반환
     }
 
-    function showGroupNameError(message) {
-        groupNameError.textContent = message;
-        groupNameError.style.color = 'red';
-    }
-    function clearGroupNameError() {
-        groupNameError.textContent = '';
-    }
-    function showMemberError(message) {
-        memberErrorMessageDiv.textContent = message;
-        memberErrorMessageDiv.style.color = 'red';
-    }
-    function clearMemberError() {
-        memberErrorMessageDiv.textContent = '';
-    }
-    function showBookError(message) {
-        bookErrorMessageDiv.textContent = message;
-        bookErrorMessageDiv.style.color = 'red';
-    }
-    function clearBookError() {
-        bookErrorMessageDiv.textContent = '';
-    }
+    // 에러 메시지 표시 함수 (span 대상)
+    function showGroupNameError(message) { groupNameErrorSpan.textContent = message; groupNameErrorSpan.style.color = 'red'; }
+    function clearGroupNameError() { groupNameErrorSpan.textContent = ''; }
+    function showMemberError(message) { memberErrorMessageSpan.textContent = message; memberErrorMessageSpan.style.color = 'red'; }
+    function clearMemberError() { memberErrorMessageSpan.textContent = ''; }
+    function showBookError(message) { bookErrorMessageSpan.textContent = message; bookErrorMessageSpan.style.color = 'red'; }
+    function clearBookError() { bookErrorMessageSpan.textContent = ''; }
 
+    // 페이지 초기화
     function initializePage() {
-        initializeLoggedInUser();
+        initializeLoggedInUser(); // 로그인 사용자 처리
         const initialGroupName = groupNameInput.value.trim();
-        if (initialGroupName && loggedInUserId) {
+        if (initialGroupName && loggedInUserId && isGroupNameValid(initialGroupName)) {
+            // 페이지 로드 시 그룹 이름이 이미 입력되어 있고 유효하다면 중복 체크 실행
             checkGroupNameAvailability(initialGroupName);
         } else {
-            validateForm();
+            validateForm(); // 초기 폼 상태 검사 및 버튼 상태 설정
         }
     }
-    initializePage();
+
+    // 페이지 로드 완료 시 초기화 함수 실행
+    document.addEventListener('DOMContentLoaded', initializePage);
+
 </script>
 </body>
 </html>

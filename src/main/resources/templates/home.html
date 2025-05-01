@@ -11,15 +11,15 @@
 <body>
 <div th:replace="~{fragments/mainHeader :: bodyHeader}" ></div>
 <div class="line_point">
-    <div class="line"></div>
+    <div class="line"></div>9
     <div class="point_menu"></div>
 </div>
-<section class="content">
+<!--<section class="content">
     <div class="container">
-       <!-- <img class="make_crew">-->
+       &lt;!&ndash; <img class="make_crew">&ndash;&gt;
         <div class="serch_box">
             <input class="input_serch" type="text">
-<!--            <img class="icon_serch" src="" href="/member/members">-->
+&lt;!&ndash;            <img class="icon_serch" src="" href="/member/members">&ndash;&gt;
         </div>
         <div class="fake_toggle">
             <div class="toggle_allBook">모든 책 최신순 보기</div>
@@ -33,14 +33,14 @@
                     <img th:src="${board}">
                     <p th:text="${board}">크루이름<span>crew</span></p>
                     <p th:text="${board}">도서이름</p>
-                    <img src=""><!--하트 이모티콘-->
+                    <img src="">&lt;!&ndash;하트 이모티콘&ndash;&gt;
                     <p th:text="${board}">0</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- /container -->
+&lt;!&ndash; /container &ndash;&gt;-->
 </body>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </html>
