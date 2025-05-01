@@ -210,34 +210,41 @@ public class BookController {
         return categoryService.getSubCategories(parentId);
     }
 
+    private record BookDTO(Long id, String title, String cover) {}
+
     @GetMapping("/search")
     @ResponseBody
     public ResponseEntity<List<BookDTO>> searchBooks(
             @RequestParam String title,
             @RequestParam(defaultValue = "8") int limit,
-            Principal principal) {
+            Principal principal) { // Principal을 사용하여 현재 사용자 식별
         if (principal == null) {
             log.warn("No authenticated user found for book search");
+            // 401 Unauthorized 반환 또는 로그인 페이지 리다이렉션 유도 (클라이언트 처리 필요)
             return ResponseEntity.status(401).body(List.of());
         }
 
-        String loginId = principal.getName();
+        String loginId = principal.getName(); // Spring Security에서 사용자 ID (username) 가져오기
         log.debug("Searching books for user with loginId: {}", loginId);
 
-        User user = userRepository.findByLoginId(loginId);
+        // loginId로 User 엔티티 찾기
+        User user = userRepository.findByLoginId(loginId); // findByLoginId 구현 필요
         if (user == null) {
             log.error("User not found for loginId: {}", loginId);
+            // 404 Not Found 또는 적절한 오류 응답
             return ResponseEntity.status(404).body(List.of());
         }
 
-        Long userId = user.getId();
-        List<Book> books = bookService.searchBooksByTitleAndUser(title, userId, limit);
+        Long userId = user.getId(); // User 엔티티에서 실제 ID 가져오기
+        List<Book> books = bookService.searchBooksByTitleAndUser(title, userId, limit); // 서비스 호출
+
+        // ★★★ BookDTO 생성 시 cover 정보 포함 ★★★
         List<BookDTO> bookDTOs = books.stream()
-                .map(book -> new BookDTO(book.getId(), book.getTitle()))
+                .map(book -> new BookDTO(book.getId(), book.getTitle(), book.getCover())) // cover 추가
                 .toList();
-        log.debug("Found {} books for userId: {}", bookDTOs.size(), userId);
+        log.debug("Found {} books for userId: {} with title '{}'", bookDTOs.size(), userId, title);
         return ResponseEntity.ok(bookDTOs);
     }
 
-    private record BookDTO(Long id, String title) {}
+
 }
