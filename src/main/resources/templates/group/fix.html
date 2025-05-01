@@ -1,12 +1,715 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style></style>
-    <title> BookDuck²::CREW 정보 수정 </title>
+    <title th:text="'BookDuck² :: ' + ${group.name} + ' 정보 수정'">CREW 정보 수정</title>
+    <!-- <style> 태그 -->
+    <style>
+        /* --- 기본 스타일 --- */
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px; /* 제목 아래 여백 추가 */
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555; /* 레이블 색상 약간 어둡게 */
+        }
+        input[type="text"] {
+            width: calc(100% - 22px); /* 패딩 고려한 너비 */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em; /* 입력 필드 글자 크기 */
+            transition: border-color 0.2s ease-in-out; /* 포커스 시 부드러운 효과 */
+        }
+        input[type="text"]:focus {
+            border-color: #66afe9;
+            outline: 0;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+        }
+        .read-only-info {
+            color: #777;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* --- 메시지 스타일 (오류, 성공) --- */
+        .error-message, .success-message {
+            padding: 10px 15px; /* 패딩 조정 */
+            margin-bottom: 20px; /* 여백 증가 */
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.95em; /* 글자 크기 약간 조정 */
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* --- 그룹 멤버 목록 스타일 --- */
+        .member-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .member-item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 8px 12px;
+            border-radius: 20px; /* 더 둥글게 */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease; /* 호버 효과 */
+        }
+        .member-item:hover {
+            transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+        }
+        .member-item img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 8px;
+            object-fit: cover;
+            border: 1px solid #eee; /* 이미지 테두리 */
+        }
+        .member-item span {
+            font-size: 0.9em;
+            color: #333; /* 글자색 진하게 */
+        }
+        .leader-mark {
+            color: gold;
+            margin-left: 5px;
+            font-size: 1.1em; /* 아이콘 약간 크게 */
+        }
+
+        /* --- 책 관련 섹션 구분 --- */
+        .book-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* --- 현재 그룹 도서 목록 스타일 --- */
+        .group-book-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+            display: flex;
+            gap: 15px; /* 아이템 간 간격 */
+            flex-wrap: wrap; /* 너비 부족 시 줄 바꿈 */
+        }
+        .group-book-item {
+            position: relative; /* 삭제 버튼 위치 기준 */
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column; /* 이미지 위, 텍스트 아래 */
+            align-items: center; /* 가운데 정렬 */
+            text-align: center;
+            width: calc(33.333% - 10px); /* 3개씩 배치 (gap 고려) */
+            box-sizing: border-box; /* 패딩, 보더 포함하여 너비 계산 */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s ease; /* 호버 시 그림자 효과 */
+        }
+        .group-book-item:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .group-book-item img {
+            max-width: 70px;
+            height: 100px; /* 고정 높이 */
+            object-fit: cover; /* 비율 유지하며 채우기 */
+            border-radius: 3px;
+            margin-bottom: 8px;
+            background-color: #f0f0f0; /* 이미지 로딩 전 배경색 */
+        }
+        .group-book-item span {
+            font-size: 0.85em;
+            color: #555;
+            /* 여러 줄 말줄임 처리 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 최대 2줄 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 2.6em; /* 2줄 높이 확보 (font-size * line-height * lines) */
+            line-height: 1.3em; /* 줄간격 */
+            word-break: keep-all; /* 단어 단위 줄바꿈 */
+        }
+        .no-books-message {
+            color: #888;
+            font-style: italic;
+            margin: 15px 0;
+            text-align: center; /* 가운데 정렬 */
+        }
+        /* 책 삭제 버튼 스타일 */
+        .delete-book-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.7); /* 반투명 빨강 */
+            color: white;
+            border: none;
+            border-radius: 50%; /* 원형 버튼 */
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 18px; /* 아이콘 세로 중앙 정렬 */
+            text-align: center;
+            cursor: pointer;
+            opacity: 0; /* 평소엔 숨김 */
+            transition: opacity 0.2s ease-in-out;
+            padding: 0; /* 내부 패딩 제거 */
+        }
+        .group-book-item:hover .delete-book-btn {
+            opacity: 1; /* 호버 시 나타남 */
+        }
+        .delete-book-btn:hover {
+            background-color: rgba(255, 0, 0, 1); /* 호버 시 진하게 */
+        }
+
+
+        /* --- 책 검색 영역 스타일 --- */
+        .book-search-container {
+            position: relative; /* 검색 결과 위치 기준 */
+        }
+        #bookSearchResults {
+            position: absolute;
+            top: 100%; /* 입력 필드 바로 아래 */
+            left: 0;
+            right: 0; /* 너비 100% */
+            background-color: white;
+            border: 1px solid #ccc;
+            border-top: none; /* 위쪽 테두리 제거 */
+            max-height: 200px;
+            overflow-y: auto; /* 내용 많으면 스크롤 */
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            z-index: 100; /* 다른 요소 위에 표시 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 4px 4px;
+            display: none; /* 초기 숨김 */
+            box-sizing: border-box;
+        }
+        #bookSearchResults li {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* 이미지와 텍스트 간격 */
+            border-bottom: 1px solid #f0f0f0; /* 구분선 */
+        }
+        #bookSearchResults li:last-child {
+            border-bottom: none; /* 마지막 항목 구분선 제거 */
+        }
+        #bookSearchResults li:hover {
+            background-color: #f0f0f0;
+        }
+        #bookSearchResults img {
+            max-width: 30px;
+            height: auto; /* 비율 유지 */
+            flex-shrink: 0; /* 이미지 크기 유지 */
+        }
+        #bookSearchResults span { /* 검색 결과 제목 */
+            font-size: 0.9em;
+            white-space: nowrap; /* 줄바꿈 방지 */
+            overflow: hidden;
+            text-overflow: ellipsis; /* 넘치면 말줄임 */
+        }
+
+        /* --- 책 추가 중복 확인 메시지 스타일 --- */
+        .book-check-result {
+            font-size: 0.85em;
+            color: red;
+            display: block; /* 필요시 줄바꿈 */
+            margin-top: 5px; /* 입력창과의 간격 */
+            font-weight: normal;
+        }
+
+        /* --- 선택된 추가할 책 표시 영역 --- */
+        #selectedBookDisplay {
+            /* display: none; */ /* JS로 제어 */
+            align-items: center;
+            gap: 10px;
+            background-color: #e6ffed; /* 연한 녹색 배경 */
+            border: 1px solid #c3e6cb;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 10px; /* 검색창과의 간격 */
+        }
+        #selectedBookDisplay img {
+            max-width: 30px;
+            height: auto;
+            border-radius: 2px; /* 약간 둥글게 */
+        }
+        #selectedBookDisplay span {
+            font-size: 0.9em;
+            color: #155724; /* 어두운 녹색 글자 */
+            flex-grow: 1; /* 가능한 공간 차지 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #cancelAddBook {
+            margin-left: auto; /* 오른쪽 끝으로 밀기 */
+            background: none;
+            border: none;
+            color: #155724; /* 아이콘 색상 */
+            cursor: pointer;
+            font-size: 1.3em; /* 아이콘 크기 */
+            padding: 0 5px;
+            line-height: 1; /* 세로 정렬 도움 */
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #cancelAddBook:hover {
+            opacity: 1;
+        }
+
+        /* --- 그룹 이름 중복 확인 스타일 --- */
+        .name-check-result {
+            font-size: 0.85em;
+            margin-left: 10px;
+            font-weight: normal;
+            vertical-align: middle; /* 입력 필드와 세로 정렬 */
+        }
+        .name-available {
+            color: green;
+        }
+        .name-unavailable {
+            color: red;
+        }
+        #groupName:disabled { /* 확인 중 비활성화 스타일 */
+            background-color: #eee;
+            cursor: not-allowed;
+        }
+
+        /* --- 제출 버튼 스타일 --- */
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #5cb85c; /* 녹색 계열 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1em;
+            font-weight: bold; /* 글자 약간 굵게 */
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 30px; /* 위쪽 여백 */
+        }
+        .submit-button:hover {
+            background-color: #4cae4c; /* 호버 시 약간 어둡게 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .submit-button:disabled { /* 비활성화 시 스타일 */
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+    </style>
 </head>
 <body>
+
+<h1 th:text="${group.name} + ' 정보 수정'">그룹 정보 수정</h1>
+<!-- 그룹 ID와 원래 이름을 data 속성으로 전달 -->
+<div id="groupInfo" th:data-group-id="${group.id}" th:data-original-name="${group.name}"></div>
+
+<!-- 서버 메시지 표시 (오류 또는 성공) -->
+<div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
+<div th:if="${successMsg}" class="success-message" th:text="${successMsg}"></div>
+
+<!-- 폼 시작 -->
+<form th:action="@{/group/fix/{groupId}(groupId=${group.id})}" method="post" id="groupFixForm">
+
+    <!-- 그룹 이름 수정 -->
+    <div class="form-group">
+        <label for="groupName">그룹 이름</label>
+        <input type="text" id="groupName" name="groupName" th:value="${group.name}" required>
+        <span id="groupNameCheckResult" class="name-check-result"></span>
+    </div>
+
+    <!-- 그룹 멤버 표시 (수정 불가) -->
+    <div class="form-group">
+        <label>그룹 멤버</label>
+        <p class="read-only-info">그룹 멤버는 수정할 수 없습니다.</p>
+        <ul class="member-list" th:if="${group.users != null and not #lists.isEmpty(group.users)}">
+            <li th:each="gu : ${group.users}" class="member-item" th:if="${gu.user != null}">
+                <img th:src="${gu.user.img}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}">
+                <span th:text="${gu.user.nickName}">멤버 닉네임</span>
+                <span class="leader-mark" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}">★</span>
+            </li>
+        </ul>
+        <p th:if="${group.users == null or #lists.isEmpty(group.users)}" class="read-only-info">
+            그룹 멤버 정보가 없습니다. <!-- 예외 케이스 처리 -->
+        </p>
+    </div>
+
+    <!-- 그룹 도서 목록 및 추가 섹션 -->
+    <div class="book-section">
+        <label>그룹 도서 목록</label>
+
+        <!-- 현재 그룹 도서 목록 표시 (전체) -->
+        <ul class="group-book-list" id="currentGroupBooks" th:if="${group.books != null and not #lists.isEmpty(group.books)}">
+            <!-- 서비스에서 createdAt으로 정렬되어 있음 -->
+            <li th:each="gb : ${group.books}" class="group-book-item"
+                th:data-book-id="${gb.book?.id}" th:data-book-title="${gb.book?.title}"> <!-- data 속성 추가 -->
+                <img th:src="${gb.book?.cover ?: '/images/default-book-cover.png'}" th:alt="${gb.book?.title}">
+                <span th:title="${gb.book?.title}" th:text="${gb.book?.title}">책 제목</span>
+                <!-- 삭제 버튼 -->
+                <button type="button" class="delete-book-btn" title="그룹에서 삭제">×</button>
+            </li>
+        </ul>
+        <!-- 그룹 도서가 없을 때 메시지 -->
+        <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message">
+            등록된 그룹 도서가 없습니다.
+        </p>
+
+        <!-- 새 책 추가 검색 (항상 표시됨) -->
+        <div class="form-group book-search-container">
+            <label for="bookSearchInput">추가할 책 검색 (보유 도서 내)</label>
+            <input type="text" id="bookSearchInput" placeholder="추가할 책 제목을 검색하세요...">
+            <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
+            <ul id="bookSearchResults"></ul>
+        </div>
+
+        <!-- 선택된 추가할 책 정보 표시 -->
+        <div id="selectedBookDisplay" style="display: none;">
+            <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
+            <span id="selectedBookTitle"></span>
+            <button type="button" id="cancelAddBook" title="추가 취소">×</button>
+        </div>
+        <!-- 추가할 책 ID 전송용 -->
+        <input type="hidden" id="newBookId" name="newBookId">
+    </div>
+
+    <!-- 기존 책 ID 전송용 (서버 로직에 따라 필요 여부 결정) -->
+    <input type="hidden" name="bookId" th:value="${group.books != null and not #lists.isEmpty(group.books) ? group.books[0].book?.id : ''}">
+
+    <!-- 제출 버튼 -->
+    <button type="submit" class="submit-button">수정 완료</button>
+
+</form> <!-- 폼 끝 -->
+
+<!-- 스크립트 시작 -->
+<script>
+    // --- 요소 가져오기 및 변수 선언 ---
+    const groupInfoDiv = document.getElementById('groupInfo');
+    const currentGroupId = groupInfoDiv.dataset.groupId;
+    const originalGroupName = groupInfoDiv.dataset.originalName;
+    const groupNameInput = document.getElementById('groupName');
+    const nameCheckResultSpan = document.getElementById('groupNameCheckResult');
+    const groupFixForm = document.getElementById('groupFixForm');
+    const submitButton = groupFixForm.querySelector('button[type="submit"]');
+    const searchInput = document.getElementById('bookSearchInput');
+    const resultsContainer = document.getElementById('bookSearchResults');
+    const newBookIdInput = document.getElementById('newBookId');
+    const bookAddCheckResultSpan = document.getElementById('bookAddCheckResult');
+    const selectedBookDisplay = document.getElementById('selectedBookDisplay');
+    const selectedBookCover = document.getElementById('selectedBookCover');
+    const selectedBookTitle = document.getElementById('selectedBookTitle');
+    const cancelAddBookBtn = document.getElementById('cancelAddBook');
+    const currentGroupBooksList = document.getElementById('currentGroupBooks'); // 그룹 책 목록 ul
+
+    let nameCheckDebounceTimer;
+    let isNameAvailable = true; // 이름 사용 가능 상태
+    let bookSearchDebounceTimer;
+
+    // --- 그룹 이름 중복 확인 (AJAX) ---
+    groupNameInput.addEventListener('input', () => {
+        clearTimeout(nameCheckDebounceTimer);
+        const newName = groupNameInput.value.trim();
+
+        nameCheckResultSpan.textContent = '';
+        nameCheckResultSpan.className = 'name-check-result';
+        isNameAvailable = true; // 기본값
+        submitButton.disabled = false; // 기본적으로 버튼 활성화
+
+        if (newName === '') { // 이름이 비었을 때
+            nameCheckResultSpan.textContent = '그룹 이름을 입력해주세요.';
+            nameCheckResultSpan.classList.add('name-unavailable');
+            isNameAvailable = false;
+            submitButton.disabled = true;
+            return;
+        }
+
+        // 원래 이름과 대소문자 구분 없이 같으면 확인 불필요
+        if (newName.toLowerCase() === originalGroupName.toLowerCase()) {
+            isNameAvailable = true;
+            submitButton.disabled = false;
+            return; // AJAX 요청 안 함
+        }
+
+        // 디바운싱 타이머 설정
+        nameCheckDebounceTimer = setTimeout(() => {
+            nameCheckResultSpan.textContent = '확인 중...'; // 확인 중 메시지
+            groupNameInput.disabled = true; // 입력창 비활성화
+            submitButton.disabled = true; // 제출 버튼 비활성화
+
+            // 서버에 이름 중복 확인 요청
+            fetch(`/group/check-name?name=${encodeURIComponent(newName)}`)
+                .then(response => {
+                    if (!response.ok) { throw new Error('Network response error'); }
+                    return response.json();
+                })
+                .then(data => { // 성공 시
+                    if (data.isAvailable) {
+                        nameCheckResultSpan.textContent = '사용 가능한 이름입니다.';
+                        nameCheckResultSpan.classList.add('name-available');
+                        isNameAvailable = true;
+                    } else {
+                        nameCheckResultSpan.textContent = '이미 사용 중인 이름입니다.';
+                        nameCheckResultSpan.classList.add('name-unavailable');
+                        isNameAvailable = false;
+                    }
+                })
+                .catch(error => { // 오류 발생 시
+                    console.error('Group name check error:', error);
+                    nameCheckResultSpan.textContent = '확인 중 오류 발생';
+                    nameCheckResultSpan.classList.add('name-unavailable'); // 오류 시 사용 불가 처리
+                    isNameAvailable = false;
+                })
+                .finally(() => { // 항상 실행
+                    groupNameInput.disabled = false; // 입력창 다시 활성화
+                    submitButton.disabled = !isNameAvailable; // 사용 가능 여부에 따라 버튼 상태 결정
+                });
+        }, 500); // 500ms 지연
+    });
+
+    // --- 책 검색 및 추가 중복 확인 (클라이언트 측) ---
+    if (searchInput) { // 책 검색 입력창이 존재할 경우에만 실행
+        searchInput.addEventListener('input', () => {
+            clearTimeout(bookSearchDebounceTimer);
+            const query = searchInput.value.trim();
+
+            // 입력 시 기존 중복 메시지 숨김
+            bookAddCheckResultSpan.style.display = 'none';
+            bookAddCheckResultSpan.textContent = '';
+
+            if (query.length < 1) { // 검색어가 1글자 미만이면 결과 숨김
+                resultsContainer.innerHTML = '';
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            bookSearchDebounceTimer = setTimeout(() => {
+                // 서버에 책 검색 요청 (groupId 파라미터 없이)
+                fetch(`/book/search?title=${encodeURIComponent(query)}&limit=5`)
+                    .then(response => {
+                        if (response.status === 401) throw new Error('로그인이 필요합니다.'); // 로그인 오류 처리
+                        if (!response.ok) throw new Error('검색 실패');
+                        return response.json();
+                    })
+                    .then(books => {
+                        resultsContainer.innerHTML = ''; // 이전 결과 지우기
+                        if (books && books.length > 0) {
+                            books.forEach(book => { // 검색 결과 각 책에 대해
+                                const li = document.createElement('li');
+                                const img = document.createElement('img');
+                                img.src = book.cover ? book.cover : '/images/default-book-cover.png';
+                                img.alt = book.title + ' 표지';
+                                li.appendChild(img);
+                                const span = document.createElement('span');
+                                span.textContent = book.title;
+                                li.appendChild(span);
+
+                                // li 요소에 데이터 저장
+                                li.dataset.bookId = book.id;
+                                li.dataset.bookTitle = book.title;
+                                li.dataset.bookCover = book.cover;
+
+                                // 검색 결과 클릭 이벤트
+                                li.addEventListener('click', () => {
+                                    const clickedBookId = li.dataset.bookId;
+                                    const clickedBookTitle = li.dataset.bookTitle;
+                                    const clickedBookCover = li.dataset.bookCover;
+                                    let isAlreadyInGroup = false;
+
+                                    // 현재 그룹 책 목록(DOM)에서 중복 확인
+                                    if (currentGroupBooksList) {
+                                        const currentBookItems = currentGroupBooksList.querySelectorAll('li.group-book-item');
+                                        currentBookItems.forEach(item => {
+                                            if (item.dataset.bookId === clickedBookId) {
+                                                isAlreadyInGroup = true;
+                                            }
+                                        });
+                                    }
+
+                                    if (isAlreadyInGroup) { // 중복이면
+                                        bookAddCheckResultSpan.textContent = `'${clickedBookTitle}' 책은 이미 그룹에 등록되어 있습니다.`;
+                                        bookAddCheckResultSpan.style.display = 'block';
+                                        newBookIdInput.value = ''; // 추가 ID 비우기
+                                        selectedBookDisplay.style.display = 'none'; // 선택 표시 숨기기
+                                    } else { // 중복 아니면
+                                        bookAddCheckResultSpan.style.display = 'none';
+                                        bookAddCheckResultSpan.textContent = '';
+                                        newBookIdInput.value = clickedBookId; // 추가 ID 설정
+                                        // 선택 표시 업데이트
+                                        selectedBookTitle.textContent = clickedBookTitle;
+                                        selectedBookCover.src = clickedBookCover ? clickedBookCover : '/images/default-book-cover.png';
+                                        selectedBookDisplay.style.display = 'flex';
+                                    }
+
+                                    // 공통 처리: 검색창 비우고 결과 숨기기
+                                    searchInput.value = '';
+                                    resultsContainer.innerHTML = '';
+                                    resultsContainer.style.display = 'none';
+                                });
+                                resultsContainer.appendChild(li); // 결과 목록에 추가
+                            });
+                            resultsContainer.style.display = 'block'; // 결과 목록 보이기
+                        } else { // 검색 결과 없을 때
+                            const li = document.createElement('li');
+                            li.textContent = '검색 결과가 없습니다.';
+                            li.style.cursor = 'default'; // 클릭 불가 스타일
+                            resultsContainer.appendChild(li);
+                            resultsContainer.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Book search error:', error);
+                        // 사용자에게 오류 알림 (예: resultsContainer에 메시지 표시)
+                        resultsContainer.innerHTML = '';
+                        const li = document.createElement('li');
+                        li.textContent = '검색 중 오류: ' + error.message;
+                        li.style.color = 'red';
+                        li.style.cursor = 'default';
+                        resultsContainer.appendChild(li);
+                        resultsContainer.style.display = 'block';
+                    });
+            }, 300); // 300ms 지연
+        });
+    }
+
+    // --- 추가 취소 버튼 ---
+    if (cancelAddBookBtn) { // 버튼이 존재할 때만
+        cancelAddBookBtn.addEventListener('click', () => {
+            newBookIdInput.value = ''; // 숨겨진 필드 값 비우기
+            selectedBookDisplay.style.display = 'none'; // 선택 표시 숨기기
+            bookAddCheckResultSpan.style.display = 'none'; // 중복 메시지 숨기기
+            bookAddCheckResultSpan.textContent = '';
+        });
+    }
+
+    // --- 검색 결과 영역 외부 클릭 시 숨김 ---
+    document.addEventListener('click', (event) => {
+        if (resultsContainer && !resultsContainer.contains(event.target) && event.target !== searchInput) {
+            resultsContainer.style.display = 'none';
+        }
+    });
+
+    // --- 폼 제출 전 유효성 검사 ---
+    groupFixForm.addEventListener('submit', function(event) {
+        // 그룹 이름 비어있는지 확인
+        if (groupNameInput.value.trim() === '') {
+            alert('그룹 이름을 입력해주세요.');
+            event.preventDefault(); // 폼 제출 막기
+            groupNameInput.focus();
+            return;
+        }
+        // 그룹 이름 사용 가능한지 확인
+        if (!isNameAvailable) {
+            alert('사용할 수 없는 그룹 이름입니다. 다른 이름을 입력해주세요.');
+            event.preventDefault();
+            groupNameInput.focus();
+            return;
+        }
+        // 추가하려는 책이 중복 메시지가 떠 있는 상태인지 확인
+        if (newBookIdInput.value !== '' && bookAddCheckResultSpan.style.display !== 'none' && bookAddCheckResultSpan.textContent !== '') {
+            alert('이미 그룹에 있는 책은 추가할 수 없습니다.');
+            event.preventDefault();
+            return;
+        }
+    });
+
+    // --- 책 삭제 이벤트 처리 (이벤트 위임 사용) ---
+    if (currentGroupBooksList) { // 그룹 책 목록이 존재할 때만
+        currentGroupBooksList.addEventListener('click', function(event) {
+            // 클릭된 요소가 삭제 버튼('.delete-book-btn')인지 확인
+            if (event.target.classList.contains('delete-book-btn')) {
+                const listItem = event.target.closest('li.group-book-item'); // 버튼이 속한 li 요소 찾기
+                const bookIdToDelete = listItem.dataset.bookId;
+                const bookTitleToDelete = listItem.dataset.bookTitle || '해당 책'; // 확인 메시지용
+
+                // dataset에 bookId가 없으면 중단 (방어 코드)
+                if (!bookIdToDelete) {
+                    console.error('Could not find book ID to delete.');
+                    alert('책 정보를 찾을 수 없어 삭제할 수 없습니다.');
+                    return;
+                }
+
+                console.log(`Delete button clicked for book ID: ${bookIdToDelete}`);
+
+                // 사용자에게 삭제 확인
+                if (confirm(`'${bookTitleToDelete}' 책을 그룹에서 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+                    // 서버에 DELETE 요청 보내기
+                    fetch(`/group/fix/${currentGroupId}/book/${bookIdToDelete}`, {
+                        method: 'DELETE',
+                        headers: {
+                            // 필요시 CSRF 토큰 등 헤더 추가
+                            // 'X-CSRF-TOKEN': csrfToken // 예시
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) { // 성공 (2xx 상태 코드)
+                                // 화면에서 해당 책 목록 아이템 즉시 제거
+                                listItem.remove();
+                                alert('책이 그룹에서 삭제되었습니다.');
+                                console.log(`Successfully deleted book ID: ${bookIdToDelete} from UI.`);
+                                // 여기에 추가 로직 가능 (예: 책 목록 개수 업데이트, 검색창 활성화 등)
+                            } else { // 실패 (4xx, 5xx 상태 코드)
+                                // 서버에서 보낸 오류 메시지를 파싱 시도
+                                return response.text().then(text => {
+                                    // JSON 형태의 오류 메시지일 수도 있음 (try-catch로 파싱 시도)
+                                    let errorMsg = text;
+                                    try {
+                                        const errorJson = JSON.parse(text);
+                                        errorMsg = errorJson.message || text; // JSON에 message 필드가 있으면 사용
+                                    } catch (e) { /* JSON 파싱 실패 시 text 그대로 사용 */ }
+                                    throw new Error(errorMsg || '삭제 실패 (상태 코드: ' + response.status + ')');
+                                });
+                            }
+                        })
+                        .catch(error => { // 네트워크 오류 또는 위에서 throw한 오류 처리
+                            console.error('Error deleting book:', error);
+                            alert(`책 삭제 중 오류가 발생했습니다: ${error.message}`);
+                        });
+                }
+            }
+        });
+    }
+
+</script> <!-- 스크립트 끝 -->
 
 </body>
 </html>
