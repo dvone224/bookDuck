@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -58,4 +59,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // 책 1권 정보 가져오기
     Book findBookById(Long id);
+
+    Optional<Book> findByIsbn13(String isbn13);
 }

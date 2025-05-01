@@ -36,6 +36,7 @@ public class ExcelService {
     private static final int MAX_DEPTH_COL = COL_5DEPTH; // 처리할 마지막 Depth 컬럼 인덱스
     private static final String ROOT_PARENT_NAME_KEY = "ROOT"; // 이름 기반 복합키용 루트
 
+
     @Transactional
     public void importCategory(InputStream inputStream) throws IOException {
         Map<String, Category> categoryCacheByCompositeNameKey = new HashMap<>();
@@ -43,215 +44,154 @@ public class ExcelService {
         Sheet sheet = workbook.getSheetAt(0);
         if (sheet == null) throw new IOException("Excel file does not contain any sheets.");
         log.info("sheet.getLastRowNum() = " + sheet.getLastRowNum());
-
-        for (int i = 1; i < sheet.getLastRowNum(); i++) {
+        DataFormatter dataFormatter = new DataFormatter();
+        for (int i = 3; i < sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             if (row == null) continue;
+            log.info("Row = " + row);
             int lastCellNum = row.getLastCellNum() - 1;
-            String mallCell = getStringCellValue(row.getCell(COL_MALL, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
-            log.info("mallCell: " + mallCell);
-            if (mallCell==null || mallCell.equals("몰")) continue;
-            Long cidCell = (long) row.getCell(COL_CID, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getNumericCellValue();
-            String compositeKey = ROOT_PARENT_NAME_KEY + "||" + mallCell;
-            Category parentCategory = categoryCacheByCompositeNameKey.get(compositeKey);
-            if (parentCategory == null) {
-                Category currentCategory = new Category(cidCell, mallCell, null);
+            log.info("lastCellNum = " + lastCellNum);
+
+            for(int k = COL_MALL; k <= lastCellNum; k++) {
+                if(row.getCell(k) == null) continue;
+                String compositeKey = generateCompositeKeyByCellNum(row, k, dataFormatter);
+                Category parentCategory = categoryCacheByCompositeNameKey.get(compositeKey);
+                if(parentCategory != null) continue;
+                Cell currentCellObj = row.getCell(k, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+
+                // 2. DataFormatter를 사용하여 셀 값을 문자열로 변환합니다.
+                //    (dataFormatter 변수는 이 코드 라인보다 앞에서 정의되어 있어야 합니다.)
+                String Cell = dataFormatter.formatCellValue(currentCellObj).trim(); // trim()으로 양끝 공백 제거
+                log.info("compositeKey: " + compositeKey);
+                long cidCell = (long) row.getCell(COL_CID, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getNumericCellValue();
+                if(k > COL_MALL) {
+                    String generateParentCompositeKey = generateParentCompositeKeyByCellNum(row, k, dataFormatter);
+                    parentCategory = categoryCacheByCompositeNameKey.get(generateParentCompositeKey);
+                }
+                Category currentCategory = new Category(cidCell, Cell, parentCategory);
                 categoryCacheByCompositeNameKey.put(compositeKey, currentCategory);
                 categoryRepository.save(currentCategory);
             }
-
-            for(int k = COL_1DEPTH; k <= lastCellNum; k++) {
-                compositeKey = generateParentCompositeKeyByCellNum(row, k);
-                parentCategory = categoryCacheByCompositeNameKey.get(compositeKey);
-                if(parentCategory != null) continue;
-                String Cell = row.getCell(k, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
-                log.info("compositeKey: " + compositeKey);
-
-            }
-
-//            Category currentCategory = new Category(cidCell, lastCell, parentCategory);
-//            categoryCacheByCompositeNameKey.put(generateCompositeKeyByCategory(currentCategory), currentCategory);
-//            categoryRepository.save(currentCategory);
         }
     }
 
-    private String generateParentCompositeKeyByCellNum(Row row, int CellNum) {
-        String grandParentName = CellNum - 1 == COL_MALL ? ROOT_PARENT_NAME_KEY : row.getCell(CellNum - 2, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
-        String parentName = row.getCell(CellNum - 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
+    /**
+     * 부모 카테고리의 복합 키를 안전하게 생성합니다. (DataFormatter 사용)
+     *
+     * @param row           현재 처리 중인 Row 객체
+     * @param cellNum       현재 처리 중인 셀의 컬럼 인덱스 (0-based)
+     * @param dataFormatter 셀 값 포맷터 (외부에서 주입받거나 생성)
+     * @return 부모 카테고리의 복합 키 문자열
+     */
+    private String generateParentCompositeKeyByCellNum(Row row, int cellNum, DataFormatter dataFormatter) {
+        String grandParentName = ROOT_PARENT_NAME_KEY; // 기본값: 최상위
+
+        // 할아버지 셀 (cellNum - 2) 처리
+        // 할아버지 셀 인덱스가 유효한 범위(COL_MALL 이상)인지 확인
+        if (cellNum - 2 >= COL_MALL) {
+            Cell grandParentCell = row.getCell(cellNum - 2, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            // 셀이 null이 아니면 DataFormatter로 값 추출
+            if (grandParentCell != null) {
+                grandParentName = dataFormatter.formatCellValue(grandParentCell).trim();
+                // 추출된 값이 비어있으면 ROOT로 간주 (데이터 정합성 위한 처리)
+                if (grandParentName.isEmpty()) {
+                    grandParentName = ROOT_PARENT_NAME_KEY;
+                    log.trace("Row {}: Grandparent cell (Col {}) is blank, using ROOT.", row.getRowNum(), cellNum - 2);
+                }
+            }
+            // else: 할아버지 셀이 null이면 기본값 ROOT_PARENT_NAME_KEY 유지
+        }
+        // else: 할아버지 셀 인덱스가 유효 범위 밖이면 기본값 ROOT_PARENT_NAME_KEY 유지
+
+        String parentName = ""; // 기본값: 빈 문자열
+
+        // 부모 셀 (cellNum - 1) 처리
+        // 부모 셀 인덱스가 유효한 범위(COL_MALL 이상)인지 확인
+        if (cellNum - 1 >= COL_MALL) {
+            Cell parentCell = row.getCell(cellNum - 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            // 셀이 null이 아니면 DataFormatter로 값 추출
+            if (parentCell != null) {
+                parentName = dataFormatter.formatCellValue(parentCell).trim();
+            }
+            // else: 부모 셀이 null이면 기본값 "" 유지
+
+            // 부모 이름이 비어있는 경우에 대한 경고 로그 (키 생성에는 영향 없음)
+            if (parentName.isEmpty()) {
+                log.warn("Row {}: Parent cell (Col {}) is empty or null when generating parent key for Col {}.", row.getRowNum(), cellNum - 1, cellNum);
+            }
+        } else {
+            // 부모 셀 인덱스가 유효 범위 밖이면 에러 상황
+            log.error("Row {}: Invalid parent cell index ({}) when generating parent key for Col {}.", row.getRowNum(), cellNum - 1, cellNum);
+            // 에러를 나타내는 특별한 키 반환 또는 예외 처리 고려
+            return "ERROR_INVALID_PARENT_INDEX";
+        }
+
+        // 최종 키 조합하여 반환
         return grandParentName + "||" + parentName; // 구분자 '||' 사용
     }
-    private String generateCompositeKeyByCellNum(Row row, int CellNum) {
-        String parentName = row.getCell(CellNum - 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
-        String currentName = row.getCell(CellNum, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
+
+    /**
+     * 현재 카테고리의 복합 키를 안전하게 생성합니다. (DataFormatter 사용)
+     *
+     * @param row           현재 처리 중인 Row 객체
+     * @param cellNum       현재 처리 중인 셀의 컬럼 인덱스 (0-based)
+     * @param dataFormatter 셀 값 포맷터 (외부에서 주입받거나 생성)
+     * @return 현재 카테고리의 복합 키 문자열
+     */
+    private String generateCompositeKeyByCellNum(Row row, int cellNum, DataFormatter dataFormatter) {
+        String parentName = ROOT_PARENT_NAME_KEY; // 기본값: 최상위
+
+        // 부모 셀 (cellNum - 1) 처리
+        // 부모 셀 인덱스가 유효한 범위(COL_MALL 이상)인지 확인
+        if (cellNum - 1 >= COL_MALL) {
+            Cell parentCell = row.getCell(cellNum - 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            // 셀이 null이 아니면 DataFormatter로 값 추출
+            if (parentCell != null) {
+                parentName = dataFormatter.formatCellValue(parentCell).trim();
+                // 추출된 값이 비어있으면 ROOT로 간주
+                if (parentName.isEmpty()) {
+                    parentName = ROOT_PARENT_NAME_KEY;
+                    log.trace("Row {}: Parent cell (Col {}) is blank, using ROOT for composite key generation.", row.getRowNum(), cellNum - 1);
+                }
+            }
+            // else: 부모 셀이 null이면 기본값 ROOT_PARENT_NAME_KEY 유지
+        }
+        // else: 부모 셀 인덱스가 유효 범위 밖이면 (cellNum이 COL_MALL일 때) 기본값 ROOT_PARENT_NAME_KEY 유지
+
+        String currentName = ""; // 기본값: 빈 문자열
+
+        // 현재 셀 (cellNum) 처리
+        Cell currentCell = row.getCell(cellNum, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        // 셀이 null이 아니면 DataFormatter로 값 추출
+        if (currentCell != null) {
+            currentName = dataFormatter.formatCellValue(currentCell).trim();
+        }
+        // else: 현재 셀이 null이면 기본값 "" 유지
+
+        // 현재 이름이 비어있는 경우에 대한 경고 로그 (키 생성에는 영향 없음)
+        if (currentName.isEmpty()) {
+            log.warn("Row {}: Current cell (Col {}) is empty or null when generating composite key.", row.getRowNum(), cellNum);
+        }
+
+        // 최종 키 조합하여 반환
         return parentName + "||" + currentName; // 구분자 '||' 사용
     }
+
+
+//    private String generateParentCompositeKeyByCellNum(Row row, int CellNum) {
+//        String grandParentName = CellNum - 1 == COL_MALL ? ROOT_PARENT_NAME_KEY : row.getCell(CellNum - 2, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
+//        String parentName = row.getCell(CellNum - 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
+//        return grandParentName + "||" + parentName; // 구분자 '||' 사용
+//    }
+//    private String generateCompositeKeyByCellNum(Row row, int CellNum) {
+//        String parentName = CellNum == COL_MALL ? ROOT_PARENT_NAME_KEY : row.getCell(CellNum - 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
+//        String currentName = row.getCell(CellNum, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getStringCellValue();
+//        return parentName + "||" + currentName; // 구분자 '||' 사용
+//    }
 
     private String generateCompositeKeyByCategory(Category category) {
         return category.getParent().getName() + "||" + category.getName(); // 구분자 '||' 사용
     }
-
-//    public Set<String> getBookTypeCategory(Sheet sheet) throws IOException {
-//        Set<String> bookTypes = new HashSet<>();
-//        for (int i = 1; i < sheet.getLastRowNum(); i++) {
-//            Row row = sheet.getRow(i);
-//            if (row == null) continue;
-//            Cell cell = row.getCell(COL_MALL, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-//            if (cell == null) continue;
-//            String bookType = cell.getStringCellValue().trim();
-//            if (!bookType.isBlank()) bookTypes.add(bookType);
-//        }
-//        return bookTypes;
-//    }
-//
-//    private String getLastDepth(Row row) {
-//        for (int i = COL_MALL; i < row.getLastCellNum(); i++) {
-//
-//        }
-//        return null;
-//    }
-//
-//    @Transactional
-//    public void importCategoriesFromExcel(InputStream inputStream) throws IOException, IllegalStateException {
-//        Map<String, Category> categoryCacheByCompositeNameKey = new HashMap<>();
-//
-//        Workbook workbook = null;
-//        try {
-//            workbook = WorkbookFactory.create(inputStream);
-//            Sheet sheet = workbook.getSheetAt(0);
-//            if (sheet == null) throw new IOException("Excel file does not contain any sheets.");
-//            log.info("Processing categories from sheet '{}'. Total rows: {}", sheet.getSheetName(), sheet.getLastRowNum() + 1);
-//
-//            int headerRowsToSkip = 1;
-//            for (int i = headerRowsToSkip; i <= sheet.getLastRowNum(); i++) {
-//                Row row = sheet.getRow(i);
-//                if (row == null) continue;
-//
-//                Cell cidCell = row.getCell(COL_CID, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-//                Integer rowExcelCid = getIntegerCellValue(cidCell);
-//
-//                Category currentParent = null;
-//                Category lastCategoryInRow = null;
-//
-//                for (int colIdx = COL_MALL; colIdx <= MAX_DEPTH_COL; colIdx++) {
-//                    Cell cell = row.getCell(colIdx, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-//                    String categoryName = getStringCellValue(cell);
-//                    if (categoryName == null || categoryName.trim().isEmpty()) break;
-//                    categoryName = categoryName.trim();
-//
-//                    String parentName = currentParent != null ? currentParent.getName() : null;
-//                    String compositeNameKey = generateCompositeKeyByName(parentName, categoryName);
-//
-//                    Category currentCategory = categoryCacheByCompositeNameKey.get(compositeNameKey);
-//
-//                    if (currentCategory == null) {
-//                        // ====[ 수정: DB 조회 생략 후 즉시 저장 시도, 실패 시 조회 ]====
-//                        log.info("Row {}, Col {}: Category with key '{}' not in cache. Attempting to create and save.",
-//                                i, colIdx, compositeNameKey);
-//                        Category newCategory = new Category(null, null, null);
-//                        try {
-//                            // 즉시 저장 시도 (DB가 ID 생성, Cascade로 부모 처리)
-//                            currentCategory = categoryRepository.save(newCategory);
-//                            categoryCacheByCompositeNameKey.put(compositeNameKey, currentCategory); // 성공 시 캐시에 추가
-//                            log.debug("Row {}, Col {}: Saved new category '{}' (key: {}) with DB ID {}.", i, colIdx, categoryName, compositeNameKey, currentCategory.getId());
-//                        } catch (DataIntegrityViolationException e) {
-//                            // 저장 실패 -> 아마도 Unique 제약조건 위반 (이미 DB에 존재)
-//                            log.warn("Row {}, Col {}: Failed to save new category with key '{}' due to possible duplicate. Attempting to find existing.",
-//                                    i, colIdx, compositeNameKey, e);
-//                            // DB에서 다시 조회 시도
-//                            Optional<Category> existingCategoryOpt;
-//                            Long parentId = (currentParent != null) ? currentParent.getId() : null; // 부모 ID 가져오기
-//                            if (parentId == null) {
-//                                existingCategoryOpt = categoryRepository.findByNameAndParentIsNull(categoryName);
-//                            } else {
-//                                existingCategoryOpt = categoryRepository.findByParent_IdAndName(parentId, categoryName);
-//                            }
-//
-//                            if (existingCategoryOpt.isPresent()) {
-//                                currentCategory = existingCategoryOpt.get();
-//                                categoryCacheByCompositeNameKey.put(compositeNameKey, currentCategory); // 찾았으니 캐시에 넣기
-//                                log.info("Row {}, Col {}: Found existing category in DB after save failure. Key: '{}', DB ID: {}", i, colIdx, compositeNameKey, currentCategory.getId());
-//                            } else {
-//                                // DB에서도 못 찾으면 심각한 문제 (Unique 제약조건 외 다른 문제)
-//                                log.error("Row {}, Col {}: Failed to save and subsequently find category with key '{}'. Aborting.", i, colIdx, compositeNameKey);
-//                                throw new IllegalStateException("Failed to save or find category: " + categoryName + " (key: " + compositeNameKey + ")", e);
-//                            }
-//                        } catch (Exception e) { // 그 외 예상치 못한 저장 에러
-//                            log.error("Error saving new category '{}' (key: {}): {}", categoryName, compositeNameKey, e.getMessage(), e);
-//                            throw new IllegalStateException("Failed to save category: " + categoryName + " (key: " + compositeNameKey + ")", e);
-//                        }
-//                        // ====[ 수정 끝 ]====
-//                    } else {
-//                        // 캐시에 있으면 건너뛰기
-//                        log.debug("Row {}, Col {}: Found category with key '{}' in cache. Skipping creation.", i, colIdx, compositeNameKey);
-//                    }
-//
-//                    currentParent = currentCategory;
-//                    lastCategoryInRow = currentCategory;
-//                } // End of column loop
-//
-//                // --- 현재 행의 마지막 카테고리에 Excel CID 값 할당 ---
-//                if (lastCategoryInRow != null && rowExcelCid != null) {
-//                    String lastCategoryKey = generateCompositeKeyByName(
-//                            (lastCategoryInRow.getParent() != null ? lastCategoryInRow.getParent().getName() : null),
-//                            lastCategoryInRow.getName()
-//                    );
-//
-//                    // excelCid 필드 값 업데이트 필요 여부 확인
-
-    /// /                    if (!Objects.equals(lastCategoryInRow.getCid(), rowExcelCid)) {
-    /// /                        log.info("Row {}: Assigning/Updating Excel CID {} to category '{}' (key: {}, DB ID: {})",
-    /// /                                i, rowExcelCid, lastCategoryInRow.getName(), lastCategoryKey, lastCategoryInRow.getId());
-    /// /                        lastCategoryInRow.setCid(rowExcelCid);
-    /// /                        try {
-    /// /                            // 변경된 값 저장 (Dirty Checking에 의존해도 되지만 명시적 호출)
-    /// /                            categoryRepository.save(lastCategoryInRow);
-    /// /                            categoryCacheByCompositeNameKey.put(lastCategoryKey, lastCategoryInRow); // 캐시 객체 갱신
-    /// /                        } catch (DataIntegrityViolationException e) {
-    /// /                            log.error("Error updating excelCid for category '{}' (DB ID: {}) due to data integrity violation (possibly duplicate Excel CID?): {}",
-    /// /                                    lastCategoryInRow.getName(), lastCategoryInRow.getId(), e.getMessage());
-    /// /                            // excelCid에 unique 제약조건이 있다면 여기서 잡힐 수 있음
-    /// /                            // 필요시 에러 throw 또는 경고 후 계속 진행
-    /// /                            log.warn("Ignoring excelCid update failure for category '{}' due to integrity violation.", lastCategoryInRow.getName());
-    /// /                        } catch (Exception e) {
-    /// /                            log.error("Error updating excelCid for category '{}' (DB ID: {}): {}", lastCategoryInRow.getName(), lastCategoryInRow.getId(), e.getMessage(), e);
-    /// /                        }
-    /// /                    } else {
-    /// /                        log.trace("Row {}: Category '{}' (key: {}) already has correct Excel CID {}.",
-    /// /                                i, lastCategoryInRow.getName(), lastCategoryKey, rowExcelCid);
-    /// /                    }
-//                } else if (lastCategoryInRow != null /* && rowExcelCid == null */) {
-//                    log.trace("Row {}: Excel CID is missing for category '{}'. excelCid field unchanged.", i, lastCategoryInRow.getName());
-//                } else if (lastCategoryInRow == null && rowExcelCid != null) {
-//                    log.warn("Row {}: No valid category found in hierarchy for CID {}. CID assignment skipped.", i, rowExcelCid);
-//                }
-//
-//            } // End of row loop
-//            log.info("Category import finished successfully. Processed {} data rows. Composite Name Key Cache size: {}",
-//                    sheet.getLastRowNum() - headerRowsToSkip + 1, categoryCacheByCompositeNameKey.size());
-//        } catch (IOException e) {
-//            log.error("IOException occurred during Excel processing: {}", e.getMessage(), e);
-//            throw e;
-//        } catch (IllegalStateException e) {
-//            log.error("Data processing error during import: {}", e.getMessage(), e);
-//            throw e;
-//        } catch (Exception e) {
-//            log.error("Unexpected error occurred during Excel import: {}", e.getMessage(), e);
-//            throw new IOException("Failed to process Excel file due to an unexpected error: " + e.getMessage(), e);
-//        } finally {
-//            if (workbook != null) {
-//                try {
-//                    workbook.close();
-//                } catch (IOException e) {
-//                    log.error("Error closing workbook", e);
-//                }
-//            }
-//        }
-//    }
-//
-//    /**
-//     * 부모 이름과 자식 이름을 결합하여 고유한 캐시 키를 생성합니다.
-//     */
-//
 
     // --- 로컬 파일 처리 메소드 ---
     @Transactional
@@ -306,77 +246,6 @@ public class ExcelService {
             return null;
         }
     }
-//
-//    /**
-//     * Cell 값을 안전하게 Integer 타입으로 읽음 (엔티티의 excelCid 필드용)
-//     */
-//    private Integer getIntegerCellValue(Cell cell) {
-//        if (cell == null) return null;
-//        try {
-//            if (cell.getCellType() == CellType.NUMERIC) {
-//                double numericValue = cell.getNumericCellValue();
-//                if (numericValue == Math.floor(numericValue) && numericValue >= Integer.MIN_VALUE && numericValue <= Integer.MAX_VALUE) {
-//                    return (int) numericValue;
-//                } else {
-//                    log.warn("Numeric cell at Row: {}, Col: {} contains decimal or out-of-range value {}. Cannot convert to Integer excelCid.",
-//                            cell.getRowIndex(), cell.getColumnIndex(), numericValue);
-//                    return null;
-//                }
-//            } else if (cell.getCellType() == CellType.STRING) {
-//                String stringValue = cell.getStringCellValue().trim();
-//                if (stringValue.isEmpty()) return null;
-//                return Integer.parseInt(stringValue);
-//            } else {
-//                log.warn("Cell at Row: {}, Col: {} is not NUMERIC or STRING type (Type: {}). Cannot read as Integer excelCid.",
-//                        cell.getRowIndex(), cell.getColumnIndex(), cell.getCellType());
-//                return null;
-//            }
-//        } catch (NumberFormatException e) {
-//            log.warn("Error parsing Integer value from cell at Row: {}, Col: {}. Value: '{}'. Error: {}",
-//                    cell.getRowIndex(), cell.getColumnIndex(), getStringCellValue(cell), e.getMessage());
-//            return null;
-//        } catch (Exception e) {
-//            log.error("Unexpected error reading integer cell value at Row: {}, Col: {}. Error: {}",
-//                    cell.getRowIndex(), cell.getColumnIndex(), e.getMessage());
-//            return null;
-//        }
-//    }
-//
-//    /**
-//     * Cell 값을 안전하게 Long 타입으로 읽음 (참고용)
-//     */
-//    private Long getLongCellValue(Cell cell) {
-//        // ... (이전 코드 내용) ...
-//        if (cell == null) return null;
-//        try {
-//            if (cell.getCellType() == CellType.NUMERIC) {
-//                double numericValue = cell.getNumericCellValue();
-//                if (numericValue == Math.floor(numericValue)) {
-//                    return (long) numericValue;
-//                } else {
-//                    log.warn("Numeric cell at Row: {}, Col: {} contains decimal value {}. Treating as invalid Long.",
-//                            cell.getRowIndex(), cell.getColumnIndex(), numericValue);
-//                    return null;
-//                }
-//            } else if (cell.getCellType() == CellType.STRING) {
-//                String stringValue = cell.getStringCellValue().trim();
-//                if (stringValue.isEmpty()) return null;
-//                return Long.parseLong(stringValue);
-//            } else {
-//                log.warn("Cell at Row: {}, Col: {} is not NUMERIC or STRING type (Type: {}). Cannot read as Long.",
-//                        cell.getRowIndex(), cell.getColumnIndex(), cell.getCellType());
-//                return null;
-//            }
-//        } catch (NumberFormatException e) {
-//            log.warn("Error parsing Long value from string cell at Row: {}, Col: {}. Value: '{}'. Error: {}",
-//                    cell.getRowIndex(), cell.getColumnIndex(), getStringCellValue(cell), e.getMessage());
-//            return null;
-//        } catch (Exception e) {
-//            log.error("Unexpected error reading long cell value at Row: {}, Col: {}. Error: {}",
-//                    cell.getRowIndex(), cell.getColumnIndex(), e.getMessage());
-//            return null;
-//        }
-//    }
 
     /**
      * 파일 이름으로 Excel 파일 확장자 확인

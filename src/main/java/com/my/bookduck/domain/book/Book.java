@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Entity
@@ -29,6 +31,9 @@ public class Book {
     private String identifier;
     private String epubPath;
 
+    @Column(unique = true, nullable = false, length = 13) // ISBN13은 고유하고 필수 값
+    private String isbn13; // 국제 표준 도서 번호 (13자리)
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCategory> categories;
 
@@ -49,5 +54,41 @@ public class Book {
         this.publicationDate = publicationDate;
         this.publishing = publishing;
         this.price = price;
+    }
+
+    @Builder(builderMethodName = "aladdinBuilder", buildMethodName = "buildFromAladdin")
+    public Book(String title,String cover,String writer,LocalDate publicationDate,String publishing,int price, String isbn13){
+        this.title = title;
+        this.cover = cover;
+        this.writer = writer;
+        this.publicationDate = publicationDate;
+        this.publishing = publishing;
+        this.price = price;
+        this.isbn13 = isbn13;
+    }
+
+    /**
+     * 알라딘 API 등에서 받은 날짜 문자열(예: "YYYY-MM-DD")을 LocalDate 객체로 변환합니다.
+     * 파싱 실패 시 null을 반환합니다.
+     * @param dateString 날짜 형식의 문자열
+     * @return 변환된 LocalDate 객체 또는 null
+     */
+    public static LocalDate parseDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
+        }
+        try {
+            // 알라딘 API의 일반적인 날짜 형식은 'YYYY-MM-DD' 입니다.
+            return LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE);
+        } catch (DateTimeParseException e) {
+            System.err.println("날짜 파싱 오류 발생: 입력 문자열='" + dateString + "', 오류 메시지=" + e.getMessage());
+            // 필요하다면 다른 날짜 형식 (예: "yyyyMMdd")도 시도해볼 수 있습니다.
+            // try {
+            //     return LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyyMMdd"));
+            // } catch (DateTimeParseException e2) {
+            //     System.err.println("다른 형식 날짜 파싱 실패: " + dateString);
+            // }
+            return null; // 최종 파싱 실패 시 null 반환
+        }
     }
 }
