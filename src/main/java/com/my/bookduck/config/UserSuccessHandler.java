@@ -4,6 +4,7 @@ import com.my.bookduck.config.auth.BDUserDetails;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.repository.UserRepository;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,11 @@ public class UserSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        String rememberId = request.getParameter("rememberid");
+        String saveId = request.getParameter("username");
+        log.info("rememberId: {}", rememberId);
+        log.info("saveId: {}", saveId);
+
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         BDUserDetails userDetails = (BDUserDetails) oAuth2User;
         log.info("UserDetails: {}", userDetails);
@@ -34,8 +40,26 @@ public class UserSuccessHandler implements AuthenticationSuccessHandler {
         log.info("user.getProvider: {}", user.getProvider());
         log.info("user.getProviderId: {}", user.getProviderId());
         if(user.getNickName() != null) {
+
+            if(rememberId != null && rememberId.equals("on")&& user.getProvider() == null) {
+                Cookie cookie = new Cookie("saveId", saveId);
+                cookie.setMaxAge(60*60*24*7);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }else{
+                Cookie cookie = new Cookie("saveId", "");
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
+
             response.sendRedirect("/logininfo");
+
         }else{
+            Cookie cookie = new Cookie("saveId", "");
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            response.addCookie(cookie);
             response.sendRedirect("/addNickname");
         }
     }

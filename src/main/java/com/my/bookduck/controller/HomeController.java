@@ -4,6 +4,7 @@ import com.my.bookduck.config.auth.BDUserDetails;
 import com.my.bookduck.controller.response.loginUserInfo;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -16,9 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
@@ -30,7 +29,10 @@ public class HomeController {
     public String home(){return "home";}
 
     @GetMapping("/logininfo")
-    public String logininfo(@AuthenticationPrincipal BDUserDetails user,HttpSession session){
+    public String logininfo(@AuthenticationPrincipal BDUserDetails user, HttpSession session, HttpServletRequest request, Model model){
+
+
+
         log.info("user: {}", user);
         //User u = user.getUser();
         User u = userService.getUserByLoginId(user.getUser().getId());
@@ -38,12 +40,39 @@ public class HomeController {
         loginUserInfo loginuser = new loginUserInfo(u);
         session.setAttribute("loginuser", loginuser);
         log.info("sesseion: {}", session.getAttribute("loginuser"));
-        return "home";
+        if(u.getNickName() == null){
+            return "redirect:/logout";
+        }
+        //return "home";
         //return "member/del";
+        return "member/mypage";
     }
 
     @GetMapping("/login-form")
-    public String loginForm(){return "member/login";}
+    public String loginForm(@AuthenticationPrincipal Model model,@CookieValue(value = "saveId", required = false) Cookie cookie){
+        model.addAttribute("loginFail", false);
+
+        String userId = "";
+        boolean remember = false;
+
+        if(cookie != null) {
+            log.info("cookieName: {}", cookie.getName());
+            log.info("cookie: {}", cookie.getValue());
+            userId = cookie.getValue();
+            remember = true;
+        }
+
+        model.addAttribute("userId", userId);
+        model.addAttribute("remember", remember);
+
+        return "member/login";
+    }
+
+    @GetMapping("/loginerror")
+    public String loginError(@AuthenticationPrincipal Model model,HttpServletRequest request, HttpServletResponse response){
+        model.addAttribute("loginFail", true);
+        return "member/login";
+    }
 
     @GetMapping("/sign-up")
     public String signUp(){return "member/joinForm";}
@@ -56,6 +85,9 @@ public class HomeController {
 
     @GetMapping("/userupdate")
     public String userUpdate(){return "member/fix";}
+
+    @GetMapping("/userinfo")
+    public String userInfo(){return "member/mypage";}
 
     @GetMapping("/error")
     public String handleError(@RequestParam(value="message",required=false) String message, Model model){

@@ -26,12 +26,12 @@ public class BDUserDetailsService implements UserDetailsService {
         log.info("loadUserByUsername: {}", loginId + "객체 생성");
         User user = userRepository.findByLoginId(loginId);
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
-
         if(user != null) {
             return new BDUserDetails(user);
         }
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 
         return null;
     }

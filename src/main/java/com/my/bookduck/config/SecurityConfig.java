@@ -55,8 +55,9 @@ public class SecurityConfig {
                         form ->{
                             form.loginPage("/login-form")
                                     .loginProcessingUrl("/login")
-                                    .failureHandler(userAuthFailureHandler)
-                                    .defaultSuccessUrl("/logininfo", true);
+                                    .successHandler(userSuccessHandler)
+                                    //.defaultSuccessUrl("/logininfo", true)
+                                    .failureHandler(userAuthFailureHandler);
                         }
                 ).oauth2Login(
                         oauth2-> oauth2
