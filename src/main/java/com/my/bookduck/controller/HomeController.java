@@ -31,8 +31,6 @@ public class HomeController {
     @GetMapping("/logininfo")
     public String logininfo(@AuthenticationPrincipal BDUserDetails user, HttpSession session, HttpServletRequest request, Model model){
 
-
-
         log.info("user: {}", user);
         //User u = user.getUser();
         User u = userService.getUserByLoginId(user.getUser().getId());

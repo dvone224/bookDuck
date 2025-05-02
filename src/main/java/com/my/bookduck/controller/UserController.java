@@ -6,16 +6,21 @@ import com.my.bookduck.controller.request.AddUserRequest;
 import com.my.bookduck.controller.request.SocialJoinUpdateRequest;
 import com.my.bookduck.controller.request.UpdateUserRequest;
 import com.my.bookduck.controller.response.UserSearchResultResponse;
+import com.my.bookduck.domain.user.User;
 import com.my.bookduck.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -90,6 +95,87 @@ public class UserController {
         }else{
             return "redirect:/logininfo";
 
+        }
+    }
+
+    @PostMapping("/imgupload")
+    @ResponseBody
+    public String imgUpload(@RequestParam("file") MultipartFile file) {
+        log.info("imgUpload: {}", file);
+        String origin = file.getOriginalFilename();
+        log.info("origin: {}", origin);
+        String fileName = origin;
+        //String fileName = origin.substring(origin.lastIndexOf(".") + 1);
+        String filepath = "C:\\bookduckImg";
+        File folder = new File(filepath);
+        if(!folder.exists()){
+            try{
+                folder.mkdirs();
+                System.out.println("폴더생성을 하였습니다");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }else{
+            System.out.println("있는 폴더에 저장하였습니다");
+        }
+        String uuid = UUID.randomUUID().toString();
+        String savename = filepath+"\\"+uuid+"_"+fileName;
+        String onlyname = uuid + "_" + fileName;
+        try{
+            File save = new File(savename);
+            file.transferTo(save);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return "success/"+onlyname;
+    }
+
+    @GetMapping("/searchuserid")
+    public ResponseEntity serchuserid(String id) {
+        log.info("serchuserid: {}", id);
+
+        try{
+            User u = userService.findByLoginId(id);
+            if(u != null){
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        }catch(Exception e){
+            //log.error("errMsg: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/searchusernickname")
+    public ResponseEntity serchusernickname(String nickname) {
+        log.info("serchuserid: {}", nickname);
+
+        try{
+            User u = userService.findByNickname(nickname);
+            if(u != null){
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        }catch(Exception e){
+            //log.error("errMsg: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/searchuseremail")
+    public ResponseEntity serchuseremail(String email) {
+        log.info("serchuserid: {}", email);
+
+        try{
+            User u = userService.findByEmail(email);
+            if(u != null){
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        }catch(Exception e){
+            //log.error("errMsg: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

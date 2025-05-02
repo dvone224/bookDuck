@@ -70,6 +70,19 @@ public class UserService {
         */
     }
 
+    public User findByNickname(String nickname) {
+        log.debug("Finding user by nickname: {}", nickname);
+        return userRepository.findByNickName(nickname);
+    }
+
+    public User findByEmail(String email) {
+        log.debug("Finding user by email: {}", email);
+        return userRepository.findByEmail(email);
+    }
+
+
+
+
     @Transactional
     public String userInfoUpdate(Long userId, UpdateUserRequest info) throws IllegalStateException {
         User user = userRepository.findById(userId).orElse(null);
