@@ -31,7 +31,7 @@ public class CartService {
         if(cartRepository.findByUserAndBook(user,book) != null) {
             throw new IllegalStateException("이미 카트에 담긴 책입니다.");
         }
-        // 소유 북에서도 확인 필요 할 듯
+        // 소유 북에서도 확인 필요 할 듯(user_book)
 
         return cart;
     }

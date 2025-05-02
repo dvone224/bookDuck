@@ -30,10 +30,4 @@ summarization:
   chunk:
     size: 1500
 
-payment:
-  toss:
-    test_client_api_key: ${TOSS_CLIENT_API_KEY:test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1} # 환경 변수 우선 사용
-    test_secret_api_key: ${TOSS_SECRET_API_KEY:test_sk_DpexMgkW36onEppeZLqpVGbR5ozO} # 오타 수정
-    success_url: ${TOSS_SUCCESS_URL:http://localhost:8080/api/payment/success} # 기본값 설정
-    fail_url: ${TOSS_FAIL_URL:http://localhost:8080/api/payment/fail} # 기본값 설정
 

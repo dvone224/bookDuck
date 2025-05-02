@@ -3,6 +3,8 @@ package com.my.bookduck.repository;
 import com.my.bookduck.domain.user.UserBook;
 import com.my.bookduck.domain.user.UserBookId; // ★★★ UserBookId 임포트 (복합 키 클래스) ★★★
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository; // @Repository 어노테이션 추가 권장
 
 import java.util.List; // 필요시 List 임포트
@@ -22,6 +24,11 @@ public interface UserBookRepository extends JpaRepository<UserBook, UserBookId> 
      * @return 해당 UserBook 데이터가 존재하면 true, 그렇지 않으면 false
      */
     boolean existsByUserIdAndBookId(Long userId, Long bookId);
+
+    @Query("SELECT CASE WHEN COUNT(ub) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM UserBook ub JOIN ub.book b " +
+            "WHERE ub.user.id = :userId AND b.isbn13 = :isbn")
+    boolean existsByUserIdAndBookIsbn(@Param("userId") Long userId, @Param("isbn") String isbn);
 
     // 필요에 따라 다른 UserBook 관련 쿼리 메소드를 추가할 수 있습니다.
     // 예: 특정 사용자의 모든 UserBook 엔티티 조회 (연관된 User, Book 정보 포함)
