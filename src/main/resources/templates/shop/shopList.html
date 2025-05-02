@@ -2,10 +2,13 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>도서 검색</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--    <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/member/delSuccess.css">-->
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <title> BookDuck²::북덕이 서점</title>
     <style>
-        /* Reset and Base Styles */
+        /*!* Reset and Base Styles *!
         * {
             margin: 0;
             padding: 0;
@@ -31,7 +34,7 @@
             text-align: center;
         }
 
-        /* Search Bar */
+        !* Search Bar *!
         .search-container {
             display: flex;
             gap: 10px;
@@ -75,7 +78,7 @@
             transform: translateY(0);
         }
 
-        /* Results Container */
+        !* Results Container *!
         #results {
             max-width: 1200px;
             width: 100%;
@@ -84,7 +87,7 @@
             gap: 20px;
         }
 
-        /* Book Item Card */
+        !* Book Item Card *!
         .book-item {
             background-color: #fff;
             border: 1px solid #ddd;
@@ -103,13 +106,13 @@
 
         .book-item img {
             max-width: 80px;
-            height: auto; /* 비율 유지 */
+            height: auto; !* 비율 유지 *!
             border-radius: 4px;
             margin-right: 15px;
-            object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+            object-fit: cover; !* 이미지 비율 유지하며 채우기 *!
         }
 
-        .book-item.clickable-book-item { /* 클릭 가능한 아이템에만 적용 */
+        .book-item.clickable-book-item { !* 클릭 가능한 아이템에만 적용 *!
             cursor: pointer;
         }
 
@@ -117,33 +120,33 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* 정보 영역 공간 활용 */
-            min-height: 100px; /* 최소 높이 확보 */
+            justify-content: space-between; !* 정보 영역 공간 활용 *!
+            min-height: 100px; !* 최소 높이 확보 *!
         }
 
         .book-info h3 {
-            font-size: 1.1rem; /* 약간 줄임 */
+            font-size: 1.1rem; !* 약간 줄임 *!
             color: #2c3e50;
-            margin: 0 0 8px; /* 간격 조정 */
-            /* 긴 제목 처리 */
+            margin: 0 0 8px; !* 간격 조정 *!
+            !* 긴 제목 처리 *!
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* 최대 2줄 */
+            -webkit-line-clamp: 2; !* 최대 2줄 *!
             -webkit-box-orient: vertical;
         }
 
         .book-info p {
-            font-size: 0.85rem; /* 약간 줄임 */
+            font-size: 0.85rem; !* 약간 줄임 *!
             color: #555;
-            margin: 3px 0; /* 간격 조정 */
-            line-height: 1.4; /* 줄 간격 조정 */
-            /* 긴 텍스트 처리 (선택적) */
+            margin: 3px 0; !* 간격 조정 *!
+            line-height: 1.4; !* 줄 간격 조정 *!
+            !* 긴 텍스트 처리 (선택적) *!
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap; /* 한 줄로 표시 */
+            white-space: nowrap; !* 한 줄로 표시 *!
         }
-        /* .book-info p.isbn-info 클래스는 이제 사용되지 않음 */
+        !* .book-info p.isbn-info 클래스는 이제 사용되지 않음 *!
 
         .book-info a {
             color: #3498db;
@@ -157,14 +160,14 @@
             text-decoration: underline;
         }
 
-        /* Status Messages */
+        !* Status Messages *!
         .status-message {
-            grid-column: 1 / -1; /* 전체 너비 차지 */
+            grid-column: 1 / -1; !* 전체 너비 차지 *!
             text-align: center;
             padding: 20px;
             font-size: 1rem;
             border-radius: 4px;
-            margin-top: 20px; /* 위쪽 여백 */
+            margin-top: 20px; !* 위쪽 여백 *!
         }
 
         .loading {
@@ -182,22 +185,22 @@
             color: #777;
         }
 
-        /* Pagination */
+        !* Pagination *!
         #paginationContainer {
             margin-top: 30px;
             text-align: center;
-            width: 100%; /* 페이지네이션 너비 확보 */
+            width: 100%; !* 페이지네이션 너비 확보 *!
         }
         .pagination {
-            display: inline-flex; /* 버튼들을 한 줄에 */
-            flex-wrap: wrap; /* 화면 작을 때 줄바꿈 */
-            justify-content: center; /* 가운데 정렬 */
-            gap: 5px; /* 버튼 사이 간격 */
+            display: inline-flex; !* 버튼들을 한 줄에 *!
+            flex-wrap: wrap; !* 화면 작을 때 줄바꿈 *!
+            justify-content: center; !* 가운데 정렬 *!
+            gap: 5px; !* 버튼 사이 간격 *!
         }
         .pagination button, .pagination span {
             display: inline-block;
             padding: 8px 12px;
-            /* margin: 0 3px; 삭제 -> gap으로 대체 */
+            !* margin: 0 3px; 삭제 -> gap으로 대체 *!
             border: 1px solid #ddd;
             background-color: #fff;
             color: #3498db;
@@ -206,7 +209,7 @@
             font-size: 0.9rem;
             transition: background-color 0.3s, color 0.3s;
             text-align: center;
-            min-width: 40px; /* 최소 너비 */
+            min-width: 40px; !* 최소 너비 *!
         }
         .pagination button:hover:not(:disabled) {
             background-color: #3498db;
@@ -216,7 +219,7 @@
             background-color: #f0f0f0;
             color: #999;
             cursor: default;
-            border-color: #ddd; /* 비활성화 시 테두리 색상 */
+            border-color: #ddd; !* 비활성화 시 테두리 색상 *!
         }
         .pagination button.current {
             background-color: #3498db;
@@ -224,16 +227,16 @@
             border-color: #3498db;
             font-weight: bold;
         }
-        .pagination span { /* 생략 부호 스타일 */
+        .pagination span { !* 생략 부호 스타일 *!
             border: none;
             background-color: transparent;
             color: #777;
             cursor: default;
             padding: 8px 5px;
-            align-self: center; /* 수직 가운데 정렬 */
+            align-self: center; !* 수직 가운데 정렬 *!
         }
 
-        /* Responsive Design */
+        !* Responsive Design *!
         @media (max-width: 768px) {
             body {
                 padding: 15px;
@@ -251,22 +254,22 @@
                 width: 100%;
             }
             #results {
-                grid-template-columns: 1fr; /* 모바일에서는 1열 */
+                grid-template-columns: 1fr; !* 모바일에서는 1열 *!
                 gap: 15px;
             }
             .book-item {
-                flex-direction: row; /* 모바일에서도 가로 배치 유지하되 조정 */
-                align-items: flex-start; /* 위쪽 정렬 */
-                text-align: left; /* 왼쪽 정렬 */
+                flex-direction: row; !* 모바일에서도 가로 배치 유지하되 조정 *!
+                align-items: flex-start; !* 위쪽 정렬 *!
+                text-align: left; !* 왼쪽 정렬 *!
             }
             .book-item img {
-                max-width: 60px; /* 이미지 크기 약간 줄임 */
+                max-width: 60px; !* 이미지 크기 약간 줄임 *!
                 margin-right: 10px;
-                margin-bottom: 0; /* 아래 여백 제거 */
+                margin-bottom: 0; !* 아래 여백 제거 *!
             }
             .book-info h3 {
                 font-size: 1rem;
-                -webkit-line-clamp: 3; /* 모바일에서 3줄까지 허용 */
+                -webkit-line-clamp: 3; !* 모바일에서 3줄까지 허용 *!
             }
             .book-info p {
                 font-size: 0.8rem;
@@ -279,49 +282,578 @@
         }
         @media (max-width: 480px) {
             .book-item {
-                /* 필요시 더 작은 화면에서 세로 배치로 변경 가능 */
-                /* flex-direction: column;
+                !* 필요시 더 작은 화면에서 세로 배치로 변경 가능 *!
+                !* flex-direction: column;
                 align-items: center;
-                text-align: center; */
+                text-align: center; *!
             }
             .book-item img {
-                /* flex-direction: column; 시 활성화 */
-                /* margin-right: 0;
-                margin-bottom: 10px; */
+                !* flex-direction: column; 시 활성화 *!
+                !* margin-right: 0;
+                margin-bottom: 10px; *!
             }
         }
 
-        /* Accessibility */
+        !* Accessibility *!
         input:focus, button:focus, a:focus {
             outline: 2px solid #3498db;
             outline-offset: 2px;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* 포커스 시 강조 */
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); !* 포커스 시 강조 *!
         }
 
         button:disabled {
-            background-color: #bdc3c7; /* 좀 더 연한 회색 */
-            color: #7f8c8d; /* 비활성 텍스트 색 */
+            background-color: #bdc3c7; !* 좀 더 연한 회색 *!
+            color: #7f8c8d; !* 비활성 텍스트 색 *!
             cursor: not-allowed;
-            transform: none; /* 비활성 시 효과 제거 */
-            box-shadow: none; /* 비활성 시 그림자 제거 */
+            transform: none; !* 비활성 시 효과 제거 *!
+            box-shadow: none; !* 비활성 시 그림자 제거 *!
         }
         button:disabled:hover {
-            background-color: #bdc3c7; /* 호버해도 색상 유지 */
+            background-color: #bdc3c7; !* 호버해도 색상 유지 *!
+        }
+*/
+
+        /*아이콘 임포트*/
+        /* Fontawesome 4.7 */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+        /*로고용 폰트: cafe24슈퍼매직*/
+        @font-face {
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        /*홈페이지 메인 폰트: 고운바탕*/
+        @font-face {
+            font-family: 'GowunBatang-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*고운돋움*/
+        @font-face {
+            font-family: 'GowunDodum-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*조선굴림*/
+        @font-face {
+            font-family: 'ChosunGu';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*온글잎콘콘*/
+        @font-face {
+            font-family: 'Ownglyph_corncorn-Rg';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*나눔손글씨펜*/
+        @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+        /*font-family: 'NanumPen';*/
+
+        /*학교안심꼬꼬마*/
+        @font-face {
+            font-family: 'TTHakgyoansimKkokkomaR';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*심경하*/
+        @font-face {
+            font-family: 'SimKyungha';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*다이어리*/
+        @font-face {
+            font-family: 'EarlyFontDiary';
+            src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 컬러 파레트 */
+        :root{
+            --main-color-dark: #00479B;
+            --main-color-middle: #83C7FF;
+            --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000;
+            --assist-color-middle: #FFB90B;
+            --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B;
+            --cancle-color-middle: #D3D3D3;
+            --cancle-color-light: #EAEAEA;
+            --crown-color: #ffa500;
+
+            /*사용법: var(--main-color-middle)*/
+            --border-big: 20px;/*큰거...뭐가잇지...*/
+            --border-middle: 10px;/*img*/
+            --border-circle: 50%;/*동그리버튼*/
+
+            /*폰트 사이즈 정의*/
+            --font-size-0: 28px;
+            --font-size-1: 23px;
+            --font-size-2: 18px;
+            --font-size-3: 13px;
+            --font-size-4: 8px;
+
+            /*쪽지 색상 지정*/
+            --memo1-color-dark: #00479B;
+            --memo1-color-middle: #83C7FF;
+            --memo1-color-light: #E3F4FF;
+            --memo1-color-back: #B0CAD6;
+
+            --memo2-color-dark: #CE7000;
+            --memo2-color-middle: #FFB90B;
+            --memo2-color-light: #FFF7E6;
+            --memo2-color-back: #EAD4AD;
+
+            --memo3-coler-dark: #841A1A;
+            --memo3-coler-middle: #FF9494;
+            --memo3-coler-light: #FFE9E9;
+            --memo3-coler-back: #D6B0B0;
+
+            --memo4-coler-dark: #325900;
+            --memo4-coler-middle: #97CE41;
+            --memo4-coler-light: #F6FFD9;
+            --memo4-coler-back: #CCD3AE;
+
+            --memo5-coler-dark: #A04800;
+            --memo5-coler-middle: #FF8B00;
+            --memo5-coler-light: #FFE3CA;
+            --memo5-coler-back: #C9A88D;
+
+            --memo6-coler-dark: #6A297A;
+            --memo6-coler-middle: #AF80CE;
+            --memo6-coler-light: #F5EEFF;
+            --memo6-coler-back: #CDC3DD;
+
+            --memo7-coler-dark: #1F1F77;
+            --memo7-coler-middle: #7A8CE5;
+            --memo7-coler-light: #E9ECFF;
+            --memo7-coler-back: #B2B8D3;
+
+            --memo8-coler-dark: #006466;
+            --memo8-coler-middle: #66C6DD;
+            --memo8-coler-light: #EBFFFF;
+            --memo8-coler-back: #B8D3D2;
+        }
+
+        /* Global 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Gowun Batang";
+            font-size: var(--font-size-2);
+        }
+
+        /* 기본 설정 */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%; /* 가로를 화면에 맞게 설정 */
+        }
+
+        /* 컨테이너 스타일 */
+        .container {
+            border: 1px solid slateblue;
+            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        /*버튼 기본 규격*/
+        .btn_circle{
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .btn_circle_big{
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn_long{
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            max-width: 768px;
+        }
+
+        .btn_mini{
+            width: auto;
+            height: 25px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-size: var(--font-size-3);
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-left: 5px;
+        }
+
+        .btn_icon{
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .box{
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-big);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            max-width: 768px;
+        }
+
+        .title{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        .bold{
+            font-weight: bold;
+        }
+
+        .dot{
+            width: 15px;
+            height: 15px;
+            border-radius: var(--border-circle);
+            display: flex;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+
+        .underline{
+            width: 130%;
+            height: 1px;
+        }
+
+        .line{
+            width: 100%;
+            height: 1px;
+        }
+
+        .blue{
+            background: var(--main-color-middle);
+        }
+        .yellow{
+            background: var(--assist-color-middle);
+        }
+        .dark_blue1{
+            background: var(--main-color-dark);
+        }
+        .dark_yellow1{
+            background: var(--assist-color-dark);
+        }
+        .dark_blue2{
+            color: var(--main-color-dark);
+        }
+        .dark_yellow2{
+            color: var(--assist-color-dark);
+        }
+        .light_blue{
+            background: var(--main-color-light);
+        }
+        .light_yellow{
+            background: var(--assist-color-light);
+        }
+        .dark_gray1{
+            background: var(--cancle-color-dark);
+        }
+        .dark_gray2{
+            color: var(--cancle-color-dark);
+        }
+        .gray{
+            background: var(--cancle-color-middle);
+        }
+        .light_gray{
+            background: var(--cancle-color-light);
+        }
+        .white{
+            background: white;
+        }
+
+        .blue_line_thin{
+            border: 1px solid var(--main-color-middle);
+        }
+        .yellow_line_thin{
+            border: 1px solid var(--assist-color-middle);
+        }
+
+        .input_long{
+            margin-bottom: 10px;
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            box-sizing: border-box;
+            text-align: center;
+            max-width: 768px;
+        }
+
+        .blue_line{
+            border: 2px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+        }
+
+        .blue_line:focus{
+            border: 4px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+            outline: none;
+        }
+
+        .yellow_line{
+            border: 2px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+        }
+
+        .yellow_line:focus{
+            border: 4px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            outline: none;
+        }
+
+
+        /*체크박스 CSS*/
+
+        input[type="checkbox"]{
+            display: none;
+        }
+        input[type="checkbox"] + label{
+            margin-right: 5px;
+            display: inline-block;
+            background: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+        }
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--main-color-middle);
+        }*/
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--assist-color-middle);
+        }*/
+        input[type="checkbox"]:checked + label::after {
+            content: '✔';
+            font-size: 16px; /* 체크 아이콘 크기 조정 */
+            width: 22px; /* 내부 원 크기 */
+            height: 22px; /* 내부 원 크기 */
+            border: none; /* 중복 테두리 제거 */
+            color: white;
+            text-align: center;
+            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+            position: absolute;
+            left: 50%; /* 중앙 정렬 */
+            top: 50%; /* 중앙 정렬 */
+            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
+            border-radius: 50%; /* 내부 원형 유지 */
+        }
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--main-color-middle);
+        }*/
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--assist-color-middle);
+        }*/
+
+        /*대표 이미지들 설정*/
+        .processImg{
+            width: 300px;
+            height: 300px;
+        }
+        .processImg img{
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
+        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+            .container {
+                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+            }
+        }
+
+        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+            .container {
+                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+            }
+        }
+        /* 헤더용 CSS들 */
+
+
+        .test1{
+            border: 1px solid red;
+        }
+        .test2{
+            border: 1px solid blue;
+        }
+
+        /*여기서부터 개별*/
+
+        .seperate{
+            width: 100%;
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 768px;
+        }
+        .seperate_one{
+            flex: 1;
+        }
+        .seperate_two{
+            width: 45px;
+            height: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ad{
+            border: 1px solid blue;
+            height: 120px;
+        }
+
+        .btn_circle_mini{
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+        }
+
+        .input_none_long{
+            border: none;
+            text-align: center;
+            width: 95%;
+            font-family: GowunBatang-Regular;
+            color: var(--assist-color-dark);
+        }
+
+        .input_none_long:focus{
+            outline: none;
+        }
+
+        .input_none_long:focus + .seperate_two,
+        .input_none_long:focus ~ .seperate {
+            border: 3px solid var(--assist-color-middle); /* 원하는 색으로 변경 */
+        }
+
+        .controller{
+            display: flex;
+            width: 100%;
+            justify-content: space-between; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+            max-width: 768px;
+            margin-bottom: 5px;
+        }
+        .book_cnt{
+            color: var(--main-color-dark);
+        }
+        .controller_list{
+            display: flex;
+            color: var(--assist-color-dark);
+        }
+        .menu_down{
+            color: var(--assist-color-middle);
+            margin-left: 5px;
+        }
+
+        .box_none{
+            width: 100%;
+            max-width: 786px;
         }
 
     </style>
 </head>
-
 <body>
 <div class="container">
-    <div class="box search-container">
-        <input class="input_long blue_line" type="text" id="searchQuery" placeholder="책 제목, 저자 등으로 검색" aria-label="도서 검색">
-        <button id="searchButton">검색</button>
+    <div class="box ad">광고</div>
+<!--    <div class="seperate search-container">-->
+<!--        <div class="seperate_one">-->
+<!--            <input class="input_long blue_line" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">-->
+<!--        </div>-->
+<!--        <div class="seperate_two">-->
+<!--            <button class="btn_long blue" id="searchButton">검색</button>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="seperate search-container input_long yellow_line">
+        <div class="seperate_one">
+            <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">
+        </div>
+        <div class="seperate_two">
+            <button class="btn_circle_mini yellow" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
     </div>
+    <div class="controller">
+        <div class="book_cnt">12건</div>
+        <div class="controller_list">최신순<div class="menu_down"><i class="fa-solid fa-caret-down"></i></div></div>
+        <!--<i class="fa-solid fa-caret-up"></i>-->
+    </div>
+    <div class="box_none">
+    <div class="line gray"></div>
+    <div id="results">
+        <!-- 검색 결과가 여기에 표시됩니다 -->
 
-<div id="results">
-    <!-- 검색 결과가 여기에 표시됩니다 -->
-</div>
+        <div class="book_box_long">
+            <div class="book_img"><img src=""></div>
+            <div class="text"></div>
+        </div>
+
+    </div>
+    </div>
 <div id="paginationContainer">
     <!-- 페이지 번호 버튼이 여기에 동적으로 생성됩니다 -->
 </div>
