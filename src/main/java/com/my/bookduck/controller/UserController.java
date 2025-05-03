@@ -137,7 +137,7 @@ public class UserController {
 
         try{
             User u = userService.findByLoginId(id);
-            if(u != null){
+            if(u == null){
                 return ResponseEntity.ok().build();
             }
             return ResponseEntity.notFound().build();
@@ -153,7 +153,7 @@ public class UserController {
 
         try{
             User u = userService.findByNickname(nickname);
-            if(u != null){
+            if(u == null){
                 return ResponseEntity.ok().build();
             }
             return ResponseEntity.notFound().build();
@@ -169,7 +169,7 @@ public class UserController {
 
         try{
             User u = userService.findByEmail(email);
-            if(u != null){
+            if(u == null){
                 return ResponseEntity.ok().build();
             }
             return ResponseEntity.notFound().build();

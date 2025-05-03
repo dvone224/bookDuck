@@ -183,6 +183,7 @@
             <label for="joinEmail"></label>
             <input type="text" class="input_long blue_line" id="joinEmail" name="email" placeholder="가입한 E-mail을 입력하세요" required autocomplete="off">
     </div>
+    <div id="exist userEmail"> </div>
 <!--
     <div class="seperate">
         <div class="seperate_one">
@@ -195,11 +196,95 @@
     </div>-->
 
     <div class="seperate">
-        <div class="seperate_same"><button class="btn_long blue">ID찾기</button></div>
-        <div class="seperate_same"><button class="btn_long yellow">임시 PASSWORD 발송</button></div>
+        <div class="seperate_same"><button class="btn_long blue" onclick="sendidonly()">ID찾기</button></div>
+        <div class="seperate_same"><button class="btn_long yellow" onclick="sendwithpw()">임시 PASSWORD 발송</button></div>
     </div>
 <!--    <input type="button" class="btn btn-findid" value="아이디찾기">
     <input type="button" class="btn btn-findinfo" value="비번찾기">-->
 </div>
 
 </body>
+
+<script>
+    const email = document.getElementById('joinEmail');
+    let valid = false;
+    const message = document.getElementById('exist userEmail');
+
+    email.addEventListener('keyup', ()=>{
+        valid = false;
+
+        fetch(`/user/searchuseremail?email=${encodeURIComponent(email.value)}`, {
+            method: 'GET'
+        })
+            .then((response) => {
+                if (response.ok) {
+                    message.innerHTML = '가입되지 않은 이메일입니다.';
+
+                }else{
+                    message.innerHTML = "입력하신 메일로 전송됩니다. 본인 메일이 맞는지 확인해 주세요";
+                    valid = true;
+                }
+            })
+            .catch((error) => {
+                console.error("검색 중 오류 발생:", error);
+            });
+
+    })
+
+    function sendidonly(){
+        if(!valid){
+            message.innerHTML = '가입된 메일이 없습니다. 메일을 확인해 주세요';
+            return;
+        }
+
+        const mail = email.value;
+        console.log(mail);
+
+        fetch('/mailapi/findid', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            body: mail
+        })
+            // .then(response => response.json())
+            // .then(data => console.log(data))
+            .catch(error =>
+                console.error('Error:', error),
+                location.href = '/findinfo'
+            );
+
+        alert("메일을 확인해 주세요.");
+
+        location.href='/login-form';
+
+    }
+
+    function sendwithpw(){
+        if(!valid){
+            message.innerHTML = '가입된 메일이 없습니다. 메일을 확인해 주세요';
+            return;
+        }
+
+        const mail = email.value;
+
+        fetch('/mailapi/issuepw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            body: mail
+        })
+            // .then(response => response.json())
+            // .then(data => console.log(data))
+            .catch(error =>
+                console.error('Error:', error),
+                location.href = '/findinfo'
+            );
+
+        alert("메일을 확인해 주세요.");
+
+        location.href='/login-form';
+    }
+
+</script>

@@ -44,7 +44,7 @@
                 <input type="text" class="input_long blue_line" id="joinCode" name="verifyCode" placeholder="인증번호를 입력하세요" required autocomplete="off">
             </div>
             <div class="seperate_two">
-                <button class="btn_long blue">인증완료</button>
+                <input type="button" class="btn_long blue" onclick="checkCode()" value="인증완료">
             </div>
         </div>
         <div id="check validCode"></div>
@@ -63,6 +63,8 @@
                 <button class="btn_mini blue" onclick="">약관보기</button>
             </div>
         </div>
+
+        <div id="check validTotal"></div>
         <div class="box">
             <button type="submit" class="btn_long blue">가입하기</button>
         </div>
@@ -114,14 +116,47 @@
     const joinPw = document.getElementById("joinPw");
     const joinNickname = document.getElementById("joinNickname");
     const joinEmail = document.getElementById("joinEmail");
+    const joinCode = document.getElementById("joinCode");
 
     let validId = false;
     let validPw = false;
     let validEmail = false;
     let validNickname = false;
-    let verifyCode = false;
+    let validCode = false;
 
-    let validsumit = false;
+    let useableEmail = false;
+
+    const submitFrom = document.getElementById("userjoinform");
+    const agree = document.getElementById("agree")
+
+    submitFrom.addEventListener("submit",(event)=>{
+        event.preventDefault();
+        const totalErr = document.getElementById("check validTotal");
+
+        if(!validId){
+            totalErr.innerHTML= "유효하지 않은 아이디 입니다."
+            return;
+        }
+        if(!validPw){
+            totalErr.innerHTML= "유효하지 않은 비밀번호 입니다."
+            return;
+        }
+        if(!validNickname){
+            totalErr.innerHTML= "유효하지 않은 별명 입니다."
+            return;
+        }
+        if(!useableEmail){
+            totalErr.innerHTML= "이메일 검증이 필요합니다."
+            return;
+        }
+        if(!agree.checked){
+            totalErr.innerHTML= "약관에 대한 동의가 필요합니다."
+            return;
+        }
+
+        submitFrom.submit();
+    })
+
 
     joinId.addEventListener("keyup",()=>{
         validId = false;
@@ -144,10 +179,11 @@
         })
             .then((response) => {
                 if (response.ok) {
-                    idErr.innerHTML = "이미 사용중인 아이디입니다.";
-                    console.log(validId);
-                }else{
                     validId = true;
+                    console.log(validId);
+
+                }else{
+                    idErr.innerHTML = "이미 사용중인 아이디입니다.";
                     console.log(validId);
                 }
             })
@@ -206,10 +242,11 @@
         })
             .then((response) => {
                 if (response.ok) {
-                    nicknameErr.innerHTML = "이미 사용중인 별명입니다.";
-                    console.log(validNickname);
-                }else{
                     validNickname = true;
+                    console.log(validNickname);
+
+                }else{
+                    nicknameErr.innerHTML = "이미 사용중인 별명입니다.";
                     console.log(validNickname);
                 }
             })
@@ -228,6 +265,9 @@
 
     joinEmail.addEventListener("keyup", ()=> {
         validEmail = false;
+        validCode = false;
+        useableEmail = false;
+
         const emailErr = document.getElementById("check validEmail");
         let emailValue = joinEmail.value;
         if(emailValue == "") {
@@ -247,10 +287,11 @@
         })
             .then((response) => {
                 if (response.ok) {
-                    emailErr.innerHTML = "이미 사용중인 이메일입니다.";
-                    console.log(validEmail);
-                }else{
                     validEmail = true;
+                    console.log(validEmail);
+
+                }else{
+                    emailErr.innerHTML = "이미 사용중인 이메일입니다.";
                     console.log(validEmail);
                 }
             })
@@ -283,6 +324,82 @@
                console.log(data);
            });
     }
+
+    joinCode.addEventListener("keyup", ()=>{
+        validCode = false;
+
+        const codeErr = document.getElementById("check validCode");
+        let codeValue = joinCode.value;
+        if(codeValue == "") {
+            codeErr.innerHTML = "";
+            return;
+        }
+
+        if(checkcodetext(codeValue) === true && checkcodelength(codeValue) === true){
+            codeErr.innerHTML = "";
+        }else{
+            codeErr.innerHTML = "인증코드는 6자리 숫자입니다.";
+            return;
+        }
+
+        validCode = true;
+
+    })
+
+    function checkcodetext(code){
+        return /^[0-9][0-9]*$/.test(code);
+    }
+
+    function checkcodelength(code){
+        return code.length == 6;
+    }
+
+
+    function checkCode(){
+        const codeErr = document.getElementById("check validCode");
+
+        if(!validEmail){
+            codeErr.innerHTML = "유효한 이메일이 아닙니다";
+            return;
+        }
+
+        if(!validCode){
+            codeErr.innerHTML = "유효한 인증번호가 아닙니다";
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append('mail', joinEmail.value);
+        formData.append('code', joinCode.value);
+
+        fetch('/mailapi/verifycode',{
+            method: 'POST',
+            cache: 'no-cache',
+            body: formData
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                if (data.status === 'Verified') {
+                    useableEmail = true;
+                    codeErr.innerHTML = "이메일 인증에 성공하였습니다.";
+                } else {
+                    codeErr.innerHTML = "이메일 인증에 실패하였습니다.(인증번호의 유효시간은 30분 입니다.)";
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                codeErr.innerHTML = "인증 중 오류가 발생했습니다. 다시 시도하세요.";
+            });
+
+    }
+
+
 
 
 </script>

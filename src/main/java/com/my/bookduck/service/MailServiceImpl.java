@@ -44,7 +44,7 @@ public class MailServiceImpl implements MailService {
         try{
             MimeMessageHelper helper = new MimeMessageHelper(message, true,"utf-8");
             helper.setFrom(senderEmail);
-            helper.setTo(mail);
+            helper.setTo(senderEmail);
             helper.setSubject("북덕북덕 이메일 인증번호");
             String body = "<h2>북덕북덕 가입을 환영합니다!</h2><h3>아래의 인증번호를 입력해 주세요.</h3><h1>" + verificationCodes.get(mail) + "</h1><h3>감사합니다.</h3>";
             helper.setText(body, true);

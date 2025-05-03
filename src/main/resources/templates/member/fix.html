@@ -148,17 +148,17 @@
         <form id="userUpdateform" action="/user/update" method="post">
             <div class="box_none" th:if="${session.loginuser.provider==null}">
                 <label for="updatePw"></label>
-                <input type="text" class="input_long blue_line" id="updatePw" name="pw" placeholder="PASSWORD(영문 대/소문자, 숫자, 특수문자)" required autocomplete="off">
+                <input type="text" class="input_long blue_line" id="updatePw" name="pw" placeholder="PASSWORD(영문 대/소문자, 숫자, 특수문자)" autocomplete="off">
             </div>
             <div class="box_none">
                 <label for="updateNickname"></label>
-                <input type="text" class="input_long blue_line" id="updateNickname" name="nickName" placeholder="닉네임(2~7자, 한글, 대/소문자, 숫자)" required autocomplete="off">
+                <input type="text" class="input_long blue_line" id="updateNickname" name="nickName" placeholder="닉네임(2~7자, 한글, 대/소문자, 숫자)" autocomplete="off">
             </div>
             <div class="box_none" th:if="${session.loginuser.provider==null}">
                 <div class="seperate">
                     <div class="seperate_one">
                         <label for="updateEmail"></label>
-                        <input type="text" class="input_long blue_line" id="updateEmail" name="email" placeholder="E-mail" required autocomplete="off">
+                        <input type="text" class="input_long blue_line" id="updateEmail" name="email" placeholder="E-mail" autocomplete="off">
                     </div>
                     <div class="seperate_two">
                         <button class="btn_long blue">인증하기</button>
@@ -169,7 +169,7 @@
                 <div class="seperate">
                     <div class="seperate_one">
                         <label for="updateCode"></label>
-                        <input type="text" class="input_long blue_line" id="updateCode" name="verifyCode" placeholder="인증번호를 입력하세요" required autocomplete="off">
+                        <input type="text" class="input_long blue_line" id="updateCode" name="verifyCode" placeholder="인증번호를 입력하세요" autocomplete="off">
                     </div>
                     <div class="seperate_two">
                         <button class="btn_long blue">인증완료</button>
