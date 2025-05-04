@@ -18,7 +18,6 @@ import java.util.List;
 public class Book {
     // 책
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id")
     private Long id;
 
@@ -31,8 +30,6 @@ public class Book {
     private String identifier;
     private String epubPath;
 
-    @Column(unique = true, nullable = false, length = 13) // ISBN13은 고유하고 필수 값
-    private String isbn13; // 국제 표준 도서 번호 (13자리)
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCategory> categories;
@@ -57,14 +54,14 @@ public class Book {
     }
 
     @Builder(builderMethodName = "aladdinBuilder", buildMethodName = "buildFromAladdin")
-    public Book(String title,String cover,String writer,LocalDate publicationDate,String publishing,int price, String isbn13){
+    public Book(String title,String cover,String writer,LocalDate publicationDate,String publishing,int price, Long isbn13){
         this.title = title;
         this.cover = cover;
         this.writer = writer;
         this.publicationDate = publicationDate;
         this.publishing = publishing;
         this.price = price;
-        this.isbn13 = isbn13;
+        this.id = isbn13;
     }
 
     /**

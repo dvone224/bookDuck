@@ -27,8 +27,9 @@ public interface UserBookRepository extends JpaRepository<UserBook, UserBookId> 
 
     @Query("SELECT CASE WHEN COUNT(ub) > 0 THEN TRUE ELSE FALSE END " +
             "FROM UserBook ub JOIN ub.book b " +
-            "WHERE ub.user.id = :userId AND b.isbn13 = :isbn")
-    boolean existsByUserIdAndBookIsbn(@Param("userId") Long userId, @Param("isbn") String isbn);
+            "WHERE ub.user.id = :userId AND b.id = :isbn")
+    boolean existsByUserIdAndBookIsbn(@Param("userId") Long userId, @Param("isbn") Long isbn);
+
 
     // 필요에 따라 다른 UserBook 관련 쿼리 메소드를 추가할 수 있습니다.
     // 예: 특정 사용자의 모든 UserBook 엔티티 조회 (연관된 User, Book 정보 포함)

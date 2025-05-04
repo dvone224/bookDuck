@@ -60,5 +60,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     // 책 1권 정보 가져오기
     Book findBookById(Long id);
 
-    Optional<Book> findByIsbn13(String isbn13);
 }

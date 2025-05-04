@@ -45,6 +45,7 @@
 <div class="order-items" th:if="${orderedItems != null and not #lists.isEmpty(orderedItems)}">
     <h2>주문 상품 내역</h2>
     <div th:each="item : ${orderedItems}" class="item-details">
+        <!-- ★★ item 객체가 getTitle(), getPrice() 메소드를 가지고 있다고 가정 ★★ -->
         <span class="item-title" th:text="${item.title}">상품 제목</span>
         <span class="item-price" th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">0원</span>
     </div>
@@ -53,10 +54,12 @@
     <p>주문 상품 정보를 불러올 수 없습니다.</p>
 </div>
 
+
 <!-- 네비게이션 링크 -->
 <div class="nav-links">
     <a href="/">메인 페이지</a> |
-    <a href="/my-orders">주문 내역 확인</a>
+    <a href="/my-orders">주문 내역 확인</a> <!-- ★★ 실제 주문 내역 페이지 URL로 수정 ★★ -->
 </div>
+
 </body>
 </html>

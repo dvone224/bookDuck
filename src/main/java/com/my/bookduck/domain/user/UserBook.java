@@ -38,6 +38,14 @@ public class UserBook {
 
     private boolean finish;
 
-
+    public UserBook(User user, Book book) {
+        this.user = user;
+        this.book = book;
+        this.userId = user.getId(); // User 엔티티의 ID 설정
+        this.bookId = book.getId(); // Book 엔티티의 ID 설정 (이것이 ISBN 값)
+        this.finish = false;
+        this.mark = "";
+        this.summary = "";
+    }
 
 }
