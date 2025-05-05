@@ -21,10 +21,33 @@ public class BookSearchController {
     @GetMapping("/books")
     public PaginatedAladinResponse searchBooks(
             @RequestParam String query,
-            @RequestParam(defaultValue = "1") int page,  // 기본값 1페이지
-            @RequestParam(defaultValue = "10") int size) { // 기본값 페이지당 10개
-        // size 값 제한 (예: 최대 50) - 알라딘 API 제한 고려
-        int effectiveSize = Math.min(Math.max(size, 1), 50); // 최소 1, 최대 50으로 제한
-        return aladinService.searchBooks(query, page, effectiveSize);
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false, defaultValue = "PublishTime") String sort) {
+        int effectiveSize = Math.min(Math.max(size, 1), 50);
+        String effectiveSort = sort != null && List.of("PublishTime", "SalesPoint", "Title").contains(sort)
+                ? sort
+                : "PublishTime";
+        String effectiveCategoryId = (categoryId != null && !categoryId.trim().isEmpty())
+                ? categoryId
+                : null;
+        return aladinService.searchBooks(query, page, effectiveSize, effectiveCategoryId, effectiveSort);
+    }
+
+    @GetMapping("/bestsellers")
+    public PaginatedAladinResponse getBestsellers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false, defaultValue = "PublishTime") String sort) {
+        int effectiveSize = Math.min(Math.max(size, 1), 50);
+        String effectiveSort = sort != null && List.of("PublishTime", "SalesPoint", "Title").contains(sort)
+                ? sort
+                : "PublishTime";
+        String effectiveCategoryId = (categoryId != null && !categoryId.trim().isEmpty())
+                ? categoryId
+                : null;
+        return aladinService.getBestsellers(page, effectiveSize, effectiveCategoryId, effectiveSort);
     }
 }

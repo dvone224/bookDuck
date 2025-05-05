@@ -414,5 +414,4 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "책 목록 조회 중 오류가 발생했습니다."));
         }
     }
-    // --- ★★★ 추가된 메소드 끝 ★★★ ---
 }

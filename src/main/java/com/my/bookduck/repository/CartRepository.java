@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository; // Repository 어노테이션 추가 권장
+import org.springframework.transaction.annotation.Transactional;
 // import org.springframework.transaction.annotation.Transactional; // Repository에서는 보통 필요 없음 (Service에서 관리)
 
 import java.util.List;
@@ -49,4 +50,16 @@ public interface CartRepository extends JpaRepository<Cart, Long> { // ID 타입
      * @return 해당 항목이 존재하면 true, 그렇지 않으면 false
      */
     boolean existsByUserIdAndBookId(Long userId, Long bookId);
+
+    // ★★★ 여러 아이템 삭제 메소드 추가 ★★★
+    /**
+     * 특정 사용자의 장바구니에서 bookId 목록에 포함된 모든 항목을 삭제합니다.
+     * @param userId 사용자 ID
+     * @param bookIds 삭제할 책 ID 목록
+     * @return 삭제된 행의 수
+     */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Cart c WHERE c.user.id = :userId AND c.book.id IN :bookIds")
+    int deleteByUserIdAndBookIdIn(@Param("userId") Long userId, @Param("bookIds") List<Long> bookIds);
 }

@@ -1,892 +1,234 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--    <link rel="stylesheet" href="/css/main.css">
-        <link rel="stylesheet" href="/css/member/delSuccess.css">-->
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
-    <title> BookDuck²::북덕이 서점</title>
+    <title>BookDuck²::북덕이 서점</title>
     <style>
-        /*!* Reset and Base Styles *!
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        !* Search Bar *!
-        .search-container {
-            display: flex;
-            gap: 10px;
-            max-width: 600px;
-            width: 100%;
-            margin-bottom: 30px;
-        }
-
-        .search-container input[type="text"] {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .search-container input[type="text"]:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-
-        .search-container button {
-            padding: 12px 20px;
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .search-container button:hover:not(:disabled) {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .search-container button:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        !* Results Container *!
-        #results {
-            max-width: 1200px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        !* Book Item Card *!
-        .book-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            align-items: flex-start;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .book-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .book-item img {
-            max-width: 80px;
-            height: auto; !* 비율 유지 *!
-            border-radius: 4px;
-            margin-right: 15px;
-            object-fit: cover; !* 이미지 비율 유지하며 채우기 *!
-        }
-
-        .book-item.clickable-book-item { !* 클릭 가능한 아이템에만 적용 *!
-            cursor: pointer;
-        }
-
-        .book-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; !* 정보 영역 공간 활용 *!
-            min-height: 100px; !* 최소 높이 확보 *!
-        }
-
-        .book-info h3 {
-            font-size: 1.1rem; !* 약간 줄임 *!
-            color: #2c3e50;
-            margin: 0 0 8px; !* 간격 조정 *!
-            !* 긴 제목 처리 *!
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2; !* 최대 2줄 *!
-            -webkit-box-orient: vertical;
-        }
-
-        .book-info p {
-            font-size: 0.85rem; !* 약간 줄임 *!
-            color: #555;
-            margin: 3px 0; !* 간격 조정 *!
-            line-height: 1.4; !* 줄 간격 조정 *!
-            !* 긴 텍스트 처리 (선택적) *!
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap; !* 한 줄로 표시 *!
-        }
-        !* .book-info p.isbn-info 클래스는 이제 사용되지 않음 *!
-
-        .book-info a {
-            color: #3498db;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-
-        .book-info a:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
-
-        !* Status Messages *!
-        .status-message {
-            grid-column: 1 / -1; !* 전체 너비 차지 *!
-            text-align: center;
-            padding: 20px;
-            font-size: 1rem;
-            border-radius: 4px;
-            margin-top: 20px; !* 위쪽 여백 *!
-        }
-
-        .loading {
-            background-color: #e8f4fd;
-            color: #3498db;
-        }
-
-        .error {
-            background-color: #ffe6e6;
-            color: #e74c3c;
-        }
-
-        .no-results {
-            background-color: #f0f0f0;
-            color: #777;
-        }
-
-        !* Pagination *!
-        #paginationContainer {
-            margin-top: 30px;
-            text-align: center;
-            width: 100%; !* 페이지네이션 너비 확보 *!
-        }
-        .pagination {
-            display: inline-flex; !* 버튼들을 한 줄에 *!
-            flex-wrap: wrap; !* 화면 작을 때 줄바꿈 *!
-            justify-content: center; !* 가운데 정렬 *!
-            gap: 5px; !* 버튼 사이 간격 *!
-        }
-        .pagination button, .pagination span {
-            display: inline-block;
-            padding: 8px 12px;
-            !* margin: 0 3px; 삭제 -> gap으로 대체 *!
-            border: 1px solid #ddd;
-            background-color: #fff;
-            color: #3498db;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            transition: background-color 0.3s, color 0.3s;
-            text-align: center;
-            min-width: 40px; !* 최소 너비 *!
-        }
-        .pagination button:hover:not(:disabled) {
-            background-color: #3498db;
-            color: #fff;
-        }
-        .pagination button:disabled, .pagination button.current {
-            background-color: #f0f0f0;
-            color: #999;
-            cursor: default;
-            border-color: #ddd; !* 비활성화 시 테두리 색상 *!
-        }
-        .pagination button.current {
-            background-color: #3498db;
-            color: #fff;
-            border-color: #3498db;
-            font-weight: bold;
-        }
-        .pagination span { !* 생략 부호 스타일 *!
-            border: none;
-            background-color: transparent;
-            color: #777;
-            cursor: default;
-            padding: 8px 5px;
-            align-self: center; !* 수직 가운데 정렬 *!
-        }
-
-        !* Responsive Design *!
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 20px;
-            }
-            .search-container {
-                flex-direction: column;
-                align-items: stretch;
-                margin-bottom: 20px;
-            }
-            .search-container button {
-                width: 100%;
-            }
-            #results {
-                grid-template-columns: 1fr; !* 모바일에서는 1열 *!
-                gap: 15px;
-            }
-            .book-item {
-                flex-direction: row; !* 모바일에서도 가로 배치 유지하되 조정 *!
-                align-items: flex-start; !* 위쪽 정렬 *!
-                text-align: left; !* 왼쪽 정렬 *!
-            }
-            .book-item img {
-                max-width: 60px; !* 이미지 크기 약간 줄임 *!
-                margin-right: 10px;
-                margin-bottom: 0; !* 아래 여백 제거 *!
-            }
-            .book-info h3 {
-                font-size: 1rem;
-                -webkit-line-clamp: 3; !* 모바일에서 3줄까지 허용 *!
-            }
-            .book-info p {
-                font-size: 0.8rem;
-            }
-            .pagination button, .pagination span {
-                padding: 6px 10px;
-                font-size: 0.85rem;
-                min-width: 35px;
-            }
-        }
-        @media (max-width: 480px) {
-            .book-item {
-                !* 필요시 더 작은 화면에서 세로 배치로 변경 가능 *!
-                !* flex-direction: column;
-                align-items: center;
-                text-align: center; *!
-            }
-            .book-item img {
-                !* flex-direction: column; 시 활성화 *!
-                !* margin-right: 0;
-                margin-bottom: 10px; *!
-            }
-        }
-
-        !* Accessibility *!
-        input:focus, button:focus, a:focus {
-            outline: 2px solid #3498db;
-            outline-offset: 2px;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); !* 포커스 시 강조 *!
-        }
-
-        button:disabled {
-            background-color: #bdc3c7; !* 좀 더 연한 회색 *!
-            color: #7f8c8d; !* 비활성 텍스트 색 *!
-            cursor: not-allowed;
-            transform: none; !* 비활성 시 효과 제거 *!
-            box-shadow: none; !* 비활성 시 그림자 제거 *!
-        }
-        button:disabled:hover {
-            background-color: #bdc3c7; !* 호버해도 색상 유지 *!
-        }
-*/
-
-        /*아이콘 임포트*/
-        /* Fontawesome 4.7 */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-
-        /*로고용 폰트: cafe24슈퍼매직*/
-        @font-face {
-            font-family: 'Cafe24Supermagic-Bold-v1.0';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
-            font-weight: 700;
-            font-style: normal;
-        }
-
-        /*홈페이지 메인 폰트: 고운바탕*/
-        @font-face {
-            font-family: 'GowunBatang-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*고운돋움*/
-        @font-face {
-            font-family: 'GowunDodum-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*조선굴림*/
-        @font-face {
-            font-family: 'ChosunGu';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*온글잎콘콘*/
-        @font-face {
-            font-family: 'Ownglyph_corncorn-Rg';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*나눔손글씨펜*/
-        @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
-        /*font-family: 'NanumPen';*/
-
-        /*학교안심꼬꼬마*/
-        @font-face {
-            font-family: 'TTHakgyoansimKkokkomaR';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*심경하*/
-        @font-face {
-            font-family: 'SimKyungha';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*다이어리*/
-        @font-face {
-            font-family: 'EarlyFontDiary';
-            src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /* 컬러 파레트 */
-        :root{
-            --main-color-dark: #00479B;
-            --main-color-middle: #83C7FF;
-            --main-color-light: #E3F4FF;
-            --assist-color-dark: #CE7000;
-            --assist-color-middle: #FFB90B;
-            --assist-color-light: #FFF7E6;
-            --cancle-color-dark: #9B9B9B;
-            --cancle-color-middle: #D3D3D3;
-            --cancle-color-light: #EAEAEA;
-            --crown-color: #ffa500;
-
-            /*사용법: var(--main-color-middle)*/
-            --border-big: 20px;/*큰거...뭐가잇지...*/
-            --border-middle: 10px;/*img*/
-            --border-circle: 50%;/*동그리버튼*/
-
-            /*폰트 사이즈 정의*/
-            --font-size-0: 28px;
-            --font-size-1: 23px;
-            --font-size-2: 18px;
-            --font-size-3: 13px;
-            --font-size-4: 8px;
-
-            /*쪽지 색상 지정*/
-            --memo1-color-dark: #00479B;
-            --memo1-color-middle: #83C7FF;
-            --memo1-color-light: #E3F4FF;
-            --memo1-color-back: #B0CAD6;
-
-            --memo2-color-dark: #CE7000;
-            --memo2-color-middle: #FFB90B;
-            --memo2-color-light: #FFF7E6;
-            --memo2-color-back: #EAD4AD;
-
-            --memo3-coler-dark: #841A1A;
-            --memo3-coler-middle: #FF9494;
-            --memo3-coler-light: #FFE9E9;
-            --memo3-coler-back: #D6B0B0;
-
-            --memo4-coler-dark: #325900;
-            --memo4-coler-middle: #97CE41;
-            --memo4-coler-light: #F6FFD9;
-            --memo4-coler-back: #CCD3AE;
-
-            --memo5-coler-dark: #A04800;
-            --memo5-coler-middle: #FF8B00;
-            --memo5-coler-light: #FFE3CA;
-            --memo5-coler-back: #C9A88D;
-
-            --memo6-coler-dark: #6A297A;
-            --memo6-coler-middle: #AF80CE;
-            --memo6-coler-light: #F5EEFF;
-            --memo6-coler-back: #CDC3DD;
-
-            --memo7-coler-dark: #1F1F77;
-            --memo7-coler-middle: #7A8CE5;
-            --memo7-coler-light: #E9ECFF;
-            --memo7-coler-back: #B2B8D3;
-
-            --memo8-coler-dark: #006466;
-            --memo8-coler-middle: #66C6DD;
-            --memo8-coler-light: #EBFFFF;
-            --memo8-coler-back: #B8D3D2;
-        }
-
-        /* Global 스타일 초기화 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Gowun Batang";
-            font-size: var(--font-size-2);
-        }
-
-        /* 기본 설정 */
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%; /* 가로를 화면에 맞게 설정 */
-        }
-
-        /* 컨테이너 스타일 */
-        .container {
-            border: 1px solid slateblue;
-            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-
-        /*버튼 기본 규격*/
-        .btn_circle{
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .btn_circle_big{
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-        }
-
-        .btn_long{
-            width: 100%;
-            height: 45px;
-            border-radius: 45px;
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-weight: bold;
-            max-width: 768px;
-        }
-
-        .btn_mini{
-            width: auto;
-            height: 25px;
-            border-radius: 20px;
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-size: var(--font-size-3);
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            margin-left: 5px;
-        }
-
-        .btn_icon{
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-        }
-
-        .box{
-            width: 100%;
-            height: auto;
-            border-radius: var(--border-big);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            max-width: 768px;
-        }
-
-        .title{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 10px;
-            font-weight: bold;
-        }
-
-        .bold{
-            font-weight: bold;
-        }
-
-        .dot{
-            width: 15px;
-            height: 15px;
-            border-radius: var(--border-circle);
-            display: flex;
-            margin-top: 5px;
-            margin-right: 5px;
-        }
-
-        .underline{
-            width: 130%;
-            height: 1px;
-        }
-
-        .line{
-            width: 100%;
-            height: 1px;
-        }
-
-        .blue{
-            background: var(--main-color-middle);
-        }
-        .yellow{
-            background: var(--assist-color-middle);
-        }
-        .dark_blue1{
-            background: var(--main-color-dark);
-        }
-        .dark_yellow1{
-            background: var(--assist-color-dark);
-        }
-        .dark_blue2{
-            color: var(--main-color-dark);
-        }
-        .dark_yellow2{
-            color: var(--assist-color-dark);
-        }
-        .light_blue{
-            background: var(--main-color-light);
-        }
-        .light_yellow{
-            background: var(--assist-color-light);
-        }
-        .dark_gray1{
-            background: var(--cancle-color-dark);
-        }
-        .dark_gray2{
-            color: var(--cancle-color-dark);
-        }
-        .gray{
-            background: var(--cancle-color-middle);
-        }
-        .light_gray{
-            background: var(--cancle-color-light);
-        }
-        .white{
-            background: white;
-        }
-
-        .blue_line_thin{
-            border: 1px solid var(--main-color-middle);
-        }
-        .yellow_line_thin{
-            border: 1px solid var(--assist-color-middle);
-        }
-
-        .input_long{
-            margin-bottom: 10px;
-            width: 100%;
-            height: 45px;
-            border-radius: 45px;
-            box-sizing: border-box;
-            text-align: center;
-            max-width: 768px;
-        }
-
-        .blue_line{
-            border: 2px solid var(--main-color-middle);
-            color: var(--main-color-dark);
-        }
-
-        .blue_line:focus{
-            border: 4px solid var(--main-color-middle);
-            color: var(--main-color-dark);
-            outline: none;
-        }
-
-        .yellow_line{
-            border: 2px solid var(--assist-color-middle);
-            color: var(--assist-color-dark);
-        }
-
-        .yellow_line:focus{
-            border: 4px solid var(--assist-color-middle);
-            color: var(--assist-color-dark);
-            outline: none;
-        }
-
-
-        /*체크박스 CSS*/
-
-        input[type="checkbox"]{
-            display: none;
-        }
-        input[type="checkbox"] + label{
-            margin-right: 5px;
-            display: inline-block;
-            background: white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            position: relative;
-        }
-        /*input[type="checkbox"] + label{
-            border:3px solid var(--main-color-middle);
-        }*/
-        /*input[type="checkbox"] + label{
-            border:3px solid var(--assist-color-middle);
-        }*/
-        input[type="checkbox"]:checked + label::after {
-            content: '✔';
-            font-size: 16px; /* 체크 아이콘 크기 조정 */
-            width: 22px; /* 내부 원 크기 */
-            height: 22px; /* 내부 원 크기 */
-            border: none; /* 중복 테두리 제거 */
-            color: white;
-            text-align: center;
-            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
-            position: absolute;
-            left: 50%; /* 중앙 정렬 */
-            top: 50%; /* 중앙 정렬 */
-            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
-            border-radius: 50%; /* 내부 원형 유지 */
-        }
-        /*input[type="checkbox"]:checked + label::after{
-            background: var(--main-color-middle);
-        }*/
-        /*input[type="checkbox"]:checked + label::after{
-            background: var(--assist-color-middle);
-        }*/
-
-        /*대표 이미지들 설정*/
-        .processImg{
-            width: 300px;
-            height: 300px;
-        }
-        .processImg img{
-            width: 100%;
-            height: 100%;
-        }
-
-
-        /* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
-        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
-            .container {
-                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
-            }
-        }
-
-        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
-            .container {
-                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
-            }
-        }
-        /* 헤더용 CSS들 */
-
-
-        .test1{
-            border: 1px solid red;
-        }
-        .test2{
-            border: 1px solid blue;
-        }
-
-        /*여기서부터 개별*/
-
-        .seperate{
-            width: 100%;
-            height: 45px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 768px;
-        }
-        .seperate_one{
-            flex: 1;
-        }
-        .seperate_two{
-            width: 45px;
-            height: 45px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .ad{
-            border: 1px solid blue;
-            height: 120px;
-        }
-
-        .btn_circle_mini{
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            justify-content: center; /* 수평 중앙 정렬 */
-            align-items: center; /* 수직 중앙 정렬 */
-        }
-
-        .input_none_long{
-            border: none;
-            text-align: center;
-            width: 95%;
-            font-family: GowunBatang-Regular;
-            color: var(--assist-color-dark);
-        }
-
-        .input_none_long:focus{
-            outline: none;
-        }
-
-        .input_none_long:focus + .seperate_two,
-        .input_none_long:focus ~ .seperate {
-            border: 3px solid var(--assist-color-middle); /* 원하는 색으로 변경 */
-        }
-
-        .controller{
-            display: flex;
-            width: 100%;
-            justify-content: space-between; /* 수평 중앙 정렬 */
-            align-items: center; /* 수직 중앙 정렬 */
-            max-width: 768px;
-            margin-bottom: 5px;
-        }
-        .book_cnt{
-            color: var(--main-color-dark);
-        }
-        .controller_list{
-            display: flex;
-            color: var(--assist-color-dark);
-        }
-        .menu_down{
-            color: var(--assist-color-middle);
-            margin-left: 5px;
-        }
-
-        .box_none{
-            width: 100%;
-            max-width: 786px;
-        }
-
+        @font-face { font-family: 'Cafe24Supermagic-Bold-v1.0'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2'); font-weight: 700; font-style: normal; }
+        @font-face { font-family: 'GowunBatang-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
+        @font-face { font-family: 'GowunDodum-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
+        :root {
+            --main-color-dark: #00479B; --main-color-middle: #83C7FF; --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000; --assist-color-middle: #FFB90B; --assist-color-light: #FFF7E6;
+            --font-size-0: 28px; --font-size-1: 23px; --font-size-2: 18px; --font-size-3: 13px; --font-size-4: 8px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "GowunBatang-Regular", sans-serif; font-size: var(--font-size-2); }
+        body { margin: 0; padding: 0; width: 100%; }
+        .container { max-width: 100%; padding: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .btn_circle { width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 10px; }
+        .btn_circle_mini { border: none; width: 35px; height: 35px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; background-color: transparent; padding: 0; }
+        .btn_circle_mini i { font-size: 1.2em; }
+        .btn_long { width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer; border: none; font-weight: bold; max-width: 768px; }
+        .input_long { margin-bottom: 10px; width: 100%; height: 45px; border-radius: 45px; box-sizing: border-box; text-align: center; max-width: 768px; display: flex; align-items: center; padding: 0 15px; }
+        .input_none_long { border: none; text-align: left; width: 100%; height: 100%; font-family: GowunBatang-Regular; color: var(--assist-color-dark); background: transparent; padding-left: 5px; }
+        .input_none_long:focus { outline: none; }
+        .yellow_line { border: 2px solid var(--assist-color-middle); color: var(--assist-color-dark); background-color: white; }
+        .blue { background: var(--main-color-middle); }
+        .yellow { background: var(--assist-color-middle); }
+        .seperate { width: 100%; height: 45px; display: flex; justify-content: space-between; align-items: center; max-width: 768px; }
+        .seperate_one { flex: 1; height: 100%; display: flex; align-items: center; }
+        .seperate_two { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; padding-right: 5px; }
+        .controller { display: flex; width: 100%; justify-content: space-between; align-items: center; max-width: 768px; margin-bottom: 5px; margin-top: 15px; padding: 0 5px; }
+        .book_cnt { color: var(--main-color-dark); font-size: var(--font-size-3); }
+        .controller_list { display: flex; color: var(--assist-color-dark); font-size: var(--font-size-3); cursor: pointer; }
+        .menu_down { color: var(--assist-color-middle); margin-left: 5px; }
+        .box_none { width: 100%; max-width: 786px; margin-top: 10px; }
+        .line { width: 100%; height: 1px; background: #eee; margin-bottom: 15px; }
+        .category-select { width: 100%; max-width: 768px; height: 45px; border-radius: 45px; border: 2px solid var(--assist-color-middle); background-color: white; color: var(--assist-color-dark); font-family: GowunBatang-Regular; font-size: var(--font-size-3); padding: 0 15px; margin-bottom: 10px; cursor: pointer; }
+        .category-select:focus { outline: none; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: #fff; min-width: 120px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 8px; right: 0; }
+        .dropdown-content div { color: var(--assist-color-dark); padding: 12px 16px; text-decoration: none; display: block; font-size: var(--font-size-3); cursor: pointer; }
+        .dropdown-content div:hover { background-color: var(--assist-color-light); }
+        .dropdown:hover .dropdown-content { display: block; }
+        #results {
+            max-width: 1200px; width: 100%; display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        @media (min-width: 768px) {
+            #results { grid-template-columns: repeat(2, 1fr); }
+        }
+        .book-item {
+            background-color: #fff; border: 1px solid #ddd; border-radius: 8px;
+            padding: 15px; display: flex; align-items: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .book-item.clickable-book-item { cursor: pointer; }
+        .book-item:hover.clickable-book-item {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+        }
+        .book-item img {
+            width: 70px; height: 100px; border-radius: 4px; margin-right: 15px;
+            object-fit: cover; flex-shrink: 0; background-color: #f0f0f0;
+        }
+        .book-info {
+            flex: 1; display: flex; flex-direction: column; min-height: 100px;
+        }
+        .book-info h3 {
+            font-size: 1.05rem; color: #333; margin: 0 0 5px; font-weight: bold;
+            overflow: hidden; text-overflow: ellipsis;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            line-height: 1.3;
+        }
+        .book-info p {
+            font-size: 0.85rem; color: #666; margin: 2px 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .status-message { grid-column: 1 / -1; text-align: center; padding: 20px; font-size: 1rem; border-radius: 4px; margin-top: 20px; }
+        .loading { background-color: #e8f4fd; color: #3498db; }
+        .error { background-color: #ffe6e6; color: #e74c3c; }
+        .no-results { background-color: #f0f0f0; color: #777; }
+        #paginationContainer { margin-top: 30px; text-align: center; width: 100%; }
+        .pagination { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+        .pagination button, .pagination span { display: inline-block; padding: 8px 12px; border: 1px solid #ddd; background-color: #fff; color: #3498db; cursor: pointer; border-radius: 4px; font-size: 0.9rem; transition: background-color 0.3s, color 0.3s; text-align: center; min-width: 40px; }
+        .pagination button:hover:not(:disabled) { background-color: #3498db; color: #fff; }
+        .pagination button:disabled, .pagination button.current { background-color: #f0f0f0; color: #999; cursor: default; border-color: #ddd; }
+        .pagination button.current { background-color: #3498db; color: #fff; border-color: #3498db; font-weight: bold; }
+        .pagination span { border: none; background-color: transparent; color: #777; cursor: default; padding: 8px 5px; align-self: center; }
     </style>
 </head>
 <body>
+<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
+
 <div class="container">
-    <div class="box ad">광고</div>
-<!--    <div class="seperate search-container">-->
-<!--        <div class="seperate_one">-->
-<!--            <input class="input_long blue_line" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">-->
-<!--        </div>-->
-<!--        <div class="seperate_two">-->
-<!--            <button class="btn_long blue" id="searchButton">검색</button>-->
-<!--        </div>-->
-<!--    </div>-->
-    <div class="seperate search-container input_long yellow_line">
+    <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
+        <option value="">전체 카테고리</option>
+        <option value="1">소설/시/희곡</option>
+        <option value="55889">만화</option>
+        <option value="170">경제경영</option>
+        <option value="336">자기계발</option>
+        <option value="656">인문학</option>
+        <option value="798">사회과학</option>
+        <option value="74">과학</option>
+        <option value="987">컴퓨터/모바일</option>
+        <option value="1383">어린이</option>
+        <option value="1137">유아</option>
+    </select>
+
+    <div class="seperate input_long yellow_line">
         <div class="seperate_one">
             <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">
         </div>
         <div class="seperate_two">
-            <button class="btn_circle_mini yellow" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="btn_circle_mini yellow" id="searchButton" aria-label="검색"><i class="fas fa-search"></i></button>
         </div>
     </div>
+
     <div class="controller">
-        <div class="book_cnt">12건</div>
-        <div class="controller_list">최신순<div class="menu_down"><i class="fa-solid fa-caret-down"></i></div></div>
-        <!--<i class="fa-solid fa-caret-up"></i>-->
-    </div>
-    <div class="box_none">
-    <div class="line gray"></div>
-    <div id="results">
-        <!-- 검색 결과가 여기에 표시됩니다 -->
-
-        <div class="book_box_long">
-            <div class="book_img"><img src=""></div>
-            <div class="text"></div>
+        <div class="book_cnt">0건</div>
+        <div class="controller_list dropdown">
+            <div id="sortLabel">최신순</div>
+            <div class="menu_down"><i class="fas fa-caret-down"></i></div>
+            <div class="dropdown-content">
+                <div data-sort="PublishTime">최신순</div>
+                <div data-sort="SalesPoint">판매량순</div>
+                <div data-sort="Title">가나다순</div>
+            </div>
         </div>
+    </div>
 
+    <div class="box_none">
+        <div class="line"></div>
+        <div id="results"></div>
     </div>
-    </div>
-<div id="paginationContainer">
-    <!-- 페이지 번호 버튼이 여기에 동적으로 생성됩니다 -->
+
+    <div id="paginationContainer"></div>
 </div>
-</div>
+
 <script>
     const searchInput = document.getElementById('searchQuery');
     const searchButton = document.getElementById('searchButton');
+    const categorySelect = document.getElementById('categorySelect');
     const resultsContainer = document.getElementById('results');
     const paginationContainer = document.getElementById('paginationContainer');
+    const bookCountElement = document.querySelector('.book_cnt');
+    const sortLabel = document.getElementById('sortLabel');
+    const dropdownItems = document.querySelectorAll('.dropdown-content div');
 
     let currentPage = 1;
     let currentQuery = '';
+    let currentCategory = '';
+    let currentSort = 'PublishTime';
     let totalResults = 0;
     const itemsPerPage = 10;
-    const defaultQuery = "베스트셀러"; // 초기 검색어
 
-    // --- API 호출 함수 ---
-    async function fetchBooks(query, page) {
-        // 실제 API 엔드포인트로 교체해야 합니다.
-        // 예시: 로컬 개발 환경의 프록시 경로 또는 실제 API URL
-        const apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
+    // 정렬 선택 이벤트
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', () => {
+            console.log('Sort option clicked:', item.dataset.sort, item.textContent);
+            currentSort = item.dataset.sort;
+            sortLabel.textContent = item.textContent;
+            console.log('Current sort updated to:', currentSort);
+            performSearch(); // 항상 검색 실행
+        });
+    });
+
+    // 카테고리 선택 이벤트
+    categorySelect.addEventListener('change', () => {
+        currentCategory = categorySelect.value;
+        console.log('Category changed to:', currentCategory);
+        performSearch(); // 항상 검색 실행
+    });
+
+    // 검색 버튼 클릭 이벤트
+    searchButton.addEventListener('click', () => {
+        currentQuery = searchInput.value.trim();
+        console.log('Search button clicked with query:', currentQuery);
+        currentPage = 1;
+        performSearch();
+    });
+
+    // 검색 입력란 Enter 키 이벤트
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            currentQuery = searchInput.value.trim();
+            console.log('Enter key pressed with query:', currentQuery);
+            currentPage = 1;
+            performSearch();
+        }
+    });
+
+    // API 호출 함수
+    async function fetchBooks(query, page, category, sort) {
+        let apiUrl;
+        if (query.trim() === '') {
+            // 검색어가 없으면 베스트셀러 목록 호출 (ItemList.aspx)
+            apiUrl = `/api/search/bestsellers?page=${page}&size=${itemsPerPage}`;
+            if (category) {
+                apiUrl += `&categoryId=${encodeURIComponent(category)}`;
+            }
+            apiUrl += `&sort=${encodeURIComponent(sort)}`;
+        } else {
+            // 검색어가 있으면 키워드 검색 호출 (ItemSearch.aspx)
+            apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
+            if (category) {
+                apiUrl += `&categoryId=${encodeURIComponent(category)}`;
+            }
+            apiUrl += `&sort=${encodeURIComponent(sort)}`;
+        }
         console.log("Fetching books with URL:", apiUrl);
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(apiUrl, {
+                cache: 'no-store'
+            });
             if (!response.ok) {
-                console.error("API Response Status:", response.status, response.statusText);
-                const errorBody = await response.text();
-                console.error("API Error Body:", errorBody);
-                // 상태 코드별로 더 구체적인 오류 메시지 생성 가능
+                const errorText = await response.text();
+                console.error("API Response Status:", response.status, response.statusText, "Body:", errorText);
                 throw new Error(`HTTP 오류! 상태: ${response.status}`);
             }
-            const data = await response.json();
-            console.log("API Response Data:", data); // 응답 데이터 확인
+            const responseText = await response.text();
+            if (!responseText) {
+                console.log("API 응답 본문이 비어있습니다.");
+                return { books: [], totalResults: 0, currentPage: page };
+            }
+            const data = JSON.parse(responseText);
+            console.log("API Response Data:", data);
             return data;
         } catch (networkError) {
             console.error("Network or Fetch Error:", networkError);
@@ -894,315 +236,188 @@
         }
     }
 
-    // --- 상태 메시지 표시 함수 ---
+    // 상태 메시지 표시 함수
     function displayStatusMessage(type, message) {
         resultsContainer.innerHTML = `<div class="status-message ${type}">${message}</div>`;
-        paginationContainer.innerHTML = ''; // 상태 메시지 표시 시 페이지네이션 숨김
+        paginationContainer.innerHTML = '';
+        if (bookCountElement) {
+            bookCountElement.textContent = (type === 'loading') ? '...' : '0건';
+        }
     }
 
-    // --- 검색 결과 표시 함수 (ISBN13 사용, 화면 표시는 제거) ---
+    // 검색 결과 표시 함수
     function displayResults(paginatedResponse) {
-        resultsContainer.innerHTML = ''; // 이전 결과 초기화
+        resultsContainer.innerHTML = '';
 
-        // 응답 데이터 구조 확인
         if (!paginatedResponse || !paginatedResponse.books) {
             console.error("Invalid API response structure:", paginatedResponse);
-            displayStatusMessage('error', '잘못된 형식의 응답을 받았습니다.');
+            displayStatusMessage('error', '결과를 표시할 수 없습니다. (응답 형식 오류)');
             return;
         }
 
         const books = paginatedResponse.books;
-        const currentTotalResults = paginatedResponse.totalResults || 0;
+        if (currentPage === 1) {
+            totalResults = paginatedResponse.totalResults || 0;
+        }
+        const currentTotalResults = totalResults;
 
-        if (currentTotalResults === 0 && currentPage === 1) {
-            displayStatusMessage('no-results', `"${currentQuery}"에 대한 검색 결과가 없습니다.`);
-            totalResults = 0;
-            renderPagination(totalResults, currentPage, itemsPerPage);
+        if (bookCountElement) {
+            bookCountElement.textContent = `${currentTotalResults}건`;
+        }
+
+        if (currentTotalResults === 0) {
+            displayStatusMessage('no-results', currentQuery ? `"${currentQuery}"에 대한 검색 결과가 없습니다.` : '검색 결과가 없습니다.');
+            renderPagination(currentTotalResults, currentPage, itemsPerPage);
             return;
         } else if (!books || books.length === 0) {
-            displayStatusMessage('no-results', '해당 페이지에 표시할 결과가 없습니다.');
-            renderPagination(totalResults, currentPage, itemsPerPage);
+            displayStatusMessage('no-results', '더 이상 결과가 없습니다.');
+            renderPagination(currentTotalResults, currentPage, itemsPerPage);
             return;
         }
 
-        if (currentPage === 1) {
-            totalResults = currentTotalResults;
-        }
+        // 디버깅: 반환된 책 목록 출력
+        console.log('Books received:', books.map(book => ({
+            title: book.title,
+            categoryId: book.categoryId, // 알라딘 API에서 제공하는 경우
+            isbn13: book.isbn13
+        })));
 
         books.forEach(book => {
             const bookElement = document.createElement('div');
-            bookElement.classList.add('book-item');
-            bookElement.classList.add('clickable-book-item');
-            bookElement.dataset.title = book.title || '제목 없음';
-            bookElement.dataset.price = (typeof book.priceStandard === 'number' && book.priceStandard > 0) ? book.priceStandard : '0';
-            // ✨ ISBN13 값은 데이터 속성에 저장 (클릭 시 사용) ✨
-            bookElement.dataset.isbn13 = book.isbn13 || 'ISBN 정보 없음';
+            bookElement.classList.add('book-item', 'clickable-book-item');
+            bookElement.dataset.isbn13 = book.isbn13 || '';
 
-            // 데이터 필드 안전하게 가져오기
-            const coverUrl = book.cover || '';
+            const coverUrl = book.cover || '/img/default_book_cover.png';
             const title = book.title || '제목 없음';
             const author = book.author || '저자 정보 없음';
             const publisher = book.publisher || '출판사 정보 없음';
             const price = book.priceStandard;
-            // const isbn13 = book.isbn13 || 'ISBN 정보 없음'; // 이 변수는 이제 innerHTML에 사용되지 않음
 
-            // HTML 구조 생성
-            const coverHtml = coverUrl
-                ? `<img src="${coverUrl}" alt="${title} 표지" loading="lazy">`
-                : '<div style="width:80px; height:110px; background:#eee; text-align:center; line-height:110px; font-size:0.8rem; color:#999; margin-right:15px; border-radius:4px;">No Image</div>';
-
-            const authorHtml = `<p><strong>저자:</strong> ${author}</p>`;
-            const publisherHtml = `<p><strong>출판사:</strong> ${publisher}</p>`;
+            const coverHtml = `<img src="${coverUrl}" alt="${title} 표지" loading="lazy" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">`;
             const priceHtml = (typeof price === 'number' && price > 0)
                 ? `<p><strong>가격:</strong> ${price.toLocaleString()}원</p>`
                 : '<p><strong>가격:</strong> 정보 없음</p>';
 
-            // ✨ bookElement.innerHTML 에서 isbnHtml 제거 ✨
             bookElement.innerHTML = `
-                    ${coverHtml}
-                    <div class="book-info">
-                        <h3>${title}</h3>
-                        <div> <!-- 저자, 출판사, 가격 그룹 -->
-                           ${authorHtml}
-                           ${publisherHtml}
-                           ${priceHtml}
-                           <!-- ISBN13 표시 제거됨 -->
-                        </div>
-                    </div>
-                `;
+                ${coverHtml}
+                <div class="book-info">
+                    <h3>${title}</h3>
+                    <p><strong>저자:</strong> ${author}</p>
+                    <p><strong>출판사:</strong> ${publisher}</p>
+                    ${priceHtml}
+                </div>
+            `;
+            // 책 클릭 이벤트 추가
+            bookElement.addEventListener('click', () => {
+                const bookId = bookElement.dataset.isbn13;
+                if (bookId) {
+                    console.log('Book clicked:', { title, bookId });
+                    window.location.href = `/payment?bookId=${encodeURIComponent(bookId)}`;
+                } else {
+                    console.error('Book ID missing for:', title);
+                    alert('도서 정보를 불러올 수 없습니다.');
+                }
+            });
             resultsContainer.appendChild(bookElement);
         });
 
-        renderPagination(totalResults, currentPage, itemsPerPage);
+        renderPagination(currentTotalResults, currentPage, itemsPerPage);
     }
 
-
-    // --- 페이지네이션 UI 렌더링 함수 ---
+    // 페이지네이션 UI 렌더링 함수
     function renderPagination(totalResults, currentPage, itemsPerPage) {
-        paginationContainer.innerHTML = ''; // 이전 페이지네이션 초기화
-        if (!totalResults || totalResults <= itemsPerPage) return; // 결과가 없거나 한 페이지 분량이면 표시 안 함
-
+        paginationContainer.innerHTML = '';
+        if (!totalResults || totalResults <= itemsPerPage) return;
         const totalPages = Math.ceil(totalResults / itemsPerPage);
-        if (totalPages <= 1) return; // 총 페이지가 1개 이하면 표시 안 함
+        if (totalPages <= 1) return;
 
         const paginationGroup = document.createElement('div');
         paginationGroup.classList.add('pagination');
-        paginationGroup.setAttribute('aria-label', '검색 결과 페이지네이션'); // 접근성 레이블 추가
+        paginationGroup.setAttribute('aria-label', '검색 결과 페이지네이션');
 
-        // "이전" 버튼
         const prevButton = document.createElement('button');
-        prevButton.textContent = '이전';
+        prevButton.innerHTML = '«';
         prevButton.disabled = currentPage === 1;
-        prevButton.setAttribute('aria-label', '이전 페이지로 이동');
+        prevButton.setAttribute('aria-label', '이전 페이지');
         prevButton.addEventListener('click', () => goToPage(currentPage - 1));
         paginationGroup.appendChild(prevButton);
 
-        // 페이지 번호 버튼들
-        const maxPageButtons = 5; // 한 번에 보여줄 최대 페이지 버튼 수
+        const maxPageButtons = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
         let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
-
-        // endPage 기준으로 startPage 조정 (페이지 버튼 수가 maxPageButtons보다 적을 경우)
         startPage = Math.max(1, endPage - maxPageButtons + 1);
 
-        // 첫 페이지 버튼 및 생략 부호 (...)
         if (startPage > 1) {
-            const firstButton = document.createElement('button');
-            firstButton.textContent = '1';
-            firstButton.setAttribute('aria-label', '1 페이지로 이동');
-            firstButton.addEventListener('click', () => goToPage(1));
+            const firstButton = document.createElement('button'); firstButton.textContent = '1';
+            firstButton.setAttribute('aria-label', '1 페이지'); firstButton.addEventListener('click', () => goToPage(1));
             paginationGroup.appendChild(firstButton);
-            if (startPage > 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.setAttribute('aria-hidden', 'true'); // 스크린리더가 읽지 않도록
-                paginationGroup.appendChild(ellipsis);
-            }
+            if (startPage > 2) { const ellipsis = document.createElement('span'); ellipsis.textContent = '...'; ellipsis.setAttribute('aria-hidden', 'true'); paginationGroup.appendChild(ellipsis); }
         }
-
-        // 중간 페이지 버튼들
         for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.textContent = i;
-            pageButton.setAttribute('aria-label', `${i} 페이지로 이동`);
-            if (i === currentPage) {
-                pageButton.classList.add('current');
-                pageButton.disabled = true;
-                pageButton.setAttribute('aria-current', 'page'); // 현재 페이지임을 명시
-            } else {
-                pageButton.addEventListener('click', () => goToPage(i));
-            }
+            const pageButton = document.createElement('button'); pageButton.textContent = i;
+            pageButton.setAttribute('aria-label', `${i} 페이지`);
+            if (i === currentPage) { pageButton.classList.add('current'); pageButton.disabled = true; pageButton.setAttribute('aria-current', 'page'); }
+            else { pageButton.addEventListener('click', () => goToPage(i)); }
             paginationGroup.appendChild(pageButton);
         }
-
-        // 마지막 페이지 버튼 및 생략 부호 (...)
         if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.setAttribute('aria-hidden', 'true');
-                paginationGroup.appendChild(ellipsis);
-            }
-            const lastButton = document.createElement('button');
-            lastButton.textContent = totalPages;
-            lastButton.setAttribute('aria-label', `${totalPages} 페이지로 이동`);
-            lastButton.addEventListener('click', () => goToPage(totalPages));
+            if (endPage < totalPages - 1) { const ellipsis = document.createElement('span'); ellipsis.textContent = '...'; ellipsis.setAttribute('aria-hidden', 'true'); paginationGroup.appendChild(ellipsis); }
+            const lastButton = document.createElement('button'); lastButton.textContent = totalPages;
+            lastButton.setAttribute('aria-label', `${totalPages} 페이지`); lastButton.addEventListener('click', () => goToPage(totalPages));
             paginationGroup.appendChild(lastButton);
         }
 
-        // "다음" 버튼
         const nextButton = document.createElement('button');
-        nextButton.textContent = '다음';
+        nextButton.innerHTML = '»';
         nextButton.disabled = currentPage === totalPages;
-        nextButton.setAttribute('aria-label', '다음 페이지로 이동');
+        nextButton.setAttribute('aria-label', '다음 페이지');
         nextButton.addEventListener('click', () => goToPage(currentPage + 1));
         paginationGroup.appendChild(nextButton);
 
         paginationContainer.appendChild(paginationGroup);
     }
 
-    // --- 특정 페이지로 이동하는 함수 ---
+    // 특정 페이지로 이동하는 함수
     async function goToPage(pageNumber) {
         const totalPages = Math.ceil(totalResults / itemsPerPage);
-        // 유효하지 않은 페이지 번호 또는 현재 페이지와 같은 경우 이동 중지
-        if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) {
-            console.log(`Invalid page navigation attempt to page ${pageNumber}. Current: ${currentPage}, Total Pages: ${totalPages}`);
-            return;
-        }
+        if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) return;
 
-        console.log(`Navigating to page ${pageNumber} for query "${currentQuery}"`);
-        currentPage = pageNumber; // 현재 페이지 업데이트
-        displayStatusMessage('loading', `페이지 ${pageNumber} 로딩 중...`); // 로딩 메시지 표시
-        searchButton.disabled = true; // 버튼 비활성화
-        searchInput.disabled = true; // 입력 필드 비활성화
+        currentPage = pageNumber;
+        displayStatusMessage('loading', `페이지 ${pageNumber} 로딩 중...`);
+        searchButton.disabled = true; searchInput.disabled = true; categorySelect.disabled = true;
 
         try {
-            const paginatedResponse = await fetchBooks(currentQuery, currentPage);
-            // displayResults 함수 내에서 totalResults는 첫 페이지 로드 시에만 업데이트됨
+            const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
             displayResults(paginatedResponse);
-            // 페이지 이동 후 페이지네이션은 displayResults 내부에서 renderPagination 호출로 업데이트됨
-            window.scrollTo(0, 0); // 페이지 이동 시 화면 상단으로 스크롤
         } catch (error) {
-            console.error(`페이지 ${pageNumber} 로드 오류:`, error);
-            displayStatusMessage('error', `페이지 ${pageNumber}를 불러오는 중 오류가 발생했습니다: ${error.message}`);
-            // 오류 발생 시에도 현재 페이지 기준 페이지네이션은 유지 (renderPagination 호출)
-            renderPagination(totalResults, currentPage, itemsPerPage);
+            console.error("Error during fetchBooks:", error);
+            displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}`);
         } finally {
-            searchButton.disabled = false; // 버튼 활성화
-            searchInput.disabled = false; // 입력 필드 활성화
+            searchButton.disabled = false; searchInput.disabled = false; categorySelect.disabled = false;
         }
     }
 
-    // --- 검색 실행 함수 ---
+    // 검색 실행 함수
     async function performSearch() {
-        let query = searchInput.value.trim();
-        // 빈 검색어 처리: 기본 검색어 사용 또는 사용자에게 알림
-        if (!query) {
-            // alert("검색어를 입력해주세요."); // 알림창 표시 (선택적)
-            // return; // 검색 중지
-            console.log("빈 검색어 입력 감지. 기본 검색어 '베스트셀러'로 검색합니다.");
-            query = defaultQuery;
-            searchInput.value = defaultQuery; // 입력창에도 기본값 표시
-        }
+        const displayQuery = currentQuery.trim() === '' ? '최신 베스트셀러' : `"${currentQuery}"`;
+        displayStatusMessage('loading', `${displayQuery} 검색 중...`);
+        searchButton.disabled = true; searchInput.disabled = true; categorySelect.disabled = true;
 
-        // 새 검색 시작 시 초기화
-        currentPage = 1;
-        currentQuery = query;
-        totalResults = 0; // 새 검색이므로 초기화
-
-        displayStatusMessage('loading', `"${query}" 검색 중...`); // 로딩 메시지
-        searchButton.disabled = true; // 버튼 비활성화
-        searchInput.disabled = true; // 입력 필드 비활성화
+        console.log('Performing search with:', { query: currentQuery, category: currentCategory, sort: currentSort });
 
         try {
-            const paginatedResponse = await fetchBooks(currentQuery, currentPage);
-            // displayResults 함수 내에서 totalResults가 설정됨
+            const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
             displayResults(paginatedResponse);
-            // 검색 완료 후 페이지네이션은 displayResults 내부에서 renderPagination 호출로 업데이트됨
         } catch (error) {
-            console.error('검색 오류:', error);
-            displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}. 관리자에게 문의하세요.`);
-            totalResults = 0; // 오류 시 결과 수 0으로 설정
-            renderPagination(totalResults, currentPage, itemsPerPage); // 빈 페이지네이션
+            console.error("Error during fetchBooks:", error);
+            displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}`);
         } finally {
-            searchButton.disabled = false; // 버튼 활성화
-            searchInput.disabled = false; // 입력 필드 활성화
+            searchButton.disabled = false; searchInput.disabled = false; categorySelect.disabled = false;
         }
     }
 
-    // --- 페이지 로드 시 초기 도서 목록 로드 함수 ---
-    async function loadInitialBooks() {
-        currentQuery = defaultQuery; // 초기 검색어 설정
-        currentPage = 1;
-        totalResults = 0; // 초기화
-
-        console.log(`Loading initial books with default query: "${defaultQuery}"`);
-        displayStatusMessage('loading', '추천 도서를 불러오는 중...'); // 초기 로딩 메시지
-        searchInput.disabled = true; // 초기 로딩 중 입력 방지
-        searchButton.disabled = true;
-
-        try {
-            const paginatedResponse = await fetchBooks(currentQuery, currentPage);
-            displayResults(paginatedResponse); // 결과 표시 및 페이지네이션
-        } catch (error) {
-            console.error('초기 도서 로드 오류:', error);
-            displayStatusMessage('error', `추천 도서를 불러오는 데 실패했습니다: ${error.message}. 나중에 다시 시도해주세요.`);
-            totalResults = 0;
-            renderPagination(totalResults, currentPage, itemsPerPage);
-        } finally {
-            searchInput.disabled = false; // 로딩 완료 후 입력 활성화
-            searchButton.disabled = false;
-        }
-    }
-
-    // --- 이벤트 리스너 설정 ---
-    searchButton.addEventListener('click', performSearch);
-
-    searchInput.addEventListener('keypress', function(event) {
-        // Enter 키 입력 시 검색 실행
-        if (event.key === 'Enter') {
-            event.preventDefault(); // 폼 제출 방지
-            performSearch();
-        }
-    });
-
-    // 결과 영역에 클릭 이벤트 리스너 추가 (이벤트 위임 방식)
-    resultsContainer.addEventListener('click', function(event) {
-        // 클릭된 요소 또는 그 부모 중에서 .clickable-book-item 클래스를 가진 가장 가까운 요소를 찾음
-        const clickedItem = event.target.closest('.clickable-book-item');
-
-        if (clickedItem) {
-            // 데이터 속성에서 책 정보 추출 (ISBN13 사용)
-            const title = clickedItem.dataset.title;
-            const price = clickedItem.dataset.price;
-            // ✨ 화면엔 없지만 데이터 속성에서 ISBN13 값 읽기 ✨
-            const isbn13 = clickedItem.dataset.isbn13;
-
-            console.log(`Book clicked: Title=${title}, Price=${price}, ISBN13=${isbn13}`);
-
-            // 결제 페이지 URL 생성 (쿼리 파라미터 사용 - ISBN13 값 전달)
-            const paymentUrl = '/payment'; // <<!-- 중요: 실제 결제 페이지 경로로 변경하세요! -->
-            const params = new URLSearchParams();
-            params.append('title', title);
-            params.append('price', price);
-
-            // 유효한 ISBN13 값만 파라미터에 추가
-            if (isbn13 && isbn13 !== 'ISBN 정보 없음') {
-                // 파라미터 이름을 'isbn' 또는 'isbn13' 중 결제 페이지에서 사용할 이름으로 지정
-                params.append('isbn', isbn13);
-            }
-
-            const urlWithParams = `${paymentUrl}?${params.toString()}`;
-            console.log("Navigating to payment page:", urlWithParams);
-
-            // 실제 페이지 이동 실행
-            window.location.href = urlWithParams;
-        }
-    });
-
-    // --- 페이지 로드 완료 시 초기 도서 목록 로드 실행 ---
-    document.addEventListener('DOMContentLoaded', loadInitialBooks);
-
+    // 페이지 로드 시 초기 검색 실행
+    performSearch();
 </script>
 </body>
 </html>
