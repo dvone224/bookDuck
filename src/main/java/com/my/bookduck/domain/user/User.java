@@ -66,7 +66,8 @@ public class User {
 
         this.nickName = nickName;
 
-        this.img = img;
+        if(img == null || img.equals("")) this.img = null;
+        else this.img = img;
 
         this.provider = provider;
         this.providerId = providerId;
