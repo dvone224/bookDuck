@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BookDuck² :: 결제 완료</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        .order-summary, .order-items {
+            border: 1px solid #ddd; padding: 20px; border-radius: 8px;
+            background-color: #f9f9f9; margin-bottom: 20px;
+        }
+        .order-summary p, .order-items p { margin: 10px 0; line-height: 1.6; }
+        .order-summary strong { display: inline-block; width: 120px; color: #555; }
+        .order-items h2 { font-size: 1.2em; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .item-details { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #eee; }
+        .item-details:last-child { border-bottom: none; }
+        .item-title { flex-grow: 1; margin-right: 15px; }
+        .item-price { font-weight: bold; min-width: 100px; text-align: right; }
+        .total-amount { font-size: 1.3em; font-weight: bold; color: #007bff; text-align: right; margin-top: 10px; }
+        .error-message { color: red; font-weight: bold; margin-bottom: 15px; background-color: #ffebeb; border: 1px solid #ffcaca; padding: 10px; border-radius: 4px; }
+        .nav-links { text-align: center; margin-top: 30px; }
+        .nav-links a { margin: 0 15px; color: #3498db; text-decoration: none; font-weight: bold; }
+        .nav-links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<h1>결제 완료</h1>
+
+<!-- 오류 메시지 표시 (있는 경우) -->
+<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+<!-- 주문 요약 정보 -->
+<div class="order-summary">
+    <p><strong>주문 번호:</strong> <span th:text="${orderId}"></span></p>
+    <p><strong>구매자:</strong> <span th:text="${customerName}"></span></p>
+    <p><strong>주문명:</strong> <span th:text="${orderName}"></span></p>
+    <p><strong>결제 키:</strong> <span th:text="${paymentKey}" style="font-size: 0.9em; color: #777;"></span></p>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">
+    <p class="total-amount"><strong>총 결제 금액:</strong> <span th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + '원'"></span></p>
+</div>
+
+<!-- 주문 상품 목록 -->
+<div class="order-items" th:if="${orderedItems != null and not #lists.isEmpty(orderedItems)}">
+    <h2>주문 상품 내역</h2>
+    <div th:each="item : ${orderedItems}" class="item-details">
+        <!-- ★★ item 객체가 getTitle(), getPrice() 메소드를 가지고 있다고 가정 ★★ -->
+        <span class="item-title" th:text="${item.title}">상품 제목</span>
+        <span class="item-price" th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">0원</span>
+    </div>
+</div>
+<div class="order-items" th:if="${orderedItems == null or #lists.isEmpty(orderedItems)}">
+    <p>주문 상품 정보를 불러올 수 없습니다.</p>
+</div>
+
+
+<!-- 네비게이션 링크 -->
+<div class="nav-links">
+    <a href="/">메인 페이지</a> |
+    <a href="/my-orders">주문 내역 확인</a> <!-- ★★ 실제 주문 내역 페이지 URL로 수정 ★★ -->
+</div>
+
+</body>
+</html>

@@ -319,7 +319,7 @@ public class AladinService {
      * @return boolean 유효하면 true
      */
     private boolean isValidBookItem(AladinBookItem item) {
-        if (item == null || item.getIsbn13() == null || item.getIsbn13().trim().isEmpty() || item.getIsbn13().length() != 13) {
+        if (item == null || item.getIsbn13() == null) {
             log.warn("부적합한 아이템 건너<0xEB><0x9A><0x81>니다 (ISBN13 없음 또는 형식 오류): title='{}', isbn13='{}'",
                     (item != null ? item.getTitle() : "null item"), (item != null ? item.getIsbn13() : "null item"));
             return false;
@@ -338,7 +338,7 @@ public class AladinService {
      */
     private Mono<Book> processBookItem(AladinBookItem apiItem, SyncResult result) {
         // findByIsbn13은 블로킹 I/O 이므로 별도 스레드에서 실행
-        return Mono.fromCallable(() -> bookRepository.findByIsbn13(apiItem.getIsbn13()))
+        return Mono.fromCallable(() -> bookRepository.findById(apiItem.getIsbn13()))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(existingBookOpt -> { // Optional<Book> 처리
                     if (existingBookOpt.isPresent()) {

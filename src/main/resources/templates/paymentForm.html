@@ -5,164 +5,158 @@
     <script src="https://js.tosspayments.com/v1/payment"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BookDuck² :: 결제</title>
+    <title>BookDuck² :: 결제하기</title> <!-- 타이틀 업데이트 -->
     <style>
-        /* 필요한 스타일 추가 */
-        body { font-family: sans-serif; padding: 20px; }
-        form label { display: block; margin-bottom: 8px; }
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        form { border: 1px solid #eee; padding: 20px; border-radius: 8px; background-color: #fafafa; }
+        form label { display: block; margin-bottom: 8px; font-weight: bold; color: #555;}
         form input[type="text"], form input[type="number"] {
-            width: 250px;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            width: calc(100% - 18px); padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;
         }
+        form input[readonly] { background-color: #eee; cursor: not-allowed; }
         form button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
+            padding: 10px 20px; color: white; border: none; border-radius: 4px;
+            cursor: pointer; font-size: 1rem; margin-right: 10px; transition: background-color 0.2s;
         }
-        form button:hover {
-            background-color: #0056b3;
-        }
-        .error-message { color: red; font-weight: bold; margin-bottom: 15px; }
+        form button:hover:not(:disabled) { opacity: 0.9; }
+        #payment-button { background-color: #007bff; }
+        #payment-button:hover:not(:disabled) { background-color: #0056b3; }
+        #add-to-cart-button { background-color: #28a745; }
+        #add-to-cart-button:hover:not(:disabled) { background-color: #218838; }
+        form button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .message-box { margin-bottom: 15px; padding: 10px; border-radius: 4px; border: 1px solid; }
+        .error-message { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        /* .owned-message 스타일은 JavaScript에서 필요시 동적으로 추가 가능 */
+        .button-group { margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<h2>결제 정보 입력</h2>
+<h2>상품 정보</h2>
 
-<!-- 서버에서 전달된 결제 오류 메시지 표시 -->
-<div th:if="${paymentError}" class="error-message" th:text="${paymentError}"></div>
-<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+<!-- 서버 메시지 표시 -->
+<div th:if="${paymentError}" class="message-box error-message" th:text="${paymentError}"></div>
+<div th:if="${errorMessage}" class="message-box error-message" th:text="${errorMessage}"></div>
 
-<!-- 세션에 로그인 사용자 정보가 없을 경우 메시지 표시 -->
+<!-- 로그인 필요 메시지 -->
 <div th:if="${session.loginuser == null}">
-    <p>결제를 진행하려면 로그인이 필요합니다.</p>
-    <!-- 로그인 페이지로 이동하는 링크 등 추가 가능 -->
+    <p>결제하거나 장바구니에 담으려면 <a href="/login-form">로그인</a>이 필요합니다.</p>
 </div>
 
-<!-- 로그인 상태일 때만 결제 폼 표시 -->
-<form id="payment-form" th:if="${session.loginuser != null}">
-    <label>상품명:
-        <input type="text" id="product-name" readonly required th:value="${productName}" style="background-color: #eee;">
-        <!-- 상품명은 수정 불가능하게 readonly 처리 -->
-    </label>
-    <label>가격(원):
-        <input type="number" id="amount" readonly required th:value="${amount}" style="background-color: #eee;">
-        <!-- 가격은 수정 불가능하게 readonly 처리 -->
-    </label>
-    <label>구매자 이름:
-        <input type="text" id="customer-name" required th:value="${session.loginuser.nickName}" value="구매자명 기본값">
-        <!-- 구매자 이름은 필요시 수정 가능하게 둘 수 있음 -->
-    </label>
+<!-- 로그인 상태일 때 폼 표시 -->
+<div th:if="${session.loginuser != null}">
+    <form id="payment-form">
+        <label for="product-name">상품명:</label>
+        <input type="text" id="product-name" readonly required th:value="${productName}">
 
-    <!-- 사용자 ID와 ISBN을 위한 숨겨진 필드 -->
-    <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
-    <input type="hidden" id="isbn" name="isbn" th:value="${isbn}" /> <!-- 컨트롤러에서 전달된 isbn 값 -->
+        <label for="amount">가격(원):</label>
+        <input type="number" id="amount" readonly required th:value="${amount}">
 
-    <button type="submit" id="payment-button">결제하기</button>
-</form>
+        <label for="customer-name">구매자 이름:</label>
+        <input type="text" id="customer-name" required th:value="${session.loginuser.nickName}">
 
-<!-- ====================================================== -->
-<!--          JavaScript 코드 (로그인 상태일 때만 실행)         -->
-<!-- ====================================================== -->
+        <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
+        <input type="hidden" id="isbn" name="isbn" th:value="${isbn}" /> <!-- String ISBN 값 -->
+
+        <!-- 버튼 그룹 -->
+        <div class="button-group">
+            <!-- ✨ Thymeleaf 소유 여부 관련 코드 제거 ✨ -->
+            <button type="button" id="payment-button">결제하기</button> <!-- 기본 활성화 -->
+            <button type="button" id="add-to-cart-button">장바구니 담기</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript (로그인 상태일 때만 포함) -->
 <script th:inline="javascript" th:if="${session.loginuser != null}">
     /*<![CDATA[*/
-
-    // 중요: 실제 서비스에서는 발급받은 Client Key 사용
-    const clientKey = "test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1"; // 테스트 키
+    const clientKey = "test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1"; // ★★ 실제 키로 변경 ★★
     const tossPayments = TossPayments(clientKey);
     const paymentButton = document.getElementById("payment-button");
+    const addToCartButton = document.getElementById("add-to-cart-button");
 
-    document.getElementById("payment-form").addEventListener("submit", function (e) {
-        e.preventDefault(); // 폼 기본 제출 방지
+    // --- ✨ 결제하기 버튼 클릭 리스너 (비동기 소유 확인 로직) ✨ ---
+    paymentButton.addEventListener("click", async function (e) { // async 추가
+        e.preventDefault();
 
-        // 결제 버튼 비활성화 (중복 요청 방지)
+        if (paymentButton.disabled) { return; } // 중복 클릭 방지
+
+        const userId = document.getElementById("userId").value;
+        const isbn = document.getElementById("isbn").value; // String ISBN
+
+        if (!userId || !isbn || isbn === 'ISBN 정보 없음' || isbn.trim() === '') { alert("결제 정보 부족."); return; }
+
+        let bookId; // Long 타입 Book ID
+        try { bookId = parseInt(isbn.trim(), 10); if (isNaN(bookId)) throw new Error(); }
+        catch (error) { alert("도서 정보(ISBN) 형식 오류."); return; }
+
         paymentButton.disabled = true;
+        paymentButton.textContent = "소유 확인 중...";
+
+        // --- 비동기 소유 여부 확인 ---
+        try {
+            // ✨ API 호출 경로 수정: /payment/check-ownership ✨
+            const checkResponse = await fetch(`/payment/check-ownership?bookId=${bookId}`); // API 호출
+
+            if (!checkResponse.ok) {
+                const errorData = await checkResponse.json().catch(() => ({ error: "서버 확인 응답 오류" }));
+                throw new Error(errorData.error || `소유 확인 실패 (${checkResponse.status})`);
+            }
+            const data = await checkResponse.json();
+
+            if (data.isOwned === true) { // ✨ 소유 중 처리 ✨
+                alert("이미 소장 중인 상품입니다.");
+                paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return; // 중단
+            }
+            console.log("소유하지 않음 확인. 결제 진행.");
+
+        } catch (error) { // API 호출 오류 처리
+            console.error("소유 확인 오류:", error);
+            alert("소유 여부 확인 중 오류: " + error.message);
+            paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return; // 중단
+        }
+        // --- 소유 여부 확인 끝 ---
+
+        // --- 결제 로직 시작 ---
         paymentButton.textContent = "결제 처리 중...";
 
-        // 폼에서 값 가져오기
         const productName = document.getElementById("product-name").value;
-        const amountInput = document.getElementById("amount");
-        const amount = parseInt(amountInput.value); // 정수로 변환
+        const amount = parseInt(document.getElementById("amount").value);
         const customerName = document.getElementById("customer-name").value;
-        const userId = document.getElementById("userId").value;
-        // ★★★ 숨겨진 필드에서 ISBN 값 가져오기 ★★★
-        const isbn = document.getElementById("isbn").value;
 
-        // 금액 유효성 검사
-        if (isNaN(amount) || amount <= 0) {
-            alert("결제 금액이 유효하지 않습니다.");
-            paymentButton.disabled = false; // 버튼 다시 활성화
-            paymentButton.textContent = "결제하기";
-            return;
-        }
+        if (isNaN(amount) || amount <= 0) { /* 금액 오류 처리 */ alert("결제 금액 오류."); paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return; }
 
-        // 고유한 주문 ID 생성 (충분히 고유하게 생성하는 방식 권장)
         const orderId = "order-" + new Date().getTime() + "-" + Math.random().toString(36).substring(2, 8);
+        const baseUrl = window.location.origin;
+        // Success/Fail URL 경로는 /payment/success, /payment/fail 유지
+        let successUrl = `${baseUrl}/payment/success?userId=${encodeURIComponent(userId)}&orderName=${encodeURIComponent(productName)}&customerName=${encodeURIComponent(customerName)}&isbn=${encodeURIComponent(isbn)}`;
+        const failUrl = `${baseUrl}/payment/fail?orderId=${orderId}`;
 
-        // === Success URL 구성 ===
-        // 기본 URL (현재 서버 주소 기준 상대 경로 또는 절대 경로 사용 가능)
-        // 주의: localhost는 개발 환경에서만 유효. 배포 시 실제 도메인/주소 사용해야 함.
-        const baseUrl = window.location.origin; // 예: http://localhost:8081
+        console.log("Requesting payment...", { amount, orderId, orderName: productName, customerName, userId, isbn });
 
-        // Toss Payments가 자동으로 추가할 파라미터 외에 필요한 파라미터(userId, isbn) 추가
-        let successUrl = `${baseUrl}/payment/success?userId=${encodeURIComponent(userId)}`;
-        successUrl += `&orderName=${encodeURIComponent(productName)}`; // ★ 상품명 추가
-        successUrl += `&customerName=${encodeURIComponent(customerName)}`; // ★ 구매자 이름 추가
+        // Toss Payments 결제 요청
+        tossPayments.requestPayment("카드", { amount, orderId, orderName: productName, customerName, successUrl, failUrl })
+            .then(res => console.log("Payment redirecting...", res))
+            .catch(err => {
+                console.error("Toss Error:", err);
+                paymentButton.disabled = false; paymentButton.textContent = "결제하기";
+                if (err.code === "USER_CANCEL") alert("결제 취소됨.");
+                else alert("결제 오류: " + (err.message || "알 수 없는 오류"));
+            });
+    });
 
-        // ★★★ ISBN 값이 유효하면 successUrl에 추가 ★★★
-        if (isbn && isbn !== 'ISBN 정보 없음' && isbn.trim() !== '') {
-            successUrl += `&isbn=${encodeURIComponent(isbn)}`;
-        } else {
-            console.warn("ISBN value is missing or invalid. It will not be added to the success URL.");
-            // ISBN이 없을 때의 처리 (예: 컨트롤러에서 required=false로 받고 null 처리)
-        }
-
-        // === Fail URL 구성 ===
-        const failUrl = `${baseUrl}/payment/fail?orderId=${orderId}`; // 실패 시에도 주문 ID는 전달
-
-        console.log("Requesting payment with data:", { amount, orderId, orderName: productName, customerName, userId, isbn });
-        console.log("Calculated Success URL:", successUrl); // ★★★ 전송될 Success URL 확인 ★★★
-        console.log("Calculated Fail URL:", failUrl);
-
-        // === Toss Payments 결제 요청 ===
-        tossPayments.requestPayment("카드", { // "카드", "가상계좌", "계좌이체" 등 결제수단 지정
-            amount: amount,              // 결제 금액
-            orderId: orderId,            // 주문 ID
-            orderName: productName,      // 주문명
-            customerName: customerName,  // 구매자 이름
-            successUrl: successUrl,      // ★★★ 성공 시 리디렉션될 URL (userId, isbn 포함) ★★★
-            failUrl: failUrl,            // 실패 시 리디렉션될 URL
-            // customerEmail: "customer@example.com", // 구매자 이메일 (선택)
-            // customerMobilePhone: "01012345678",   // 구매자 휴대폰 번호 (선택, 가상계좌 등에서 필요)
-            // customerKey: userId // Toss Payments 고객 식별 기능 사용 시 (선택)
-        }).then(function (response) {
-            // 성공 로직은 successUrl 리디렉션 후 서버에서 처리하므로 여기서는 특별히 할 일 없음
-            console.log("Payment request successful, redirecting to success URL...", response);
-            // 결제 창이 닫히고 successUrl로 이동됨
-        }).catch(function (error) {
-            console.error("Toss Payments Error:", error);
-            paymentButton.disabled = false; // 오류 발생 시 버튼 다시 활성화
-            paymentButton.textContent = "결제하기";
-
-            if (error.code === "USER_CANCEL") {
-                alert("결제를 취소했습니다.");
-            } else if (error.code === "INVALID_CARD_NUMBER") {
-                alert("카드 번호가 유효하지 않습니다.");
-            } else if (error.code === "INVALID_ORDER_NAME") {
-                alert("주문명이 너무 길거나 유효하지 않습니다.");
-            }
-            // 기타 다양한 오류 코드 처리 가능
-            else {
-                alert("결제 중 오류가 발생했습니다: " + (error.message || "알 수 없는 오류"));
-            }
-        });
+    // --- 장바구니 담기 로직 (변경 없음) ---
+    addToCartButton.addEventListener("click", function() {
+        const userId = document.getElementById("userId").value; const isbn = document.getElementById("isbn").value;
+        if (!userId || !isbn || isbn === 'ISBN 정보 없음' || isbn.trim() === '') { alert("장바구니 정보 누락"); return; }
+        try { parseInt(isbn.trim(), 10); } catch(e) { alert("유효하지 않은 도서 정보"); return; }
+        addToCartButton.disabled = true; addToCartButton.textContent = "담는 중...";
+        const formData = new FormData(); formData.append('userId', userId); formData.append('bookId', isbn);
+        fetch('/cart', { method: 'POST', body: formData }) // POST /cart 로 요청
+            .then(response => { if (response.ok) { alert('장바구니 담기 성공!'); } else { response.json().then(data => alert('실패: '+(data.message||'서버 오류'))).catch(()=>response.text().then(text=>alert('실패: '+(text||'서버 오류')))); }})
+            .catch(error => { console.error('Error:', error); alert('오류 발생'); })
+            .finally(() => { addToCartButton.disabled = false; addToCartButton.textContent = "장바구니 담기"; });
     });
 
     /*]]>*/

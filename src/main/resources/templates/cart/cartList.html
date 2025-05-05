@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+    <title>BookDuck² :: 장바구니</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 960px; margin: auto; }
+        h2, h3 { margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: middle; }
+        th { background-color: #f2f2f2; }
+        td img { max-width: 60px; height: auto; display: block; margin-right: 10px; }
+        td a { color: #007bff; text-decoration: none; }
+        td a:hover { text-decoration: underline; }
+        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; color: white; margin-left: 5px; transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out; }
+        button:hover:not(:disabled) { opacity: 0.9; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .remove-button { background-color: #dc3545; }
+        .remove-button:hover:not(:disabled) { background-color: #c82333; }
+        .cart-summary { border-top: 2px solid #eee; padding-top: 20px; margin-top: 20px; text-align: right; }
+        .cart-summary h3 { margin-bottom: 15px; font-size: 1.2rem; }
+        .cart-summary span { font-weight: bold; color: #007bff; }
+        #checkout-button { background-color: #007bff; padding: 10px 25px; font-size: 1rem; }
+        #checkout-button:hover:not(:disabled) { background-color: #0056b3; }
+        .empty-cart-message { text-align: center; padding: 30px; color: #666; border: 1px dashed #ccc; margin-top: 20px; }
+        .error-message { color: red; font-weight: bold; margin-bottom: 15px; background-color: #ffebeb; border: 1px solid #ffcaca; padding: 10px; border-radius: 4px; }
+        .page-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="page-title">
+    <span th:if="${session.loginuser}" th:text="${session.loginuser.nickName} + '님의 장바구니'">장바구니</span>
+    <span th:unless="${session.loginuser}">장바구니</span>
+</div>
+
+<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+<div id="empty-cart-msg-container" th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="empty-cart-message">
+    <p>장바구니가 비어 있습니다.</p>
+    <a href="/shop/shopList">쇼핑 계속하기</a>
+</div>
+
+<div id="cart-content-container" th:unless="${cartItems == null or #lists.isEmpty(cartItems)}">
+    <table id="cart-table">
+        <thead>
+        <tr>
+            <th style="width: 10%;">상품 이미지</th>
+            <th>상품명</th>
+            <th style="width: 15%; text-align: right;">가격</th>
+            <th style="width: 10%; text-align: center;">삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cartItems}" th:data-bookid="${item.bookId}" class="cart-item-row">
+            <td>
+                <img th:if="${item.book?.cover}" th:src="@{${item.book.cover}}" alt="Book Cover"/>
+                <span th:unless="${item.book?.cover}">이미지 없음</span>
+            </td>
+            <td>
+                <a th:if="${item.book}" th:href="@{/book/{bookId}(bookId=${item.book.id})}" th:text="${item.book.title}">책 제목</a>
+                <span th:unless="${item.book}">상품 정보 없음</span>
+            </td>
+            <td style="text-align: right;">
+                <span class="item-price" th:if="${item.book}" th:text="${#numbers.formatInteger(item.book.price, 0, 'COMMA')} + '원'">0원</span>
+            </td>
+            <td style="text-align: center;">
+                <button type="button" class="remove-button"
+                        th:data-userid="${item.userId}"
+                        th:data-bookid="${item.bookId}">삭제</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="cart-summary">
+        <h3>총 결제 금액: <span id="total-amount-display" th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + '원'">0원</span></h3>
+        <button type="button" id="checkout-button">결제하기</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // 장바구니 아이템 삭제 함수
+    function removeCartItem(buttonElement, userId, bookId) {
+        if (!confirm('정말로 이 상품을 장바구니에서 삭제하시겠습니까?')) { return; }
+        buttonElement.disabled = true;
+        buttonElement.textContent = '삭제 중...';
+        fetch(`/cart/remove/${userId}/${bookId}`, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    const rowToRemove = buttonElement.closest('tr');
+                    if (rowToRemove) {
+                        rowToRemove.remove();
+                        updateTotalAmount();
+                        checkIfCartIsEmpty();
+                        alert('상품이 장바구니에서 삭제되었습니다.');
+                    }
+                } else {
+                    response.text().then(text => {
+                        let msg = '삭제 실패: 서버 오류';
+                        try {
+                            const d = JSON.parse(text);
+                            msg = '삭제 실패: ' + (d.message || text);
+                        } catch (e) {
+                            msg = '삭제 실패: ' + text;
+                        }
+                        alert(msg);
+                    }).catch(() => {
+                        alert('삭제 실패: 응답 처리 불가');
+                    });
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = '삭제';
+                }
+            }).catch(error => {
+            console.error('삭제 오류:', error);
+            alert('삭제 중 오류 발생');
+            buttonElement.disabled = false;
+            buttonElement.textContent = '삭제';
+        });
+    }
+
+    // 총 금액 업데이트 함수
+    function updateTotalAmount() {
+        let newTotal = 0;
+        document.querySelectorAll('#cart-table tbody tr .item-price').forEach(s => {
+            const p = s.textContent.replace(/[^0-9]/g, '');
+            if (p) {
+                newTotal += parseInt(p, 10);
+            }
+        });
+        const el = document.getElementById('total-amount-display');
+        if (el) {
+            el.textContent = new Intl.NumberFormat('ko-KR').format(newTotal) + '원';
+        }
+        console.log("Total updated:", newTotal);
+    }
+
+    // 장바구니 비었는지 확인 함수
+    function checkIfCartIsEmpty() {
+        const body = document.querySelector('#cart-table tbody'),
+            msg = document.getElementById('empty-cart-msg-container'),
+            cont = document.getElementById('cart-content-container');
+        if (body && body.rows.length === 0) {
+            if (cont) cont.style.display = 'none';
+            if (msg) msg.style.display = 'block';
+        } else {
+            if (cont) cont.style.display = 'block';
+            if (msg) msg.style.display = 'none';
+        }
+    }
+
+    // 삭제 버튼 이벤트 리스너
+    document.querySelectorAll('.remove-button').forEach(b => {
+        b.addEventListener('click', function() {
+            const uid = this.dataset.userid,
+                bid = this.dataset.bookid;
+            if (uid && bid) {
+                removeCartItem(this, uid, bid);
+            } else {
+                alert('삭제 정보 없음');
+            }
+        });
+    });
+
+    // Toss Payments 결제 시작 로직
+    const clientKey = "test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1";
+    const tossPayments = TossPayments(clientKey);
+    const checkoutButton = document.getElementById('checkout-button');
+    const currentUserId = /*[[${currentUserId}]]*/ null;
+    const currentUserNickName = /*[[${currentUserNickName}]]*/ null;
+
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function() {
+            const el = document.getElementById('total-amount-display'),
+                amtTxt = el ? el.textContent.replace(/[^0-9]/g, '') : '0';
+            const amount = parseInt(amtTxt, 10);
+            if (isNaN(amount) || amount <= 0) {
+                alert('결제 금액이 없습니다.');
+                return;
+            }
+            if (!currentUserId || !currentUserNickName) {
+                alert('사용자 정보가 없습니다.');
+                return;
+            }
+            checkoutButton.disabled = true;
+            checkoutButton.textContent = '결제 처리 중...';
+
+            const firstTitle = document.querySelector('#cart-table tbody tr td a');
+            const numItems = document.querySelectorAll('#cart-table tbody tr.cart-item-row').length;
+            let orderName = "BookDuck² 장바구니 상품";
+            if (firstTitle && numItems > 0) {
+                orderName = firstTitle.textContent;
+                if (numItems > 1) {
+                    orderName += ` 외 ${numItems - 1}건`;
+                }
+                if (orderName.length > 100) {
+                    orderName = orderName.substring(0, 97) + "...";
+                }
+            }
+            const orderId = "bookduck-cart-" + new Date().getTime() + "-" + Math.random().toString(36).substring(2, 8);
+            const rows = document.querySelectorAll('#cart-table tbody tr.cart-item-row');
+            const bookIds = Array.from(rows).map(r => r.dataset.bookid).filter(id => id);
+            const isbnString = bookIds.join(',');
+            if (bookIds.length === 0) {
+                alert("결제할 상품이 없습니다.");
+                checkoutButton.disabled = false;
+                checkoutButton.textContent = '결제하기';
+                return;
+            }
+            const base = window.location.origin;
+            let successUrl = `${base}/payment/success?userId=${encodeURIComponent(currentUserId)}&orderId=${encodeURIComponent(orderId)}&amount=${encodeURIComponent(amount)}&orderName=${encodeURIComponent(orderName)}&customerName=${encodeURIComponent(currentUserNickName)}&isbn=${encodeURIComponent(isbnString)}`;
+            let failUrl = `${base}/payment/fail?orderId=${encodeURIComponent(orderId)}`;
+            console.log("Payment Request:", { amount, orderId, orderName, customerName: currentUserNickName, userId: currentUserId, isbns: bookIds });
+            console.log("Success URL:", successUrl);
+            console.log("Fail URL:", failUrl);
+            tossPayments.requestPayment("카드", {
+                amount: amount,
+                orderId: orderId,
+                orderName: orderName,
+                customerName: currentUserNickName,
+                successUrl: successUrl,
+                failUrl: failUrl
+            }).then(res => {
+                console.log("Redirecting...", res);
+            }).catch(err => {
+                console.error("Toss Error:", err);
+                checkoutButton.disabled = false;
+                checkoutButton.textContent = '결제하기';
+                if (err.code === "USER_CANCEL") {
+                    alert("결제가 취소되었습니다.");
+                } else {
+                    alert("결제 오류: " + (err.message || "알 수 없는 오류"));
+                }
+            });
+        });
+    } else {
+        console.error("Checkout button not found.");
+    }
+    document.addEventListener('DOMContentLoaded', checkIfCartIsEmpty);
+    /*]]>*/
+</script>
+</body>
+</html>

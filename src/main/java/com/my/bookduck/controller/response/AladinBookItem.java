@@ -11,7 +11,7 @@ public class AladinBookItem {
     private String publisher;
     private String pubDate; // 출간일
     private String cover; // 표지 이미지 URL
-    private String isbn13; // ISBN
+    private Long isbn13; // ISBN
     private int priceStandard; // 정가
     private String description;
     private String link; // 알라딘 상품 링크
