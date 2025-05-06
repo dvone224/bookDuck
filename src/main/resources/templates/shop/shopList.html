@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
-    <title>BookDuck²::북덕이 서점</title>
+    <title>BookDuck²::북덕이 eBook 서점</title>
     <style>
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
         @font-face { font-family: 'Cafe24Supermagic-Bold-v1.0'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2'); font-weight: 700; font-style: normal; }
@@ -113,7 +113,7 @@
 
     <div class="seperate input_long yellow_line">
         <div class="seperate_one">
-            <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">
+            <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 eBook을 찾아볼까요?" aria-label="eBook 검색">
         </div>
         <div class="seperate_two">
             <button class="btn_circle_mini yellow" id="searchButton" aria-label="검색"><i class="fas fa-search"></i></button>
@@ -164,23 +164,25 @@
             console.log('Sort option clicked:', item.dataset.sort, item.textContent);
             currentSort = item.dataset.sort;
             sortLabel.textContent = item.textContent;
+            currentPage = 1; // 페이지 리셋
             console.log('Current sort updated to:', currentSort);
-            performSearch(); // 항상 검색 실행
+            performSearch();
         });
     });
 
     // 카테고리 선택 이벤트
     categorySelect.addEventListener('change', () => {
         currentCategory = categorySelect.value;
+        currentPage = 1; // 페이지 리셋
         console.log('Category changed to:', currentCategory);
-        performSearch(); // 항상 검색 실행
+        performSearch();
     });
 
     // 검색 버튼 클릭 이벤트
     searchButton.addEventListener('click', () => {
         currentQuery = searchInput.value.trim();
-        console.log('Search button clicked with query:', currentQuery);
         currentPage = 1;
+        console.log('Search button clicked with query:', currentQuery);
         performSearch();
     });
 
@@ -188,8 +190,8 @@
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             currentQuery = searchInput.value.trim();
-            console.log('Enter key pressed with query:', currentQuery);
             currentPage = 1;
+            console.log('Enter key pressed with query:', currentQuery);
             performSearch();
         }
     });
@@ -198,41 +200,45 @@
     async function fetchBooks(query, page, category, sort) {
         let apiUrl;
         if (query.trim() === '') {
-            // 검색어가 없으면 베스트셀러 목록 호출 (ItemList.aspx)
             apiUrl = `/api/search/bestsellers?page=${page}&size=${itemsPerPage}`;
             if (category) {
                 apiUrl += `&categoryId=${encodeURIComponent(category)}`;
             }
-            apiUrl += `&sort=${encodeURIComponent(sort)}`;
+            if (sort) {
+                apiUrl += `&sort=${encodeURIComponent(sort)}`;
+            }
+            console.log('Fetching bestsellers with URL:', apiUrl, { query, category, sort });
         } else {
-            // 검색어가 있으면 키워드 검색 호출 (ItemSearch.aspx)
             apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
             if (category) {
                 apiUrl += `&categoryId=${encodeURIComponent(category)}`;
             }
-            apiUrl += `&sort=${encodeURIComponent(sort)}`;
+            if (sort) {
+                apiUrl += `&sort=${encodeURIComponent(sort)}`;
+            }
+            console.log('Fetching books with URL:', apiUrl, { query, category, sort });
         }
-        console.log("Fetching books with URL:", apiUrl);
         try {
             const response = await fetch(apiUrl, {
-                cache: 'no-store'
+                cache: 'no-store',
+                headers: { 'Accept': 'application/json' }
             });
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error("API Response Status:", response.status, response.statusText, "Body:", errorText);
+                console.error('API Response Error:', response.status, response.statusText, 'Body:', errorText);
                 throw new Error(`HTTP 오류! 상태: ${response.status}`);
             }
-            const responseText = await response.text();
-            if (!responseText) {
-                console.log("API 응답 본문이 비어있습니다.");
-                return { books: [], totalResults: 0, currentPage: page };
-            }
-            const data = JSON.parse(responseText);
-            console.log("API Response Data:", data);
+            const data = await response.json();
+            console.log('API Response Data (first 3 books):', data.books?.slice(0, 3).map(b => ({
+                title: b.title,
+                isbn13: b.isbn13,
+                pubDate: b.pubDate,
+                categoryId: b.categoryId
+            })));
             return data;
-        } catch (networkError) {
-            console.error("Network or Fetch Error:", networkError);
-            throw new Error(`네트워크 오류 또는 서버에 연결할 수 없습니다: ${networkError.message}`);
+        } catch (error) {
+            console.error('Fetch Error:', error);
+            throw error;
         }
     }
 
@@ -241,45 +247,46 @@
         resultsContainer.innerHTML = `<div class="status-message ${type}">${message}</div>`;
         paginationContainer.innerHTML = '';
         if (bookCountElement) {
-            bookCountElement.textContent = (type === 'loading') ? '...' : '0건';
+            bookCountElement.textContent = type === 'loading' ? '...' : '0건';
         }
     }
 
     // 검색 결과 표시 함수
     function displayResults(paginatedResponse) {
         resultsContainer.innerHTML = '';
+        const categoryText = currentCategory ? categorySelect.options[categorySelect.selectedIndex]?.text : '전체 카테고리';
 
         if (!paginatedResponse || !paginatedResponse.books) {
-            console.error("Invalid API response structure:", paginatedResponse);
+            console.error('Invalid API response structure:', paginatedResponse);
             displayStatusMessage('error', '결과를 표시할 수 없습니다. (응답 형식 오류)');
             return;
         }
 
         const books = paginatedResponse.books;
-        if (currentPage === 1) {
-            totalResults = paginatedResponse.totalResults || 0;
-        }
-        const currentTotalResults = totalResults;
-
+        totalResults = paginatedResponse.totalResults || 0;
         if (bookCountElement) {
-            bookCountElement.textContent = `${currentTotalResults}건`;
+            bookCountElement.textContent = `${totalResults}건`;
         }
 
-        if (currentTotalResults === 0) {
-            displayStatusMessage('no-results', currentQuery ? `"${currentQuery}"에 대한 검색 결과가 없습니다.` : '검색 결과가 없습니다.');
-            renderPagination(currentTotalResults, currentPage, itemsPerPage);
-            return;
-        } else if (!books || books.length === 0) {
-            displayStatusMessage('no-results', '더 이상 결과가 없습니다.');
-            renderPagination(currentTotalResults, currentPage, itemsPerPage);
+        if (totalResults === 0 || !books || books.length === 0) {
+            let message;
+            if (currentQuery) {
+                message = `"${categoryText} > ${currentQuery}" (eBook)에 대한 검색 결과가 없습니다.`;
+            } else if (currentCategory) {
+                message = `"${categoryText}" eBook 베스트셀러 결과가 없습니다.`;
+            } else {
+                message = 'eBook 베스트셀러 결과가 없습니다.';
+            }
+            displayStatusMessage('no-results', message);
+            renderPagination(totalResults, currentPage, itemsPerPage);
             return;
         }
 
-        // 디버깅: 반환된 책 목록 출력
-        console.log('Books received:', books.map(book => ({
+        console.log('Displaying books:', books.map(book => ({
             title: book.title,
-            categoryId: book.categoryId, // 알라딘 API에서 제공하는 경우
-            isbn13: book.isbn13
+            isbn13: book.isbn13,
+            pubDate: book.pubDate,
+            categoryId: book.categoryId
         })));
 
         books.forEach(book => {
@@ -307,7 +314,6 @@
                     ${priceHtml}
                 </div>
             `;
-            // 책 클릭 이벤트 추가
             bookElement.addEventListener('click', () => {
                 const bookId = bookElement.dataset.isbn13;
                 if (bookId) {
@@ -315,13 +321,13 @@
                     window.location.href = `/payment?bookId=${encodeURIComponent(bookId)}`;
                 } else {
                     console.error('Book ID missing for:', title);
-                    alert('도서 정보를 불러올 수 없습니다.');
+                    alert('Book 정보를 불러올 수 없습니다.');
                 }
             });
             resultsContainer.appendChild(bookElement);
         });
 
-        renderPagination(currentTotalResults, currentPage, itemsPerPage);
+        renderPagination(totalResults, currentPage, itemsPerPage);
     }
 
     // 페이지네이션 UI 렌더링 함수
@@ -348,22 +354,42 @@
         startPage = Math.max(1, endPage - maxPageButtons + 1);
 
         if (startPage > 1) {
-            const firstButton = document.createElement('button'); firstButton.textContent = '1';
-            firstButton.setAttribute('aria-label', '1 페이지'); firstButton.addEventListener('click', () => goToPage(1));
+            const firstButton = document.createElement('button');
+            firstButton.textContent = '1';
+            firstButton.setAttribute('aria-label', '1 페이지');
+            firstButton.addEventListener('click', () => goToPage(1));
             paginationGroup.appendChild(firstButton);
-            if (startPage > 2) { const ellipsis = document.createElement('span'); ellipsis.textContent = '...'; ellipsis.setAttribute('aria-hidden', 'true'); paginationGroup.appendChild(ellipsis); }
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.setAttribute('aria-hidden', 'true');
+                paginationGroup.appendChild(ellipsis);
+            }
         }
         for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement('button'); pageButton.textContent = i;
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
             pageButton.setAttribute('aria-label', `${i} 페이지`);
-            if (i === currentPage) { pageButton.classList.add('current'); pageButton.disabled = true; pageButton.setAttribute('aria-current', 'page'); }
-            else { pageButton.addEventListener('click', () => goToPage(i)); }
+            if (i === currentPage) {
+                pageButton.classList.add('current');
+                pageButton.disabled = true;
+                pageButton.setAttribute('aria-current', 'page');
+            } else {
+                pageButton.addEventListener('click', () => goToPage(i));
+            }
             paginationGroup.appendChild(pageButton);
         }
         if (endPage < totalPages) {
-            if (endPage < totalPages - 1) { const ellipsis = document.createElement('span'); ellipsis.textContent = '...'; ellipsis.setAttribute('aria-hidden', 'true'); paginationGroup.appendChild(ellipsis); }
-            const lastButton = document.createElement('button'); lastButton.textContent = totalPages;
-            lastButton.setAttribute('aria-label', `${totalPages} 페이지`); lastButton.addEventListener('click', () => goToPage(totalPages));
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.setAttribute('aria-hidden', 'true');
+                paginationGroup.appendChild(ellipsis);
+            }
+            const lastButton = document.createElement('button');
+            lastButton.textContent = totalPages;
+            lastButton.setAttribute('aria-label', `${totalPages} 페이지`);
+            lastButton.addEventListener('click', () => goToPage(totalPages));
             paginationGroup.appendChild(lastButton);
         }
 
@@ -384,40 +410,56 @@
 
         currentPage = pageNumber;
         displayStatusMessage('loading', `페이지 ${pageNumber} 로딩 중...`);
-        searchButton.disabled = true; searchInput.disabled = true; categorySelect.disabled = true;
+        searchButton.disabled = true;
+        searchInput.disabled = true;
+        categorySelect.disabled = true;
 
         try {
             const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
             displayResults(paginatedResponse);
         } catch (error) {
-            console.error("Error during fetchBooks:", error);
+            console.error('Error during fetchBooks:', error);
             displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}`);
         } finally {
-            searchButton.disabled = false; searchInput.disabled = false; categorySelect.disabled = false;
+            searchButton.disabled = false;
+            searchInput.disabled = false;
+            categorySelect.disabled = false;
         }
     }
 
     // 검색 실행 함수
     async function performSearch() {
-        const displayQuery = currentQuery.trim() === '' ? '최신 베스트셀러' : `"${currentQuery}"`;
+        const categoryText = currentCategory ? categorySelect.options[categorySelect.selectedIndex]?.text : '전체 카테고리';
+        let displayQuery;
+        if (currentQuery.trim() === '') {
+            displayQuery = currentCategory ? `"${categoryText}" eBook 베스트셀러` : 'eBook 베스트셀러';
+            console.log('Performing bestseller search:', { category: currentCategory, sort: currentSort });
+        } else {
+            displayQuery = `"${categoryText} > ${currentQuery}" (eBook)`;
+            console.log('Performing keyword search:', { query: currentQuery, category: currentCategory, sort: currentSort });
+        }
         displayStatusMessage('loading', `${displayQuery} 검색 중...`);
-        searchButton.disabled = true; searchInput.disabled = true; categorySelect.disabled = true;
-
-        console.log('Performing search with:', { query: currentQuery, category: currentCategory, sort: currentSort });
+        searchButton.disabled = true;
+        searchInput.disabled = true;
+        categorySelect.disabled = true;
 
         try {
             const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
             displayResults(paginatedResponse);
         } catch (error) {
-            console.error("Error during fetchBooks:", error);
+            console.error('Error during fetchBooks:', error);
             displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}`);
         } finally {
-            searchButton.disabled = false; searchInput.disabled = false; categorySelect.disabled = false;
+            searchButton.disabled = false;
+            searchInput.disabled = false;
+            categorySelect.disabled = false;
         }
     }
 
     // 페이지 로드 시 초기 검색 실행
     performSearch();
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93b898c40ebfed8b',t:'MTc0NjUzNTc1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93b8e0555a80ada7',t:'MTc0NjUzODY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

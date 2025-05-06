@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class AladinService {
 
-    // application.properties에서 값 주입
     @Value("${aladin.api.key}")
     private String apiKey;
 
@@ -53,13 +52,11 @@ public class AladinService {
     private final ObjectMapper objectMapper;
     private final SyncStatusRepository syncStatusRepository;
 
-    // --- 상수 정의 ---
     private static final int MAX_RESULTS_PER_PAGE = 50;
     private static final int PAGES_PER_RUN = 20;
     private static final Duration API_TIMEOUT = Duration.ofSeconds(15);
     public static final int DEFAULT_BESTSELLER_CATEGORY_ID = 0;
 
-    // --- 결과 카운트 및 상태를 위한 DTO ---
     @lombok.Data
     @lombok.NoArgsConstructor
     public static class SyncResult {
@@ -92,7 +89,7 @@ public class AladinService {
                 .queryParam("QueryType", "Keyword")
                 .queryParam("MaxResults", size)
                 .queryParam("start", page)
-                .queryParam("SearchTarget", "eBook")
+                .queryParam("SearchTarget", "Book") // eBook -> Book
                 .queryParam("output", "js")
                 .queryParam("Version", "20131101");
 
@@ -137,14 +134,12 @@ public class AladinService {
         return fetchAladinPage(Integer.parseInt(effectiveCategoryId), page)
                 .map(response -> {
                     List<AladinBookItem> books = (response.getItem() != null) ? response.getItem() : Collections.emptyList();
-                    // 알라딘 API의 totalResults를 Integer로 처리, null일 경우 books.size() 사용
                     Integer totalResults = response.getTotalResults();
                     int total = totalResults != null ? totalResults : books.size();
-                    // size만큼만 책 목록 자르기
                     books = books.size() > size ? books.subList(0, size) : books;
                     return new PaginatedAladinResponse(books, total, page, size);
                 })
-                .block(); // 동기 호출로 처리
+                .block();
     }
 
     private Mono<AladinApiResponse> fetchAladinPage(int categoryId, int pageNumber) {
@@ -156,7 +151,7 @@ public class AladinService {
                 .queryParam("QueryType", "Bestseller")
                 .queryParam("MaxResults", MAX_RESULTS_PER_PAGE)
                 .queryParam("start", pageNumber)
-                .queryParam("SearchTarget", "Book")
+                .queryParam("SearchTarget", "Book") // eBook -> Book
                 .queryParam("output", "js")
                 .queryParam("Version", "20131101")
                 .queryParam("CategoryId", categoryId)
