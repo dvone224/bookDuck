@@ -55,18 +55,25 @@ public class User {
         else this.loginId = loginId;
 
         this.name = name;
-        this.password = password;
-        this.email = email;
+        //this.password = password;
+
+        if(password == null || password.isEmpty()) this.password = null;
+        else this.password = password;
+
+        if(email == null || email.isEmpty()) this.email = null;
+        else this.email = email;
+
+        //this.email = email;
         if(loginId.equals("admin"))this.role = ROLE_ADMIN;
         else if(role == null) this.role = ROLE_USER;
         else this.role = Role.valueOf(role);
 
-        //if(nickName == null) this.nickName = name;
-        //else this.nickName = nickName;
 
-        this.nickName = nickName;
 
-        if(img == null || img.equals("")) this.img = null;
+        if(nickName == null || nickName.isEmpty()) this.nickName = null;
+        else this.nickName = nickName;
+
+        if(img == null || img.isEmpty()) this.img = null;
         else this.img = img;
 
         this.provider = provider;

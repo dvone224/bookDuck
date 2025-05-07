@@ -23,13 +23,14 @@ import java.nio.file.Files;
 public class ImageController {
 
     @GetMapping("/getimg")
-    public ResponseEntity<byte[]> getImg(String fileName) {
+    public ResponseEntity<byte[]> getImg(String fileName) throws RuntimeException {
         log.info("Uploading image to " + fileName);
-        File file = new File("C:\\bookduckImg\\" + fileName);
+
 
         ResponseEntity<byte[]> result = null;
 
         try{
+            File file = new File("C:\\bookduckImg\\" + fileName);
             HttpHeaders header = new HttpHeaders();
             header.add("Content-Type", Files.probeContentType(file.toPath()));
             result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);

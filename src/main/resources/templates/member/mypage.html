@@ -15,10 +15,11 @@
 <div th:replace="~{fragments/therdHeader :: bodyHeader}" ></div>
 <div class="container">
 <div class="profile_img_box">
-    <div class="profile_img"> <img src="/img/bookduck_login.png"> </div>
-    <div class="btn_circle yellow fix"><i class="fa-solid fa-pen icon_white"></i></div>
+    <div class="profile_img"> <img id="useroriginimg" src="/img/bookduck_login.png"> </div>
+    <div class="btn_circle yellow fix" onclick="location.href='/userupdate'"><i class="fa-solid fa-pen icon_white"></i></div>
+    <input type="hidden" id="originImg" th:value="${session.loginuser.img}">
 </div>
-<div class="nickname dark_blue2">닉네임님</div>
+<div class="nickname dark_blue2" th:text="${session.loginuser.nickName}+' 님'"></div>
 <div class="my_crew box light_blue">
     <div class="title dark_blue2">MY CREW<div class="line_long dark_blue1"></div></div>
     <div class="box_temp">
@@ -72,3 +73,25 @@
 </div>
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+<script>
+    const originImg = document.getElementById('originImg').value;
+
+    if (originImg.length != 0) {
+        // 이미지 URL 설정
+        $('#useroriginimg')
+            .attr("src", "/image/getimg?fileName=" + encodeURIComponent(originImg))
+            .on("load", function () {
+                //console.log("Image loaded successfully: " + originImg);
+            })
+            .on("error", function () {
+                console.log("Image failed to load: " + originImg);
+                $(this).attr("src", "/img/bookduck_login.png");
+            });
+    } else {
+        $('#useroriginimg').attr("src", "/img/bookduck_login.png"); // 기본 이미지 설정
+    }
+
+
+</script>

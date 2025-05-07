@@ -54,6 +54,17 @@ public class UserService {
         return user;
     }
 
+    @Transactional
+    public void deleteUserById(Long id) throws IllegalStateException {
+        User deletedUser = userRepository.findById(id).orElse(null);
+        log.info("deleteUserById: {}", deletedUser);
+        if(deletedUser != null){
+            userRepository.delete(deletedUser);
+        }else{
+            throw new IllegalStateException("삭제회원 조회에 실패하였습니다.");
+        }
+    }
+
     /**
      * 로그인 아이디(String)로 사용자를 조회합니다.
      * @param loginId 조회할 사용자의 로그인 아이디
@@ -93,10 +104,10 @@ public class UserService {
         }
         log.info("socialJoinUpdateRequest: {}", info);
 
-        if(info.getPw() != null) user.setPassword(bCryptPasswordEncoder.encode(info.getPw()));
-        if(info.getEmail() != null) user.setEmail(info.getEmail());
-        if(info.getNickName() != null) user.setNickName(info.getNickName());
-        if(info.getImg() != null) user.setImg(info.getImg());
+        if(info.getPw() != null && !info.getPw().isEmpty()) user.setPassword(bCryptPasswordEncoder.encode(info.getPw()));
+        if(info.getEmail() != null && !info.getEmail().isEmpty()) user.setEmail(info.getEmail());
+        if(info.getNickName() != null && !info.getNickName().isEmpty()) user.setNickName(info.getNickName());
+        if(info.getImg() != null && !info.getImg().isEmpty()) user.setImg(info.getImg());
 
         log.info("new user: {}", user);
         userRepository.save(user);
@@ -115,8 +126,8 @@ public class UserService {
         }
         log.info("socialJoinUpdateRequest: {}", socialJoinUpdateRequest);
 
-        if(socialJoinUpdateRequest.getNickName() != null) user.setNickName(socialJoinUpdateRequest.getNickName());
-        if(socialJoinUpdateRequest.getImg() != null) user.setImg(socialJoinUpdateRequest.getImg());
+        if(socialJoinUpdateRequest.getNickName() != null && !socialJoinUpdateRequest.getNickName().isEmpty()) user.setNickName(socialJoinUpdateRequest.getNickName());
+        if(socialJoinUpdateRequest.getImg() != null && !socialJoinUpdateRequest.getImg().isEmpty()) user.setImg(socialJoinUpdateRequest.getImg());
 
         log.info("new user: {}", user);
         userRepository.save(user);

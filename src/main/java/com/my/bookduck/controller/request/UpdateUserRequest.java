@@ -10,13 +10,12 @@ import lombok.*;
 @Setter
 public class UpdateUserRequest {
 
-
     private String email;
     private String pw;
     private String nickName;
     private String img;
 
-    public User toEntity(AddUserRequest dto){
+    public User toEntity(UpdateUserRequest dto){
         return User.builder()
                 .email(dto.getEmail())
                 .password(dto.getPw())
