@@ -8,8 +8,10 @@ import com.my.bookduck.repository.BoardRepository;
 import com.my.bookduck.repository.BookRepository;
 import com.my.bookduck.repository.GroupRepository;
 // import com.my.bookduck.repository.UserRepository; // 필요시 주입
+import com.my.bookduck.repository.UserBookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.AccessDeniedException; // Spring Security 예외 사용
 
 import java.time.LocalDateTime; // Auditing 미사용 시 필요할 수 있음
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +31,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final GroupRepository groupRepository;
     private final BookRepository bookRepository;
+    private final UserBookRepository userBookRepository;
     // 필요시: private final UserRepository userRepository;
 
     /**
@@ -105,6 +109,46 @@ public class BoardService {
             boardRepository.save(newBoard);
             log.info("Created new Board entry (ID: {}) for group {}, book {}. State is now public.", newBoard.getId(), groupId, bookId);
             return true; // 변경 후 상태: 공개 (true)
+        }
+    }
+
+
+    /**
+     * 필터링 및 정렬 조건에 따라 게시글 목록을 조회합니다.
+     *
+     * @param userId 현재 로그인한 사용자 ID (내가 구매한 책 필터링 시 필요, null 가능)
+     * @param filterMyBooks true면 내가 구매한 책 관련 게시글만, false면 전체 게시글
+     * @param sortBy 정렬 기준 ("createdAt", "bookTitle")
+     * @param sortDirection 정렬 방향 ("ASC", "DESC")
+     * @return Board 엔티티 리스트
+     */
+
+    public List<Board> findBoards(Long userId, boolean filterMyBooks, String query, String sortBy, String sortDirection) {
+        log.info("게시글 목록 조회 - userId: {}, filterMyBooks: {}, query(책제목): '{}', sortBy: {}, sortDir: {}",
+                userId, filterMyBooks, query, sortBy, sortDirection);
+
+        Sort.Direction direction = "DESC".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String sortProperty = "bookTitle".equalsIgnoreCase(sortBy) ? "book.title" : "createdAt";
+        Sort sort = Sort.by(direction, sortProperty);
+
+        String searchQuery = (query != null && !query.trim().isEmpty()) ? query.trim() : "";
+
+        if (filterMyBooks && userId != null) {
+            List<Long> myBookIds = userBookRepository.findBookIdsByUserId(userId);
+            if (myBookIds == null || myBookIds.isEmpty()) {
+                return List.of();
+            }
+            log.debug("사용자(ID:{}) 구매 책 ID 목록: {} 으로 필터링, 책 제목 검색어: '{}'", userId, myBookIds, searchQuery);
+            // 검색어가 있든 없든 findByBookIdInAndQuery 호출 (쿼리 내부에서 LIKE '%%' 처리)
+            return boardRepository.findByBookIdInAndQuery(myBookIds, searchQuery, sort);
+        } else {
+            if (!searchQuery.isEmpty()) {
+                log.debug("전체 게시글 대상 책 제목 검색어 '{}' 및 정렬 적용.", searchQuery);
+                return boardRepository.findAllPublicBoardsWithDetailsAndQuery(searchQuery, sort);
+            } else {
+                log.debug("전체 게시글 조회 및 정렬 적용 (검색어 없음).");
+                return boardRepository.findAllPublicBoardsWithDetails(sort);
+            }
         }
     }
 }

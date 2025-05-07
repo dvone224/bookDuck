@@ -1,10 +1,13 @@
 package com.my.bookduck.controller;
 
 import com.my.bookduck.config.auth.BDUserDetails;
+import com.my.bookduck.controller.response.BoardListViewDto;
 import com.my.bookduck.controller.response.GroupListViewDto;
 import com.my.bookduck.controller.response.loginUserInfo;
+import com.my.bookduck.domain.board.Board;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.user.User;
+import com.my.bookduck.service.BoardService;
 import com.my.bookduck.service.GroupService;
 import com.my.bookduck.service.UserBookService;
 import com.my.bookduck.service.UserService;
@@ -36,9 +39,59 @@ public class HomeController {
     private final UserService userService;
     private final GroupService groupService;
     private final UserBookService userBookService;
+    private final BoardService boardService;
 
     @GetMapping({"","/","/home"})
-    public String home(){return "home";}
+    public String home(
+            Model model,
+            @AuthenticationPrincipal BDUserDetails userDetails,
+            HttpSession httpSession,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query, // 검색어 파라미터
+            @RequestParam(name = "filterMyBooks", required = false, defaultValue = "false") boolean filterMyBooks,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDir", required = false, defaultValue = "DESC") String sortDir
+    ) {
+        log.info("Home page request - query: '{}', filterMyBooks: {}, sortBy: {}, sortDir: {}", query, filterMyBooks, sortBy, sortDir);
+
+        Long currentUserId = null;
+        loginUserInfo loginUser = null;
+
+        if (userDetails != null) {
+            currentUserId = userDetails.getUser().getId();
+            loginUser = (loginUserInfo) httpSession.getAttribute("loginuser");
+
+            if (loginUser == null || !loginUser.getId().equals(currentUserId)) {
+                log.info("세션에 loginuser 정보가 없거나 불일치하여 DB에서 조회합니다. userId: {}", currentUserId);
+                User user = userService.getUserById(currentUserId);
+                if (user != null) {
+                    loginUser = new loginUserInfo(user);
+                    httpSession.setAttribute("loginuser", loginUser);
+                    log.info("세션에 loginuser 정보 저장 완료. Nickname: {}", loginUser.getNickName());
+                } else {
+                    log.warn("DB에서 userId {} 에 해당하는 사용자를 찾을 수 없습니다.", currentUserId);
+                }
+            }
+            model.addAttribute("loginuser", loginUser);
+        } else {
+            model.addAttribute("loginuser", null);
+        }
+
+        // ★★★ BoardService 호출 시 query 파라미터 추가 ★★★
+        List<Board> boards = boardService.findBoards(currentUserId, filterMyBooks, query, sortBy, sortDir);
+        List<BoardListViewDto> boardDtos = boards.stream() // 변수명 boardDto -> boardDtos 로 변경 (복수형)
+                .map(BoardListViewDto::new)
+                .collect(Collectors.toList());
+        model.addAttribute("boards", boardDtos); // "boards"라는 이름으로 모델에 추가
+        log.info("boards DTO count: {}", boardDtos.size()); // boardDtos.size() 로 변경
+
+        // 현재 필터, 정렬, 검색 상태를 뷰에 전달
+        model.addAttribute("currentQuery", query);
+        model.addAttribute("currentFilterMyBooks", filterMyBooks);
+        model.addAttribute("currentSortBy", sortBy);
+        model.addAttribute("currentSortDir", sortDir);
+
+        return "home";
+    }
 
     @GetMapping("/logininfo") // 또는 /mypage 등
     public String myPage(Model model, @AuthenticationPrincipal BDUserDetails userDetails, HttpSession session) {

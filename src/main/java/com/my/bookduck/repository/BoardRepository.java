@@ -1,28 +1,37 @@
 package com.my.bookduck.repository;
 
 import com.my.bookduck.domain.board.Board;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    // 그룹 ID와 책 ID로 Board 찾기 (존재 여부 및 삭제 시 사용)
     Optional<Board> findByGroupIdAndBookId(Long groupId, Long bookId);
 
-    // 그룹 ID와 책 ID로 Board 삭제 (더 효율적일 수 있음)
-    void deleteByGroupIdAndBookId(Long groupId, Long bookId);
-
-    // 그룹 ID에 해당하는 모든 Board의 Book ID 조회 (초기 상태 전달용)
     @Query("SELECT b.book.id FROM Board b WHERE b.group.id = :groupId")
     Set<Long> findBookIdsByGroupId(@Param("groupId") Long groupId);
 
-    // 그룹 ID와 책 ID로 존재 여부 확인 (더 가벼움)
-    boolean existsByGroupIdAndBookId(Long groupId, Long bookId);
+    // Book ID 리스트 + 책 제목 검색 + 정렬
+    @Query("SELECT DISTINCT b FROM Board b " +
+            "JOIN FETCH b.book bk " +
+            "JOIN FETCH b.group g " +
+            "WHERE bk.id IN :bookIds " +
+            // ★★★ 그룹 이름 검색 조건 제거, 책 제목만 검색 ★★★
+            "AND (LOWER(bk.title) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<Board> findByBookIdInAndQuery(@Param("bookIds") List<Long> bookIds, @Param("query") String query, Sort sort);
+
+    // 책 제목 검색 + 정렬 (Book ID 필터링 없음)
+    @Query("SELECT b FROM Board b JOIN FETCH b.book bk JOIN FETCH b.group g " +
+            // ★★★ 그룹 이름 검색 조건 제거, 책 제목만 검색 ★★★
+            "WHERE LOWER(bk.title) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Board> findAllPublicBoardsWithDetailsAndQuery(@Param("query") String query, Sort sort);
+
+    // 검색어가 없을 때 (이전과 동일)
+    @Query("SELECT b FROM Board b JOIN FETCH b.book JOIN FETCH b.group")
+    List<Board> findAllPublicBoardsWithDetails(Sort sort);
 }
