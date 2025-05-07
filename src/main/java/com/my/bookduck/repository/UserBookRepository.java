@@ -47,4 +47,8 @@ public interface UserBookRepository extends JpaRepository<UserBook, UserBookId> 
      */
     @Query("SELECT ub.book FROM UserBook ub WHERE ub.user.id = :userId")
     List<Book> findBooksByUserId(@Param("userId") Long userId);
+
+    // ★★★ 특정 사용자가 구매한 모든 책의 ID 목록을 조회하는 메소드 추가 ★★★
+    @Query("SELECT ub.book.id FROM UserBook ub WHERE ub.user.id = :userId")
+    List<Long> findBookIdsByUserId(@Param("userId") Long userId);
 }

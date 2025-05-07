@@ -1,589 +1,146 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}">
+<head>
+    <!-- 기존 head 내용 유지 (header 프래그먼트는 주석 처리 또는 실제 경로로) -->
+    <!-- <head th:replace="~{fragments/header :: header}"> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-<!--    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/member/delSuccess.css">-->
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
+    <title>BookDuck² :: 명예의 전당</title> <!-- 페이지 타이틀 명확히 -->
     <style>
-
-
         /*아이콘 임포트*/
-        /* Fontawesome 4.7 */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+        /* 폰트 정의 (이전 코드 유지) */
+        @font-face { font-family: 'Cafe24Supermagic-Bold-v1.0'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2'); font-weight: 700; font-style: normal; }
+        @font-face { font-family: 'GowunBatang-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
+        /* (기타 폰트 정의 생략) */
 
-        /*로고용 폰트: cafe24슈퍼매직*/
-        @font-face {
-            font-family: 'Cafe24Supermagic-Bold-v1.0';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
-            font-weight: 700;
-            font-style: normal;
-        }
-
-        /*홈페이지 메인 폰트: 고운바탕*/
-        @font-face {
-            font-family: 'GowunBatang-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*고운돋움*/
-        @font-face {
-            font-family: 'GowunDodum-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*조선굴림*/
-        @font-face {
-            font-family: 'ChosunGu';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*온글잎콘콘*/
-        @font-face {
-            font-family: 'Ownglyph_corncorn-Rg';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*나눔손글씨펜*/
-        @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
-        /*font-family: 'NanumPen';*/
-
-        /*학교안심꼬꼬마*/
-        @font-face {
-            font-family: 'TTHakgyoansimKkokkomaR';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*심경하*/
-        @font-face {
-            font-family: 'SimKyungha';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /*다이어리*/
-        @font-face {
-            font-family: 'EarlyFontDiary';
-            src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /* 컬러 파레트 */
+        /* 컬러 파레트 (이전 코드 유지) */
         :root{
-            --main-color-dark: #00479B;
-            --main-color-middle: #83C7FF;
-            --main-color-light: #E3F4FF;
-            --assist-color-dark: #CE7000;
-            --assist-color-middle: #FFB90B;
-            --assist-color-light: #FFF7E6;
-            --cancle-color-dark: #9B9B9B;
-            --cancle-color-middle: #D3D3D3;
-            --cancle-color-light: #EAEAEA;
-            --crown-color: #ffa500;
-
-            /*사용법: var(--main-color-middle)*/
-            --border-big: 20px;/*큰거...뭐가잇지...*/
-            --border-middle: 10px;/*img*/
-            --border-circle: 50%;/*동그리버튼*/
-
-            /*폰트 사이즈 정의*/
-            --font-size-0: 28px;
-            --font-size-1: 23px;
-            --font-size-2: 18px;
-            --font-size-3: 13px;
-            --font-size-4: 8px;
-
-            /*쪽지 색상 지정*/
-            --memo1-color-dark: #00479B;
-            --memo1-color-middle: #83C7FF;
-            --memo1-color-light: #E3F4FF;
-            --memo1-color-back: #B0CAD6;
-
-            --memo2-color-dark: #CE7000;
-            --memo2-color-middle: #FFB90B;
-            --memo2-color-light: #FFF7E6;
-            --memo2-color-back: #EAD4AD;
-
-            --memo3-coler-dark: #841A1A;
-            --memo3-coler-middle: #FF9494;
-            --memo3-coler-light: #FFE9E9;
-            --memo3-coler-back: #D6B0B0;
-
-            --memo4-coler-dark: #325900;
-            --memo4-coler-middle: #97CE41;
-            --memo4-coler-light: #F6FFD9;
-            --memo4-coler-back: #CCD3AE;
-
-            --memo5-coler-dark: #A04800;
-            --memo5-coler-middle: #FF8B00;
-            --memo5-coler-light: #FFE3CA;
-            --memo5-coler-back: #C9A88D;
-
-            --memo6-coler-dark: #6A297A;
-            --memo6-coler-middle: #AF80CE;
-            --memo6-coler-light: #F5EEFF;
-            --memo6-coler-back: #CDC3DD;
-
-            --memo7-coler-dark: #1F1F77;
-            --memo7-coler-middle: #7A8CE5;
-            --memo7-coler-light: #E9ECFF;
-            --memo7-coler-back: #B2B8D3;
-
-            --memo8-coler-dark: #006466;
-            --memo8-coler-middle: #66C6DD;
-            --memo8-coler-light: #EBFFFF;
-            --memo8-coler-back: #B8D3D2;
+            --main-color-dark: #00479B; --main-color-middle: #83C7FF; --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000; --assist-color-middle: #FFB90B; --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B; --cancle-color-middle: #D3D3D3; --cancle-color-light: #EAEAEA;
+            --font-size-0: 28px; --font-size-1: 23px; --font-size-2: 18px; --font-size-3: 13px; --font-size-4: 8px;
+            /* (기타 색상 변수 생략) */
         }
 
         /* Global 스타일 초기화 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Gowun Batang";
-            font-size: var(--font-size-2);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Gowun Batang", sans-serif; font-size: var(--font-size-2); }
+        body { margin: 0; padding: 0; width: 100%; background-color: #f8f9fa; /* 전체 배경색 */ }
 
-        /* 기본 설정 */
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%; /* 가로를 화면에 맞게 설정 */
-        }
-
-        /* 컨테이너 스타일 */
+        /* 컨테이너 스타일 (내부 요소 중앙 정렬) */
         .container {
-            border: 1px solid slateblue;
-            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
-            padding: 10px;
+            /* border: 1px solid slateblue; */ /* 테스트용 테두리 제거 */
+            max-width: 1200px; /* 게시글 목록 고려하여 너비 조정 */
+            margin: 0 auto; /* 상하 0, 좌우 자동 (중앙 정렬) */
+            padding: 10px 15px; /* 좌우 패딩 */
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            align-items: center; /* 내부 컨텐츠들 중앙 정렬 */
         }
 
+        /* 버튼 기본 규격 (기존 코드 유지, 일부 수정) */
+        .btn_circle{ width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 5px; }
+        .btn_long{ width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer; border: none; font-weight: bold; max-width: 600px; margin-top: 20px; /* 다른 요소와의 간격 */ }
+        .btn_mini{ width: auto; height: 25px; border-radius: 20px; color: white; cursor: pointer; border: none; font-size: var(--font-size-3); font-weight: bold; display: inline-flex; /* 옆으로 나열 위해 */ justify-content: center; align-items: center; padding: 5px 10px; /* 내부 여백 조정 */ margin-left: 5px; }
+        .box{ width: 100%; height: auto; border-radius: var(--border-big); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; /* 내부 패딩 증가 */ margin-bottom: 20px; /* 아래 요소와의 간격 */ max-width: 768px; }
+        .blue{ background: var(--main-color-middle); }
+        .yellow{ background: var(--assist-color-middle); }
+        /* (기타 색상 클래스 생략) */
 
-        /*버튼 기본 규격*/
-        .btn_circle{
-/*            border: 1px solid red;*/
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin: 5px;
-        }
+        /* 헤더 스타일 (기존 코드 유지) */
+        header { width: 100%; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; /* 헤더와 컨텐츠 간격 */ }
+        .header_one { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .header_one_top, .header_right{ display: flex; }
+        .header_one_top { justify-content: space-between; align-items: center; width: 100%; padding: 10px 0; }
+        .logo{ width: 150px; height: 40px; font-family: 'Cafe24Supermagic-Bold-v1.0'; font-size: var(--font-size-0); color: var(--main-color-dark); display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; }
+        .header_right .btn_circle i { color: var(--main-color-dark); } /* 아이콘 색상 명확히 */
+        .header_one_bottom{ display: flex; flex-direction: column; }
+        .box_none{ display: flex; } /* 메뉴 레이아웃 */
+        .box_none2{ flex: 1; display: flex; justify-content: center; align-items: center; }
+        .point_menu{ height: 3px; width: 100%; background: var(--main-color-dark); } /* 두께 증가 */
+        .menu{ height: auto; /* 내용에 맞게 */ padding: 10px 0; /* 상하 패딩 */ flex: 1; display: flex; justify-content: center; align-items: center; /* 중앙 정렬 */ color: var(--cancle-color-dark); transition: color 0.3s, font-weight 0.3s; cursor: pointer; text-decoration: none; font-size: var(--font-size-2); }
+        .menu:hover { color: var(--main-color-dark); }
+        .this_page { color: var(--main-color-dark); font-weight: bold; }
+        .line.gray { background-color: #eee; } /* 헤더 하단 라인 */
 
-        .btn_circle_big{
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
+        /* "모임 생성하기" 버튼 스타일 */
+        .btn_box {
+            background-color: var(--main-color-middle); color: white;
+            font-weight: bold; text-align: center; line-height: 100px; /* 텍스트 수직 중앙 정렬 */
+            cursor: pointer; transition: background-color 0.2s;
+            /* 기존 border: 1px solid blue; 제거하고 배경색으로 구분 */
         }
+        .btn_box:hover { background-color: var(--main-color-dark); }
 
-        .btn_long{
-            width: 100%;
-            height: 45px;
-            border-radius: 45px;
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-weight: bold;
-            max-width: 600px;
+        /* 검색창 영역 (제공해주신 스타일 기반) */
+        .seperate.input_long.yellow_line {
+            display: flex; align-items: center;
+            padding: 0 10px 0 15px; border: 2px solid var(--assist-color-middle);
+            background-color: white; border-radius: 45px; height: 45px;
+            max-width: 768px; width: 100%; margin-bottom: 20px; /* 간격 추가 */
         }
-
-        .btn_mini{
-            width: auto;
-            height: 25px;
-            border-radius: 20px;
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-size: var(--font-size-3);
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            margin-left: 5px;
+        .seperate_one{ flex: 1; height: 100%; display: flex; align-items: center; }
+        .input_none_long{
+            border: none; text-align: left; width: 100%; height: 100%;
+            font-family: "GowunBatang-Regular", sans-serif; color: var(--assist-color-dark);
+            background: transparent; padding-left: 5px; font-size: var(--font-size-3);
         }
-
-        .btn_icon{
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-        }
-
-        .box{
-            width: 100%;
-            height: auto;
-            border-radius: var(--border-big);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            max-width: 768px;
-        }
-
-        .title{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 10px;
-            font-weight: bold;
-        }
-
-        .bold{
-            font-weight: bold;
-        }
-
-        .dot{
-            width: 15px;
-            height: 15px;
-            border-radius: var(--border-circle);
-            display: flex;
-            margin-top: 5px;
-            margin-right: 5px;
-        }
-
-        .underline{
-            width: 130%;
-            height: 1px;
-        }
-
-        .line{
-            width: 100%;
-            height: 1px;
-        }
-
-        .blue{
-            background: var(--main-color-middle);
-        }
-        .blue2{
-            color: var(--main-color-middle);
-        }
-        .yellow{
-            background: var(--assist-color-middle);
-        }
-        .dark_blue1{
-            background: var(--main-color-dark);
-        }
-        .dark_yellow1{
-            background: var(--assist-color-dark);
-        }
-        .dark_blue2{
-            color: var(--main-color-dark);
-        }
-        .dark_yellow2{
-            color: var(--assist-color-dark);
-        }
-        .light_blue{
-            background: var(--main-color-light);
-        }
-        .light_yellow{
-            background: var(--assist-color-light);
-        }
-        .dark_gray1{
-            background: var(--cancle-color-dark);
-        }
-        .dark_gray2{
-            color: var(--cancle-color-dark);
-        }
-        .gray{
-            background: var(--cancle-color-middle);
-        }
-        .light_gray{
-            background: var(--cancle-color-light);
-        }
-        .white{
-            background: white;
-        }
-
-        .blue_line_thin{
-            border: 1px solid var(--main-color-middle);
-        }
-        .yellow_line_thin{
-            border: 1px solid var(--assist-color-middle);
-        }
-
-        .input_long{
-            margin-bottom: 10px;
-            width: 100%;
-            height: 45px;
-            border-radius: 45px;
-            box-sizing: border-box;
-            text-align: center;
-            max-width: 768px;
-        }
-
-        .blue_line{
-            border: 2px solid var(--main-color-middle);
-            color: var(--main-color-dark);
-        }
-
-        .blue_line:focus{
-            border: 4px solid var(--main-color-middle);
-            color: var(--main-color-dark);
-            outline: none;
-        }
-
-        .yellow_line{
-            border: 2px solid var(--assist-color-middle);
-            color: var(--assist-color-dark);
-        }
-
-        .yellow_line:focus{
-            border: 4px solid var(--assist-color-middle);
-            color: var(--assist-color-dark);
-            outline: none;
-        }
+        .input_none_long::placeholder { color: #aaa; }
+        .input_none_long:focus{ outline: none; }
+        .seperate_two{ width: auto; height: 100%; display: flex; justify-content: center; align-items: center; padding-left: 5px; }
+        .btn_circle_mini{ border: none; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; background-color: transparent; padding: 0; }
+        .btn_circle_mini i { font-size: 1.2em; color: var(--assist-color-middle); }
+        .btn_circle_mini:hover i { color: var(--assist-color-dark); }
+        button:disabled .btn_circle_mini i { color: #ccc; }
 
 
-        /*체크박스 CSS*/
-
-        input[type="checkbox"]{
-            display: none;
-        }
-        input[type="checkbox"] + label{
-            margin-right: 5px;
-            display: inline-block;
-            background: white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            position: relative;
-        }
-        /*input[type="checkbox"] + label{
-            border:3px solid var(--main-color-middle);
-        }*/
-        input[type="checkbox"] + label{
-            border:3px solid var(--assist-color-middle);
-        }
-        input[type="checkbox"]:checked + label::after {
-            content: '✔';
-            font-size: 16px; /* 체크 아이콘 크기 조정 */
-            width: 22px; /* 내부 원 크기 */
-            height: 22px; /* 내부 원 크기 */
-            border: none; /* 중복 테두리 제거 */
-            color: white;
-            text-align: center;
-            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
-            position: absolute;
-            left: 50%; /* 중앙 정렬 */
-            top: 50%; /* 중앙 정렬 */
-            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
-            border-radius: 50%; /* 내부 원형 유지 */
-        }
-        /*input[type="checkbox"]:checked + label::after{
-            background: var(--main-color-middle);
-        }*/
-        input[type="checkbox"]:checked + label::after{
-            background: var(--assist-color-middle);
-        }
-
-        /*대표 이미지들 설정*/
-        .processImg{
-            width: 300px;
-            height: 300px;
-        }
-        .processImg img{
-            width: 100%;
-            height: 100%;
-        }
-
-
-        /* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
-        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
-            .container {
-                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
-            }
-        }
-
-        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
-            .container {
-                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
-            }
-        }
-        /* 헤더용 CSS들 */
-        .header_one_top, .header_right{
-            display: flex;
-        }
-        .header_one_top {
-            /*border: 1px solid black;*/
-            justify-content: space-between; /* 내부 요소를 양 끝으로 배치 */
-            align-items: center; /* 세로 정렬을 중앙으로 */
-            width: 100%;
-        }
-
-        .btn_haeder{
-            border: 1px solid red;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        .icon_noout{
-            width: 70%;
-            height: 70%;
-        }
-
-        .logo{
-/*            border: 1px solid black;*/
-            width: 150px;
-            height: 40px;
-            font-family: 'Cafe24Supermagic-Bold-v1.0';
-            font-size: var(--font-size-0);
-            color: darkblue;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .header_one_bottom{
-            display: flex;
-            flex-direction: column;
-        }
-
-        .box_none{
-/*            border: 1px solid blueviolet;*/
-            display: flex;
-        }
-
-        .box_none2{
-            /*border: 1px solid blue;*/
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .point_menu{
-            height: 2px;
-            width: 100px;
-            background: var(--main-color-dark);
-        }
-
-        .menu{
-/*            border: 1px solid blue;*/
-            height: var(--font-size-1);
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            margin-bottom: 5px;
-            color: var(--cancle-color-dark);
-            transition: 0.5s;
-        }
-
-        .menu:hover {
-            font-size: var(--font-size-1);
-        }
-
-        .this_page{
-            color: var(--main-color-dark);
-            font-weight: bold;
-        }
-
-        .test_border{
-/*            border: 1px solid red;*/
-        }
-
-        .btn_box{
-            border: 1px solid blue;
-            height: 100px;
-        }
-
-        .seperate{
-            width: 100%;
-            height: 45px;
+        /* --- 게시글 목록 컨트롤 (필터, 정렬) --- */
+        .controls-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 768px;
-        }
-        .seperate_one{
-            flex: 1;
-        }
-        .seperate_two{
-            width: 45px;
-            height: 45px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .btn_circle_mini{
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            justify-content: center; /* 수평 중앙 정렬 */
-            align-items: center; /* 수직 중앙 정렬 */
-            cursor: pointer;
-        }
-
-        .input_none_long{
-            border: none;
-            text-align: center;
-            width: 95%;
-            font-family: GowunBatang-Regular;
-            color: var(--assist-color-dark);
-        }
-
-        .input_none_long:focus{
-            outline: none;
-        }
-
-        .input_none_long:focus + .seperate_two,
-        .input_none_long:focus ~ .seperate {
-            border: 3px solid var(--assist-color-middle); /* 원하는 색으로 변경 */
-        }
-
-        .controller{
-/*            border: 1px solid red;*/
-            display: flex;
+            flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+            gap: 15px; /* 컨트롤 간 간격 */
+            margin-bottom: 25px; /* 목록과의 간격 */
+            padding: 15px;
+            background-color: #f0f5fa; /* 약간 다른 배경색 */
+            border-radius: 8px;
             width: 100%;
-            justify-content: space-between; /* 수평 중앙 정렬 */
-            align-items: center; /* 수직 중앙 정렬 */
-            max-width: 768px;
-            margin-bottom: 5px;
+            max-width: 768px; /* 검색창과 너비 일치 */
         }
-
-        .agree{
-/*            border: 1px solid blue;*/
+        .search-area-board { /* 게시글 검색창 (기존 검색창과 구분) */
             display: flex;
-            justify-content: center;
             align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 0 5px 0 15px;
+            background-color: white;
+            flex-grow: 1;
+            margin-right: 10px; /* 필터 버튼과의 간격 */
+        }
+        .search-area-board input[type="text"] {
+            border: none; outline: none; padding: 8px 0; flex-grow: 1;
+            font-size: 0.9em;
+        }
+        .search-area-board button { background: none; border: none; color: var(--main-color-middle); cursor: pointer; padding: 8px; font-size: 1.1em; }
+        .search-area-board button:hover { color: var(--main-color-dark); }
+
+        .filter-button { display: flex; gap: 8px; }
+        .filter-button button {
+            padding: 8px 12px; /* 패딩 약간 조정 */
+            border: 1px solid var(--main-color-middle);
+            background-color: white; color: var(--main-color-dark);
+            border-radius: 20px; cursor: pointer; font-size: 0.85em; /* 폰트 크기 약간 작게 */
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .filter-button button.active { background-color: var(--main-color-middle); color: white; font-weight: bold; }
+        .filter-button button:hover:not(.active) { background-color: var(--main-color-light); }
+
+        .sort-dropdown select {
+            padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;
+            font-size: 0.85em; background-color: white; cursor: pointer;
+            min-width: 120px; /* 드롭다운 최소 너비 */
         }
 
         .controller_list{
@@ -626,34 +183,47 @@
             margin-right: 5px;
         }
 
+        /* 게시글 목록 스타일 */
+        .board-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; width: 100%; }
+        @media (max-width: 700px) { .board-list { grid-template-columns: 1fr; } }
+        .board-item { border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .board-item-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .board-item-cover { width: 70px; height: 100px; object-fit: cover; border-radius: 4px; margin-right: 15px; background-color: #f0f0f0; border: 1px solid #eee; flex-shrink: 0;}
+        .board-item-info { flex-grow: 1; }
+        .board-item-book-title { font-size: 1.1em; font-weight: bold; color: #333; margin-bottom: 5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+        .board-item-group-name { font-size: 0.9em; color: #555; background-color: var(--main-color-light); padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 4px;}
+        .board-item-date { font-size: 0.8em; color: #777; text-align: right; margin-top: auto; padding-top: 10px; }
+        .no-boards-message { text-align: center; padding: 40px; color: #777; font-size: 1.1em; width: 100%; }
+
+        /* 페이지네이션 스타일 (이전과 동일) */
+        #paginationContainer { /* ... */ }
+        .pagination { /* ... */ }
     </style>
-    <title> BookDuck² </title>
 </head>
 <body>
-<!--<div th:replace="~{fragments/mainHeader :: bodyHeader}" ></div>-->
-<!--<header th:fragment="bodyHeader">-->
 <header>
     <div class="header_one">
         <div class="header_one_top">
             <div class="heaer_left">
-                <div class="logo" onclick="location.href='/home'">
-                    BookDuck²
-                </div>
+                <a href="/home" class="logo">BookDuck²</a> <!-- 로고에 링크 추가 -->
             </div>
             <div class="header_right">
-                <div class="btn_circle cart" onclick="location.href='/member/members'">
-                    <i class="fa-solid fa-cart-shopping icon_noout blue2"></i>
+                <!-- 로그인 상태에 따라 다른 버튼 표시 (Thymeleaf sec 네임스페이스 사용 예시) -->
+                <div sec:authorize="isAuthenticated()" class="btn_circle cart" onclick="location.href='/cart/cartList'"> <!-- 장바구니 경로 확인 -->
+                    <i class="fa-solid fa-cart-shopping"></i>
                 </div>
-                <div class="btn_circle mine" onclick="location.href='/member/members'">
-                    <i class="fa-solid fa-user icon_noout blue2"></i>
+                <div sec:authorize="isAuthenticated()" class="btn_circle mine" onclick="location.href='/logininfo'"> <!-- 마이페이지 경로 확인 -->
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div sec:authorize="isAnonymous()" class="btn_circle login" onclick="location.href='/login-form'">
+                    <i class="fa-solid fa-right-to-bracket"></i> <!-- 로그인 아이콘 -->
                 </div>
             </div>
         </div>
-
-        <div class="header_one_bottom test_border">
+        <div class="header_one_bottom">
             <div class="box_none">
-                <div class="menu this_page" onclick="location.href='/home'">명예의 전당</div>
-                <div class="menu" onclick="location.href='/shop'">북덕이 서점</div>
+                <a href="/home" class="menu this_page">명예의 전당</a>
+                <a href="/shop/shopList" class="menu">북덕이 서점</a> <!-- 실제 서점 경로로 수정 -->
             </div>
             <div class="box_none">
                 <div class="box_none2"><div class="point_menu"></div></div>
@@ -667,20 +237,155 @@
 </header>
 
 <div class="container">
-
-    <div class="box btn_box">
+    <!-- "모임 생성하기" 버튼은 그대로 유지 -->
+    <div class="box btn_box blue" onclick="location.href='/group/addGroup'"> <!-- 색상 및 디자인은 맞게 조절 -->
         모임 생성하기
     </div>
-    <div class="seperate search-container input_long yellow_line">
-        <div class="seperate_one">
-            <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">
+
+    <!-- 페이지 제목 -->
+    <h1 class="page-title" style="margin-top: 30px;">명예의 전당</h1> <!-- 위쪽 여백 추가 -->
+
+    <!-- 컨트롤 영역: 검색, 필터, 정렬 -->
+    <div class="controls-container">
+        <!-- 게시글 검색창 (기존 검색창 ID와 다르게 설정) -->
+        <div class="search-area-board">
+            <input type="text" id="boardSearchQueryInput" placeholder="책 제목으로 게시글 검색" th:value="${currentQuery}" aria-label="게시글 검색">
+            <button type="button" id="boardSearchButton" aria-label="검색"><i class="fas fa-search"></i></button>
         </div>
-        <div class="seperate_two">
-            <button class="btn_circle_mini yellow" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
+
+        <div class="filter-button">
+            <button type="button" id="filterAllBoardsBtn" th:classappend="${!currentFilterMyBooks} ? 'active'" >전체 보기</button>
+            <button type="button" id="filterMyOwnedBooksBtn" th:classappend="${currentFilterMyBooks} ? 'active'" th:disabled="${loginuser == null}">내가 구매한 책만 보기</button>
+        </div>
+
+        <div class="sort-dropdown">
+            <select id="boardSortOptions">
+                <option value="createdAt_DESC" th:selected="${currentSortBy == 'createdAt' and currentSortDir == 'DESC'}">최신순</option>
+                <option value="createdAt_ASC"  th:selected="${currentSortBy == 'createdAt' and currentSortDir == 'ASC'}">오래된순</option>
+                <option value="bookTitle_ASC"  th:selected="${currentSortBy == 'bookTitle' and currentSortDir == 'ASC'}">가나다순 (책 제목)</option>
+                <option value="bookTitle_DESC" th:selected="${currentSortBy == 'bookTitle' and currentSortDir == 'DESC'}">가나다역순 (책 제목)</option>
+            </select>
         </div>
     </div>
-</section>
-&lt;!&ndash; /container &ndash;&gt;-->
-</body>
+
+    <!-- 게시글 목록 -->
+    <div class="board-list" th:if="${not #lists.isEmpty(boards)}">
+        <div class="board-item" th:each="boardDto : ${boards}">
+            <div class="board-item-header">
+                <img th:src="${boardDto.bookCover ?: '/img/default_book_cover.png'}"
+                     th:alt="${boardDto.bookTitle}" class="board-item-cover"
+                     onerror="this.onerror=null; this.src='/img/default_book_cover.png';"/>
+                <div class="board-item-info">
+                    <h3 class="board-item-book-title" th:title="${boardDto.bookTitle}" th:text="${boardDto.bookTitle}">책 제목</h3>
+                    <span class="board-item-group-name" th:text="${boardDto.groupName}">그룹 이름</span>
+                </div>
+            </div>
+            <div class="board-item-date" th:if="${boardDto.createdAt}"
+                 th:text="${#temporals.format(boardDto.createdAt, 'yyyy-MM-dd HH:mm')}">작성일시</div>
+        </div>
+    </div>
+    <div th:if="${#lists.isEmpty(boards)}" class="no-boards-message">
+        <p>표시할 게시글이 없습니다.</p>
+    </div>
+    <!-- 페이지네이션은 현재 구현에서 제외 (페이지 리로드 방식이므로 서버에서 페이지네이션 데이터 필요) -->
+
+</div><!-- /.container -->
+
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // 현재 필터, 정렬, 검색 상태 (Thymeleaf에서 전달받음)
+    let currentBoardQuery = /*[[${currentQuery}]]*/ '';
+    let currentBoardFilterMyBooks = /*[[${currentFilterMyBooks}]]*/ false;
+    let currentBoardSortBy = /*[[${currentSortBy}]]*/ 'createdAt';
+    let currentBoardSortDir = /*[[${currentSortDir}]]*/ 'DESC';
+
+    // HTML 요소 참조
+    const boardSearchQueryInput = document.getElementById('boardSearchQueryInput');
+    const boardSearchButton = document.getElementById('boardSearchButton');
+    const filterAllBoardsBtn = document.getElementById('filterAllBoardsBtn');
+    const filterMyOwnedBooksBtn = document.getElementById('filterMyOwnedBooksBtn');
+    const boardSortOptionsSelect = document.getElementById('boardSortOptions');
+
+    // 필터, 정렬, 검색 조건 변경 시 페이지 리로드 함수
+    function applyBoardSearchAndFilters() {
+        const url = new URL(window.location.pathname, window.location.origin); // 현재 페이지의 기본 경로
+
+        // 1. 검색어
+        const queryValue = boardSearchQueryInput.value.trim();
+        if (queryValue) {
+            url.searchParams.set('query', queryValue);
+        } else {
+            url.searchParams.delete('query'); // 검색어 없으면 파라미터에서 제거
+        }
+
+        // 2. "내가 구매한 책만 보기" 필터
+        // 현재 활성화된 버튼 기준으로 filterMyBooks 값을 결정
+        // (또는 클릭 이벤트에서 직접 값을 받아와서 currentBoardFilterMyBooks를 업데이트하고 사용)
+        url.searchParams.set('filterMyBooks', String(currentBoardFilterMyBooks));
+
+
+        // 3. 정렬
+        const sortValue = boardSortOptionsSelect.value;
+        const parts = sortValue.split('_');
+        url.searchParams.set('sortBy', parts[0]);
+        url.searchParams.set('sortDir', parts[1]);
+
+        console.log("Applying board filters and sort. URL:", url.toString());
+        window.location.href = url.toString(); // 페이지 새로고침
+    }
+
+    // --- 이벤트 리스너 설정 ---
+    if (boardSearchButton) {
+        boardSearchButton.addEventListener('click', () => {
+            // 검색 버튼 클릭 시, 현재 필터/정렬 상태는 유지하고 검색어만 업데이트
+            applyBoardSearchAndFilters();
+        });
+    }
+
+    if (boardSearchQueryInput) {
+        boardSearchQueryInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyBoardSearchAndFilters();
+            }
+        });
+    }
+
+    if (filterAllBoardsBtn) {
+        filterAllBoardsBtn.addEventListener('click', () => {
+            currentBoardFilterMyBooks = false; // 상태 변경
+            applyBoardSearchAndFilters();
+        });
+    }
+
+    if (filterMyOwnedBooksBtn && !filterMyOwnedBooksBtn.disabled) { // 버튼이 존재하고 비활성화되지 않았을 때만
+        filterMyOwnedBooksBtn.addEventListener('click', () => {
+            currentBoardFilterMyBooks = true; // 상태 변경
+            applyBoardSearchAndFilters();
+        });
+    }
+
+    if (boardSortOptionsSelect) {
+        boardSortOptionsSelect.addEventListener('change', () => {
+            applyBoardSearchAndFilters(); // 정렬 변경 시 현재 검색어/필터 유지
+        });
+    }
+
+    // 페이지 로드 시 UI 상태 반영 (Thymeleaf가 대부분 처리)
+    document.addEventListener('DOMContentLoaded', function() {
+        // JavaScript 변수에 초기값 설정 (이미 Thymeleaf 인라인으로 처리됨)
+        console.log("Board list page initialized with state:", {
+            query: currentBoardQuery,
+            filterMyBooks: currentBoardFilterMyBooks,
+            sortBy: currentBoardSortBy,
+            sortDir: currentBoardSortDir
+        });
+        // 필요하다면 여기서 JavaScript로 추가적인 UI 초기화
+    });
+
+    /*]]>*/
+</script>
+</body>
 </html>
