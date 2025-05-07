@@ -15,7 +15,7 @@ import static com.my.bookduck.domain.user.User.Role.ROLE_USER;
 @Getter
 @Setter
 @NoArgsConstructor  // jpa 만 내 객체를 생성할 수 있게
-@ToString(exclude = {"userBooks","carts","groups"})
+@ToString(exclude = {"userBooks","carts","comments"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

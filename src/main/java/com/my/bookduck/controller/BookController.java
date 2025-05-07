@@ -142,6 +142,7 @@ public class BookController {
             log.error("File path not found for id: {}", id);
             return ResponseEntity.notFound().build();
         }
+        log.info("Serving Epub file: {}", filePath);
         try {
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists() && resource.isReadable()) {
