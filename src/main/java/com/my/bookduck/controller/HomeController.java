@@ -81,8 +81,11 @@ public class HomeController {
         model.addAttribute("myBooksPreview", bookPreview);
         model.addAttribute("hasMoreBooks", allMyBooks.size() > 3); // 더보기 버튼 표시 여부 (나중에 사용)
 
-
-        return "member/mypage";
+        if(loginUser.getRole().equals("admin") ) {
+            return "admin/adminMain";
+        }else{
+            return "member/mypage";
+        }
     }
 
     @GetMapping("/login-form")

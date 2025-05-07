@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class AdminAddBookRequest {
+    private Long id;
     private String title;
     private String cover;
     private String writer;
@@ -23,6 +24,7 @@ public class AdminAddBookRequest {
 
     public Book toEntity(AdminAddBookRequest dto){
         return Book.adminBuilder()
+                .id(dto.id)
                 .title(dto.title)
                 .cover(dto.cover)
                 .writer(dto.writer)

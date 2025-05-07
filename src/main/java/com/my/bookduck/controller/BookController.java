@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -292,6 +293,23 @@ public class BookController {
 
         // 7. 뷰 이름 반환
         return "book/myBookList"; // templates/book/myBookList.html 파일을 반환
+    }
+
+
+    @GetMapping("/searchbookid")
+    public ResponseEntity serchuserid(Long id) {
+        log.info("serchbookid: {}", id);
+
+        try{
+            Book b = bookService.findBybookid(id);
+            if(b == null){
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        }catch(Exception e){
+            //log.error("errMsg: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
 }

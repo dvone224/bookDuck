@@ -65,7 +65,8 @@ public class Book {
     }
 
     @Builder(builderMethodName = "adminBuilder", buildMethodName = "buildFromAdmin")
-    public Book(String title, String cover, String writer, LocalDate publicationDate, String publishing, int price, String identifier, String epubPath){
+    public Book(Long id, String title, String cover, String writer, LocalDate publicationDate, String publishing, int price, String identifier, String epubPath){
+        this.id = id;
         this.title = title;
         this.cover = cover;
         this.writer = writer;

@@ -9,6 +9,10 @@
 
 <div class="form_box">
     <form id="addbookform" action="/admin/adminaddbook" method="post">
+        <label for="addbookid"></label>
+        <input type="text" class="input_long blue_line" id="addbookid" name="id" placeholder="ISBN 코드 입력(13자리)" required autocomplete="off">
+        <div id="check validisbn"></div>
+
         <label for="addbooktitle"></label>
         <input type="text" class="input_long blue_line" id="addbooktitle" name="title" placeholder="제목" required autocomplete="off">
 
@@ -84,5 +88,68 @@
 
         })
     })
+
+    validISBN = false;
+    const ISBN = document.getElementById('addbookid');
+
+    ISBN.addEventListener("keyup", ()=>{
+        validISBN = false;
+
+        const ISBNErr = document.getElementById('check validisbn');
+        let ISBNno = ISBN.value;
+
+        if(ISBNno == ""){
+            ISBNErr.innerHTML ="";
+            return
+        }
+
+        if(checkcodetext(ISBNno) === true && checkcodelength(ISBNno) === true){
+            ISBNErr.innerHTML = "";
+        }else{
+            ISBNErr.innerHTML = "인증코드는 13자리 숫자입니다.";
+            return;
+        }
+
+        fetch(`/book/searchbookid?id=${encodeURIComponent(ISBNno)}`, {
+            method: 'GET'
+        })
+            .then((response) => {
+                if (response.ok) {
+                    validISBN = true;
+                    console.log(validISBN);
+
+                }else{
+                    ISBNErr.innerHTML = "이미 등록되어있는 코드입니다. 다시 확인해 주세요";
+                    console.log(validISBN);
+                }
+            })
+            .catch((error) => {
+                console.error("검색 중 오류 발생:", error);
+            });
+
+    })
+
+    function checkcodetext(code){
+        return /^[0-9][0-9]*$/.test(code);
+    }
+
+    function checkcodelength(code){
+        return code.length == 13;
+    }
+
+    const form = document.getElementById('addbookform');
+
+    form.addEventListener("submit",(event)=>{
+        event.preventDefault();
+        if(!validISBN){
+            alert('ISBN을 확인해 주세요');
+            return;
+        }
+
+        form.submit();
+
+    })
+
+
 
 </script>
