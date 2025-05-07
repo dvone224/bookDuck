@@ -24,6 +24,9 @@ public class AdminController {
     private final BookService bookService;
     private final StoreService storeService;
 
+    @GetMapping({"","/"})
+    public String index(){return "/admin/adminMain";}
+
     @GetMapping("/manageuser")
     public String manageUser() {
         return "admin/memberList";
@@ -46,7 +49,7 @@ public class AdminController {
         }catch(Exception e){
             log.error("errMsg: {}", e.getMessage());
             model.addAttribute("errMsg", e.getMessage());
-            return "/admin/addbook";
+            return "redirect:/admin/addbook";
         }
 
         return "admin/adminMain";

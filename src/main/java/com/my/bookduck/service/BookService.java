@@ -73,10 +73,20 @@ public class BookService {
     public void createBook(AdminAddBookRequest book) throws IllegalStateException {
         log.info("createBook: {}", book);
         Book b = book.toEntity(book);
+
         if(b.getCover() != null && !b.getCover().isEmpty()) b.setCover(book.getCover());
         else b.setCover(null);
+        if(b.getEpubPath() != null && !b.getEpubPath().isEmpty()) b.setEpubPath(book.getEpubPath());
+        else b.setEpubPath(null);
+        if(b.getIdentifier() != null && !b.getIdentifier().isEmpty()) b.setIdentifier(book.getIdentifier());
+        else b.setIdentifier(null);
+        log.info("new Book: {}", b);
         bookRepository.save(b);
 
+    }
+
+    public Book findBybookid(Long id){
+        return bookRepository.findBookById(id);
     }
 
 

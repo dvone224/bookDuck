@@ -14,11 +14,17 @@ public class loginUserInfo {
     private final String img;
     private final String email;
     private final String provider;
+    private final String role;
     public loginUserInfo(User user) {
         this.id = user.getId();
         this.nickName = user.getNickName();
         this.img = user.getImg();
         this.email = user.getEmail();
         this.provider = user.getProvider();
+        if(user.getRole() == User.Role.ROLE_ADMIN) {
+            this.role = "admin";
+        }else{
+            this.role = "user";
+        }
     }
 }
