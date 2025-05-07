@@ -17,18 +17,25 @@
 ## 🛠️주요 기능
 **1. 전자북 구매**
 ![Image](https://github.com/user-attachments/assets/b2106f7e-2622-443e-8e8a-0949bc70594f)
+
 **2. 독서모임 생성**
 ![Image](https://github.com/user-attachments/assets/6937aa26-a1f3-4498-8ee1-8fd2707cb7c6)
+
 **3. 독서 감상 기록**
 ![Image](https://github.com/user-attachments/assets/1f218c29-be66-4a8b-8f6c-4230e55389c8)
+
 **4. 감상 쪽지 공개**
 ![Image](https://github.com/user-attachments/assets/4a2a8228-5c6d-41f8-82bf-906232a7ac29)
 
 ## 💻기술 관련
 언어: JAVA, HTML, JS, CSS
+
 기술: epub, google Ai Studio
+
 개발도구: Spring Boot, IJ
+
 API: naver 로그인, Google 로그인, Google 메일, Toss 결제, 알라딘
+
 
 ## 👍팀원
 ![Image](https://github.com/user-attachments/assets/5111f0bb-16d1-44d0-8001-a25943c55837)
