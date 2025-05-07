@@ -348,16 +348,16 @@ public class GroupService {
             // 3a. 추가할 책 조회 (BookService 사용, 없으면 예외 발생)
             Book bookToAdd = bookService.findById(newBookId);
             log.debug("Found book to add: '{}' (ID: {})", bookToAdd.getTitle(), newBookId);
-
+            List<GroupBook> currentBooks = group.getBooks();
             // 3b. 유효성 검사: 최대 책 개수 (현재 3권)
-            final int MAX_BOOKS = 3;
-            List<GroupBook> currentBooks = group.getBooks(); // 이미 로드 및 정렬된 상태
-            log.debug("Current book count in group {}: {}", groupId, currentBooks.size());
-
-            if (currentBooks.size() >= MAX_BOOKS) {
-                log.warn("Cannot add book ID {}. Group {} already has {} books (max is {}).", newBookId, groupId, currentBooks.size(), MAX_BOOKS);
-                throw new IllegalArgumentException("그룹에는 최대 " + MAX_BOOKS + "권의 책만 등록할 수 있습니다.");
-            }
+//            final int MAX_BOOKS = 3;
+//            List<GroupBook> currentBooks = group.getBooks(); // 이미 로드 및 정렬된 상태
+//            log.debug("Current book count in group {}: {}", groupId, currentBooks.size());
+//
+//            if (currentBooks.size() >= MAX_BOOKS) {
+//                log.warn("Cannot add book ID {}. Group {} already has {} books (max is {}).", newBookId, groupId, currentBooks.size(), MAX_BOOKS);
+//                throw new IllegalArgumentException("그룹에는 최대 " + MAX_BOOKS + "권의 책만 등록할 수 있습니다.");
+//            }
 
             // 3c. 유효성 검사: 중복 추가 방지
             boolean alreadyExists = currentBooks.stream()
