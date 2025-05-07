@@ -5,6 +5,7 @@ import com.my.bookduck.domain.book.BookInfo;
 import com.my.bookduck.repository.BookInfoRepository;
 import com.my.bookduck.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EBookService {
 
     private final BookInfoRepository bookInfoRepository;
@@ -35,7 +37,7 @@ public class EBookService {
             if (relativePathString != null && !relativePathString.isEmpty()) {
                 // 기본 경로(epubBasePath)와 DB의 상대 경로(relativePathString)를 안전하게 조합
                 // resolve() 메소드는 경로 구분자를 자동으로 처리하고 경로 조작(..) 시도 시 예외 발생 가능성 있음
-                return this.epubBasePath.resolve(relativePathString).normalize();
+                return epubBasePath.resolve(relativePathString).normalize();
             }
         }
         return null;

@@ -17,7 +17,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
+            overflow: hidden; /* 중요: 전체 페이지 스크롤 방지, iframe 내 스크롤 기준 */
             font-family: sans-serif;
         }
 
@@ -62,11 +62,9 @@
         /* Viewer area */
         #viewer-container {
             flex-grow: 1;
-            position: relative;
+            position: relative; /* 자식 absolute 요소(예: 선택 버튼)의 기준점 역할 가능 */
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
-            /* Cursor might be set by epubjs iframe now */
-            /* cursor: pointer; */
         }
         #viewer {
             width: 100%;
@@ -76,7 +74,6 @@
             width: 100%;
             height: 100%;
             border: none;
-            /* Let iframe handle pointer events for rendition listener */
             pointer-events: auto;
         }
 
@@ -123,7 +120,7 @@
             height: 100%;
             background: #fff;
             box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            z-index: 1000;
+            z-index: 1000; /* 선택 버튼보다 아래 */
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
             padding: 15px;
@@ -149,43 +146,35 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-
-
         }
-
 
         .settings-content {
             width: 100%;
             background-color: rgba(40, 40, 40, 1);
             color: white;
             padding: 10px 15px;
-            /*box-shadow: 0 -2px 5px rgba(0,0,0,0.3);*/
-            z-index: 900;
+            z-index: 900; /* 선택 버튼보다 아래 */
             font-size: 0.9em;
             position: fixed;
-
             left: 0;
             display: flex;
             align-items: center;
             gap: 20px;
             flex-grow: 1;
             justify-content: center;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            flex-wrap: wrap;
             transition: transform 0.3s ease-in-out;
         }
-
         .settings-content.bottom{
             bottom: 0;
             transform: translateY(100%);
         }
-
         .settings-content.top{
             top: 0;
             transform: translateY(-100%);
         }
-
         .settings-content.settings-visible {
-            transform: translateY(0); /* Slide in */
+            transform: translateY(0);
         }
 
         .setting-group {
@@ -196,7 +185,7 @@
         .setting-group label {
             margin-right: 5px;
         }
-        #settings-bar button {
+        #settings-bar button { /* 이 스타일은 settings-bar 내부 버튼에만 적용됩니다. */
             padding: 5px 10px;
             min-width: 30px;
             cursor: pointer;
@@ -223,7 +212,8 @@
         /* --- Dark Mode Styles for Main UI --- */
         body.dark-mode { background-color: #121212; }
         body.dark-mode .app-header { background-color: #1e1e1e; color: #e0e0e0; border-bottom-color: #333; }
-        body.dark-mode #settings-bar { background-color: rgba(30, 30, 30, 0.95); color: #e0e0e0; box-shadow: 0 -2px 5px rgba(0,0,0,0.5); }
+        /* body.dark-mode #settings-bar: 기존 스타일은 settings-content에 적용되므로, 만약 settings-bar 자체의 배경이 필요하면 추가 */
+        body.dark-mode .settings-content { background-color: rgba(30, 30, 30, 0.95); color: #e0e0e0; box-shadow: 0 -2px 5px rgba(0,0,0,0.5); }
         body.dark-mode #settings-bar button { background-color: #333; border-color: #555; color: #e0e0e0; }
         body.dark-mode #settings-bar button:active { background-color: #555; }
         body.dark-mode #close-settings { color: #bbb; }
@@ -233,15 +223,46 @@
         body.dark-mode #toc-container a:hover, body.dark-mode #toc-container a:active { background-color: #333; }
         body.dark-mode #loading-indicator { color: #e0e0e0; background: rgba(30, 30, 30, 0.8); }
 
+        /* --- 추가된 선택 버튼 스타일 --- */
+        #selection-action-button {
+            position: absolute; /* body 기준 절대 위치 (JS에서 동적 위치 지정) */
+            display: none;      /* 기본적으로 숨김 */
+            padding: 8px 12px;
+            background-color: #007bff; /* 예시 색상 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1050; /* 다른 UI 요소들보다 위에 오도록 설정 (TOC:1000, Settings:900) */
+            font-size: 0.9em;
+        }
+        #selection-action-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 다크 모드 시 선택 버튼 스타일 */
+        body.dark-mode #selection-action-button {
+            background-color: #bb86fc; /* 다크 모드에 어울리는 색상 */
+            color: #121212; /* 어두운 배경에 밝은 글씨가 아닌, 밝은 버튼에 어두운 글씨로 대비 */
+            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        }
+        body.dark-mode #selection-action-button:hover {
+            background-color: #9e6ddc;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="page-container">
-<!--    <header class="app-header">
+    <!-- 헤더는 주석 처리된 상태로 유지합니다. 필요시 주석 해제. -->
+    <!--
+    <header class="app-header">
         <h1 th:text="${bookTitle != null ? bookTitle : 'Ebook Reader'}">Ebook Reader</h1>
         <button id="toggle-toc">목차</button>
-    </header>-->
+    </header>
+    -->
 
     <div id="viewer-container">
         <div id="viewer"></div> <!-- iframe will be rendered inside here -->
@@ -260,35 +281,33 @@
 <!-- *** Settings UI (with Font Size and Dark Mode) *** -->
 <div id="settings-bar">
     <div class="settings-content top">
+        <!-- 상단 설정 내용이 있다면 여기에 추가 -->
     </div>
-    <div class="settings-content bottom">
+    <div class="settings-content bottom"> <!-- 기본적으로 하단에 표시되도록 bottom 클래스 유지 -->
         <div class="setting-group">
             <div>
-
+                <!-- 비어있는 div 유지 -->
             </div>
-            <button>목차</button>
-            <button>쪽지</button>
-            <button>보기 설정</button>
-<!--            <button id="decrease-font" aria-label="Decrease font size">-</button>-->
-<!--            <span id="current-font-size">100%</span>-->
-<!--            <button id="increase-font" aria-label="Increase font size">+</button>-->
+            <button>목차</button> <!-- 이 버튼의 기능은 reader.js에서 별도 구현 필요 -->
+            <button>쪽지</button> <!-- 이 버튼의 기능은 reader.js에서 별도 구현 필요 -->
+            <button>보기 설정</button> <!-- 이 버튼의 기능은 reader.js에서 별도 구현 필요 -->
         </div>
         <div class="setting-group">
             <button id="toggle-dark-mode">Dark Mode</button>
         </div>
         <button id="close-settings" aria-label="Close settings">×</button>
     </div>
-
-
-
 </div>
+
+<!-- 드래그 시 나타날 버튼 (body의 직속 자식으로 추가) -->
+<button id="selection-action-button">액션</button>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-
     const GLOBAL_BOOK_ID = /*[[${bookId}]]*/ null; // null 또는 적절한 기본값
     const GLOBAL_BOOK_URL_TEMPLATE = /*[[ @{/book/api/books/epub/} + ${bookId} ]]*/ '/default/api/path/';
     /*]]>*/
+
 </script>
 
 <script th:src="@{/js/book/reader.js}"></script>
