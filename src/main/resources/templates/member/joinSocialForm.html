@@ -19,12 +19,15 @@
             <!--<label for="joinNickname"> <span th:text="${joinSocial}">null</span>닉네임</label>-->
             <label for="joinNickname"></label>
             <input type="text" class="input_long blue_line" id="joinNickname" name="nickName" placeholder="닉네임(2~7자, 한글, 대/소문자, 숫자)" required autocomplete="off">
+            <div id="check validNickname"></div>
         </div>
         <div class="input_img">
             <!--<label for="joinImg"> <span th:text="${joinSocial}">null</span>이미지 임시</label>
             <input type="text" id="joinImg" name="img" placeholder="사진을 넣어주세요" required autocomplete="off">-->
-            <div class="profile_img"> <img src="/img/bookduck_login.png"> </div>
-            <button class="btn_long yellow">프로필 이미지 등록</button>
+            <div class="profile_img"> <img id="uploadImg" src="/img/bookduck_login.png"> </div>
+            <input type="file" id="userImg" name="userImg" accept="image/*">
+            <input type="hidden" id="img" name="img">
+            <input type="button" class="btn_long yellow" id="imgUploadBtn" value="프로필 이미지 등록">
         </div>
         <div class="box">
             <div class="agree dark_blue2">
@@ -33,8 +36,12 @@
                 <button class="btn_mini blue">약관보기</button>
             </div>
         </div>
+        <div id="check validTotal"></div>
         <div class="box">
             <button type="submit" class="btn_long blue">가입하기</button>
         </div>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+<script defer src="/js/member/joinSocial.js"></script>

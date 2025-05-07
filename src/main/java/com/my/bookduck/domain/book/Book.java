@@ -64,6 +64,18 @@ public class Book {
         this.id = isbn13;
     }
 
+    @Builder(builderMethodName = "adminBuilder", buildMethodName = "buildFromAdmin")
+    public Book(String title, String cover, String writer, LocalDate publicationDate, String publishing, int price, String identifier, String epubPath){
+        this.title = title;
+        this.cover = cover;
+        this.writer = writer;
+        this.publicationDate = publicationDate;
+        this.publishing = publishing;
+        this.price = price;
+        this.identifier = identifier;
+        this.epubPath = epubPath;
+    }
+
     /**
      * 알라딘 API 등에서 받은 날짜 문자열(예: "YYYY-MM-DD")을 LocalDate 객체로 변환합니다.
      * 파싱 실패 시 null을 반환합니다.

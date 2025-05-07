@@ -220,7 +220,7 @@
                 <label for="agree"></label>위 내용을 모두 확인했습니다.
             </div>
         </div>
-        <button class="btn_long gray">탈퇴하기</button>
+        <button class="btn_long gray" id="delBtn" onclick="leave()" th:data-id="${session.loginuser.id}">탈퇴하기</button>
 <!--    <div>
             <a class="link btn btn-delete" th:href="@{/user/del/{id}(id=${session.loginuser.id})}">탈퇴하기</a>
         </div>-->
@@ -228,3 +228,5 @@
 </div>
 </body>
 </html>
+
+<script defer src="/js/member/del.js"></script>

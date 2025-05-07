@@ -43,7 +43,12 @@ public class HomeController {
         }
         //return "home";
         //return "member/del";
-        return "member/mypage";
+        if(u.getRole() == User.Role.ROLE_ADMIN){
+            return "admin/adminMain";
+        }else{
+            return "member/mypage";
+        }
+
     }
 
     @GetMapping("/login-form")
@@ -101,6 +106,11 @@ public class HomeController {
     @GetMapping("/findinfo")
     public String findUser(){
         return "member/findinfo";
+    }
+
+    @GetMapping("/findinfosuccess")
+    public String findUserSuccess(){
+        return "member/findinfoSuccess";
     }
 
     @GetMapping("/deleteuser")

@@ -1,6 +1,9 @@
 package com.my.bookduck.service;
 
+import com.my.bookduck.controller.request.AddUserRequest;
+import com.my.bookduck.controller.request.AdminAddBookRequest;
 import com.my.bookduck.domain.book.Book;
+import com.my.bookduck.domain.user.User;
 import com.my.bookduck.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +69,15 @@ public class BookService {
         return book;
     }
 
+    @Transactional
+    public void createBook(AdminAddBookRequest book) throws IllegalStateException {
+        log.info("createBook: {}", book);
+        Book b = book.toEntity(book);
+        if(b.getCover() != null && !b.getCover().isEmpty()) b.setCover(book.getCover());
+        else b.setCover(null);
+        bookRepository.save(b);
 
+    }
 
 
 }

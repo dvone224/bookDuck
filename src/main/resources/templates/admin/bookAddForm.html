@@ -1,10 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<h1>관리자 북 추가</h1>
+
+<div class="form_box">
+    <form id="addbookform" action="/admin/adminaddbook" method="post">
+        <label for="addbooktitle"></label>
+        <input type="text" class="input_long blue_line" id="addbooktitle" name="title" placeholder="제목" required autocomplete="off">
+
+        <div class="input_bookcover">
+            <div class="bookcover_img"> <img id="bookcoverImg" src="/img/bookduck_login.png" alt="기본이미지"> </div>
+            <input type="file" id="bookcoverfile" name="bookcoverfile" accept="image/*">
+            <input type="hidden" id="bookcover" name="cover">
+            <input type="button" class="btn_long yellow" id="imgUploadBtn" value="프로필 이미지 등록">
+        </div>
+
+        <label for="addbookwriter"></label>
+        <input type="text" class="input_long blue_line" id="addbookwriter" name="writer" placeholder="글쓴이" required autocomplete="off">
+
+        <label for="addbookpublicationDate"></label>
+        <input type="text" class="input_long blue_line" id="addbookpublicationDate" name="publicationDate" placeholder="출간일" required autocomplete="off">
+
+        <label for="addbookpublishing"></label>
+        <input type="text" class="input_long blue_line" id="addbookpublishing" name="publishing" placeholder="출판사" required autocomplete="off">
+
+        <label for="addbookprice"></label>
+        <input type="number" class="input_long blue_line" id="addbookprice" name="price" placeholder="판매금액" required autocomplete="off">
+
+        <label for="addbookidentifier"></label>
+        <input type="text" class="input_long blue_line" id="addbookidentifier" name="identifier" placeholder="identifier" autocomplete="off">
+
+        <label for="addbookepubPath"></label>
+        <input type="text" class="input_long blue_line" id="addbookepubPath" name="epubPath" placeholder="epubPath" autocomplete="off">
+
+        <div class="box">
+            <button type="submit" class="btn_long blue">책등록하기</button>
+        </div>
+    </form>
+</div>
+
 
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+<script>
+    $("#imgUploadBtn").click(()=>{
+        //파일데이터 추출
+        var file=$("#bookcoverfile");
+        console.log(file[0]);//순수한 태그
+        console.dir(file[0].files[0]); //파일데이터
+
+        //폼태그로 추가
+        var formData = new FormData(); //폼객체
+        formData.append("file",file[0].files[0]); //name, 값
+
+        $.ajax({
+            url:"/user/imgupload",
+            type:"post",
+            data:formData, //보내는데이터 form
+            contentType:false, //보내는데이터타입 false->"multipart/form-data"로 선언됩니다.
+            processData:false, //폼데이터가 name=값&name=값 형식으로 자동변경되는 것을 막아줍니다.
+            success:(result)=>{
+                var res = result.split('/')[0];
+                var imgname = result.split('/')[1];
+                //var imgPath = "'"+img+"'";
+                console.log(res);
+                console.log(imgname);
+                if(res == "success"){
+                    alert("업로드가 완료되었습니다.");
+                    $('#bookcoverImg').attr("src", "/image/getimg?fileName="+imgname);
+                    $('#bookcover').attr("value",imgname);
+                }
+            },
+            error:(err)=>{
+                $('#imgUploadErr').innerHTML="이미지 업로드 오류"
+                //alert("업로드 에러발생");
+            }
+
+        })
+    })
+
+</script>

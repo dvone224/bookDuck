@@ -8,6 +8,7 @@ import com.my.bookduck.controller.request.UpdateUserRequest;
 import com.my.bookduck.controller.response.UserSearchResultResponse;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -68,11 +69,28 @@ public class UserController {
 
     }
 
+    @GetMapping("/delSuccess")
+    public String delSuccess(@AuthenticationPrincipal HttpSession session) {
+        if(session.getAttribute("loginuser") != null){
+            session.removeAttribute("loginuser");
+        }
 
-    @GetMapping("/del/{id}")
-    public String delUser(@PathVariable Long id) {
-        System.out.println("delUser: " + id);
-        return "redirect:/logout";
+        return "member/delSuccess";
+
+    }
+
+    @ResponseBody
+    @DeleteMapping("/del/{id}")
+    public ResponseEntity delUser(@PathVariable Long id) {
+        log.info("delUser: {}", id);
+        try{
+            userService.deleteUserById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("errMsg: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
     @PostMapping("/update")
