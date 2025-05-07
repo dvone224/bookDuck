@@ -897,7 +897,7 @@ form{
 
 <!-- 그룹 ID와 원래 이름을 data 속성으로 전달 (group이 null이 아닐 때만) -->
 <div id="groupInfo" th:if="${group}" th:data-group-id="${group.id}" th:data-original-name="${group.name}"></div>
-
+<!--테스트-->
 <!-- 서버 메시지 표시 (오류 또는 성공) -->
 <div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
 <div th:if="${successMsg}" class="success-message" th:text="${successMsg}"></div>
