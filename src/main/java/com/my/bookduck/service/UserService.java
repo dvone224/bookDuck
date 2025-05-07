@@ -6,6 +6,7 @@ import com.my.bookduck.controller.request.UpdateUserRequest;
 import com.my.bookduck.controller.response.UserSearchResultResponse;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -114,6 +115,24 @@ public class UserService {
 
         return "success";
 
+    }
+
+    /**
+     * 사용자 ID(Primary Key)로 사용자 정보를 조회합니다.
+     * @param userId 조회할 사용자의 ID
+     * @return 조회된 User 엔티티
+     * @throws EntityNotFoundException 해당 ID의 사용자가 없을 경우 발생
+     */
+    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    public User getUserById(Long userId) {
+        log.info("사용자 ID로 조회 시도: {}", userId);
+        // JpaRepository의 findById는 Optional<User>를 반환합니다.
+        return userRepository.findById(userId)
+                .orElseThrow(() -> { // 사용자를 찾지 못하면 예외 발생
+                    log.error("ID {} 에 해당하는 사용자를 찾을 수 없습니다.", userId);
+                    // 또는 new IllegalArgumentException(...) 등 다른 예외 사용 가능
+                    return new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다: " + userId);
+                });
     }
 
     @Transactional

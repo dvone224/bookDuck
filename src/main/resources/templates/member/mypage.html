@@ -7,70 +7,229 @@
     <link rel="stylesheet" href="/css/member/mypage.css">
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <style>
+        /* --- 기존 스타일 유지 --- */
+        .crew_list, .book_list { display: flex; flex-wrap: wrap; gap: 15px; padding-bottom: 10px; }
+        .crew_one, .book_one { width: calc((100% - 30px) / 3); text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
+        .crew_book_img, .book_img { width: 100%; aspect-ratio: 100 / 140; margin-bottom: 5px; border: 1px solid #eee; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #f8f8f8; }
+        .crew_book_img img, .book_img img { width: 100%; height: 100%; object-fit: cover; }
+        .crew_tag { font-size: 0.8em; background-color: #5dade2; color: white; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; }
+        .crew_name { font-size: 0.9em; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .no-content { width: 100%; text-align: center; color: #777; padding: 20px 0; }
+        .box_side { width: 100%; text-align: right; padding-top: 5px; }
+        .book_one_title { font-size: 0.9em; margin-top: 5px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* --- 모달 스타일 (책 모달용으로 유지) --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; position: relative; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); animation-name: animatetop; animation-duration: 0.4s; }
+        @keyframes animatetop { from {top:-300px; opacity:0} to {top:0; opacity:1} }
+        .close-button { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-button:hover, .close-button:focus { color: black; text-decoration: none; }
+        .modal-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .modal-list { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .modal-list .modal-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .modal-list .modal-item:last-child { border-bottom: none; }
+        .modal-item img { width: 50px; height: 70px; object-fit: cover; margin-right: 15px; border-radius: 3px; background-color: #f0f0f0; }
+        .modal-item-info { flex-grow: 1; }
+        .modal-item-title { font-weight: bold; margin-bottom: 5px; }
+        .modal-item-sub { font-size: 0.9em; color: #555; }
+        .modal-item-action a { margin-left: 10px; color: #3498db; text-decoration: none; font-size: 0.9em; white-space: nowrap; }
+        .loader { border: 5px solid #f3f3f3; border-radius: 50%; border-top: 5px solid #3498db; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     <title> BookDuck²::My Page </title>
 </head>
 <body>
-<body>
 <div th:replace="~{fragments/therdHeader :: bodyHeader}" ></div>
+
 <div class="container">
-<div class="profile_img_box">
-    <div class="profile_img"> <img id="useroriginimg" src="/img/bookduck_login.png"> </div>
-    <div class="btn_circle yellow fix" onclick="location.href='/userupdate'"><i class="fa-solid fa-pen icon_white"></i></div>
-    <input type="hidden" id="originImg" th:value="${session.loginuser.img}">
+    <!-- 프로필 정보 -->
+    <div class="profile_img_box">
+        <div class="profile_img">
+            <img src="/img/bookduck_login.png" alt="Profile Image">
+        </div>
+        <div class="btn_circle yellow fix" onclick="location.href='/userupdate'">
+            <i class="fa-solid fa-pen icon_white"></i>
+        </div>
+    </div>
+    <div class="nickname dark_blue2" th:text="${loginuser.nickName} + '님'">닉네임님</div>
+
+    <!-- MY CREW 섹션 -->
+    <div class="my_crew box light_blue">
+        <div class="title dark_blue2">MY CREW<div class="line_long dark_blue1"></div></div>
+        <div class="box_temp">
+            <!-- 그룹 목록 미리보기 (엔티티 포함 DTO 기준 접근) -->
+            <div class="crew_list" th:if="${not #lists.isEmpty(myGroupsPreview)}">
+                <div class="crew_one" th:each="groupView : ${myGroupsPreview}">
+                    <div class="crew_book_img">
+                        <!-- 그룹 대표 이미지 (Lazy 로딩 주의!) -->
+                        <img th:src="${(groupView.group != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null) ? groupView.group.books[0].book.cover : '/img/default_crew_icon.png'}"
+                             alt="Crew Image" src="/img/default_crew_icon.png"
+                             onerror="this.onerror=null; this.src='/img/default_crew_icon.png';">
+                    </div>
+                    <div class="crew_tag">CREW</div>
+                    <!-- 그룹 이름 (groupView.group.name 사용) -->
+                    <div class="crew_name" th:text="${groupView.group?.name ?: '이름 없음'}" th:title="${groupView.group?.name}">그룹 이름</div>
+                </div>
+            </div>
+            <div class="no-content" th:if="${#lists.isEmpty(myGroupsPreview)}">
+                <p>가입한 그룹이 없습니다.</p>
+            </div>
+
+            <!-- ★★★ 그룹 더보기 버튼: 페이지 이동 ★★★ -->
+            <div class="box_side" th:if="${hasMoreGroups}">
+                <button class="more btn_mini blue" onclick="location.href='/group/list'">더보기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MY BOOK 섹션 -->
+    <div class="my_book box light_yellow">
+        <div class="title dark_yellow2">MY BOOK<div class="line_long dark_yellow1"></div></div>
+        <div class="box_temp">
+            <!-- 책 목록 미리보기 -->
+            <div class="book_list" th:if="${not #lists.isEmpty(myBooksPreview)}">
+                <div class="book_one" th:each="book : ${myBooksPreview}">
+                    <div class="book_img">
+                        <img th:src="${book.cover}" th:alt="${book.title}" src="/img/default_book_cover.png" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
+                    </div>
+                    <div class="book_one_title" th:title="${book.title}"></div>
+                </div>
+            </div>
+            <div class="no-content" th:if="${#lists.isEmpty(myBooksPreview)}">
+                <p>내 서재에 등록된 책이 없습니다.</p>
+            </div>
+
+            <!-- ★★★ 책 더보기 버튼: 모달 호출 ★★★ -->
+            <div class="box_side" th:if="${hasMoreBooks}">
+                <button class="more btn_mini yellow" onclick="openModal('book')">더보기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로그아웃 버튼 -->
+    <button class="logout btn_long yellow" onclick="location.href='/logout'">LOGOUT</button>
 </div>
-<div class="nickname dark_blue2" th:text="${session.loginuser.nickName}+' 님'"></div>
-<div class="my_crew box light_blue">
-    <div class="title dark_blue2">MY CREW<div class="line_long dark_blue1"></div></div>
-    <div class="box_temp">
-    <div class="crew_list">
-        <!--each로 반복-->
-        <div class="crew_one">
-            <div class="crew_book_img"></div>
-            <div class="crew_tag">CREW</div>
-            <div class="crew_name">독서 어벤저스</div>
-        </div>
-        <div class="crew_one">
-            <div class="crew_book_img"></div>
-            <div class="crew_tag">CREW</div>
-            <div class="crew_name">독서 어벤저스</div>
-        </div>
-        <div class="crew_one">
-            <div class="crew_book_img"></div>
-            <div class="crew_tag">CREW</div>
-            <div class="crew_name">독서 어벤저스</div>
-        </div>
-        <!--each로 반복-->
-    </div>
-        <div class="box_side">
-            <button class="more btn_mini blue">더보기</button>
-        </div>
-    </div>
-</div>
-<div class="my_book box light_yellow">
-    <div class="title dark_yellow2">MY BOOK<div class="line_long dark_yellow1"></div></div>
-    <div class="box_temp">
-    <div class="book_list">
-        <!--each로 반복-->
-        <div class="book_one">
-            <div class="book_img"></div>
-        </div>
-        <div class="book_one">
-            <div class="book_img"></div>
-        </div>
-        <div class="book_one">
-            <div class="book_img"></div>
-        </div>
-        <!--each로 반복-->
-    </div>
-        <div class="box_side">
-            <button class="more btn_mini yellow">더보기</button>
+
+<!-- ======================= 모달 창 구조 (책 모달만 필요) ======================= -->
+
+<!-- 책 목록 모달 -->
+<div id="bookModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('bookModal')">×</span>
+        <h3 class="modal-title">내 서재</h3>
+        <div id="bookListContainer" class="modal-list">
+            <!-- 책 목록이 여기에 동적으로 삽입됩니다 -->
+            <div class="loader" style="display: none;"></div> <!-- 로딩 스피너 -->
         </div>
     </div>
 </div>
 
-<button class="logout btn_long yellow" onclick="location.href='/logout'">LOGOUT</button>
-</div>
+<!-- ======================= JavaScript (책 모달용) ======================= -->
+<script>
+    // 모달 열기 함수 (책 전용)
+    function openModal(type) {
+        if (type !== 'book') {
+            console.error('Only book modal is supported now.');
+            return;
+        }
+
+        const modalId = 'bookModal';
+        const listContainerId = 'bookListContainer';
+        const apiUrl = '/api/my-books'; // 책 API 경로
+        const title = '내 서재';
+
+        const modal = document.getElementById(modalId);
+        const listContainer = document.getElementById(listContainerId);
+        let loader = listContainer.querySelector('.loader');
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.className = 'loader';
+            listContainer.appendChild(loader);
+        }
+
+        Array.from(listContainer.children).forEach(child => {
+            if (!child.classList.contains('loader')) {
+                listContainer.removeChild(child);
+            }
+        });
+        loader.style.display = 'block';
+        modal.style.display = 'block';
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || '데이터를 불러오는데 실패했습니다.') });
+                }
+                return response.json();
+            })
+            .then(data => {
+                loader.style.display = 'none';
+
+                if (!data || data.length === 0) {
+                    listContainer.innerHTML = '<p style="text-align: center; color: #777; padding: 20px 0;">내 서재가 비어있습니다.</p>';
+                    return;
+                }
+
+                let listHtml = '';
+                data.forEach(book => {
+                    listHtml += `
+                         <div class="modal-item">
+                             <img src="${book.cover}" alt="${book.title}" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
+                             <div class="modal-item-info">
+                                 <div class="modal-item-title">${book.title}</div>
+                                 <div class="modal-item-sub">${book.writer}</div>
+                             </div>
+                             <a href="/book/read/${book.id}" class="modal-item-action">읽기</a>
+                         </div>
+                     `;
+                });
+
+                Array.from(listContainer.children).forEach(child => {
+                    if (!child.classList.contains('loader')) {
+                        listContainer.removeChild(child);
+                    }
+                });
+                listContainer.insertAdjacentHTML('beforeend', listHtml);
+            })
+            .catch(error => {
+                console.error('Error fetching book data:', error);
+                loader.style.display = 'none';
+                Array.from(listContainer.children).forEach(child => {
+                    if (!child.classList.contains('loader')) {
+                        listContainer.removeChild(child);
+                    }
+                });
+                listContainer.insertAdjacentHTML('beforeend', `<p style="text-align: center; color: red; padding: 20px 0;">${error.message || '오류가 발생했습니다.'}</p>`);
+            });
+    }
+
+    // 모달 닫기 함수
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            const listContainer = modal.querySelector('.modal-list');
+            if(listContainer) {
+                Array.from(listContainer.children).forEach(child => {
+                    if (!child.classList.contains('loader')) {
+                        listContainer.removeChild(child);
+                    }
+                });
+                const loader = listContainer.querySelector('.loader');
+                if(loader) loader.style.display = 'none';
+            }
+        }
+    }
+
+    // 모달 외부 클릭 시 닫기 (책 모달만 해당)
+    window.onclick = function(event) {
+        const bookModal = document.getElementById('bookModal');
+        if (event.target == bookModal) {
+            closeModal('bookModal');
+        }
+    }
+</script>
+
 </body>
 </html>
 

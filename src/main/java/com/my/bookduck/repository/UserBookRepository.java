@@ -1,5 +1,6 @@
 package com.my.bookduck.repository;
 
+import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.user.UserBook;
 import com.my.bookduck.domain.user.UserBookId; // ★★★ UserBookId 임포트 (복합 키 클래스) ★★★
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,4 +38,13 @@ public interface UserBookRepository extends JpaRepository<UserBook, UserBookId> 
 
     // 예: 특정 책을 등록한 모든 UserBook 엔티티 조회
     // List<UserBook> findByBookId(Long bookId);
+
+    /**
+     * 특정 사용자의 서재에 등록된 모든 책(Book 엔티티) 목록을 조회합니다.
+     * UserBook을 거쳐 연관된 Book 객체만 선택하여 반환합니다.
+     * @param userId 사용자 ID
+     * @return 해당 사용자가 등록한 Book 엔티티 리스트 (없으면 빈 리스트 반환)
+     */
+    @Query("SELECT ub.book FROM UserBook ub WHERE ub.user.id = :userId")
+    List<Book> findBooksByUserId(@Param("userId") Long userId);
 }

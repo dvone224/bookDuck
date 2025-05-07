@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,14 +49,23 @@ public class PaymentService {
 
             // 단일 Purchase 객체 생성
             Purchase purchase = new Purchase(orderId, String.valueOf(user.getId()), new ArrayList<>());
+            // @CreatedDate가 동작하지 않을 경우를 대비한 안전장치
+            purchase.setPurchasedAt(LocalDateTime.now());
+            log.info("Purchase 객체 초기화 - orderId: {}, purchasedAt (before save): {}", orderId, purchase.getPurchasedAt());
             for (Book book : orderedBooks) {
                 PurchaseItems item = PurchaseItems.createPurchaseItem(String.valueOf(book.getId()), orderId, purchase);
                 purchase.addPurchaseItem(item);
             }
-            purchaseRepository.save(purchase);
-            log.info("Purchase 정보 저장 성공 - orderId: {}, itemCount: {}", orderId, orderedBooks.size());
+            Purchase savedPurchase = purchaseRepository.save(purchase);
+            log.info("Purchase 정보 저장 성공 - orderId: {}, itemCount: {}, purchasedAt (after save): {}",
+                    orderId, orderedBooks.size(), savedPurchase.getPurchasedAt());
+            // @CreatedDate 동작 확인
+            if (!savedPurchase.getPurchasedAt().equals(purchase.getPurchasedAt())) {
+                log.info("JPA Auditing (@CreatedDate) applied - purchasedAt updated to: {}", savedPurchase.getPurchasedAt());
+            }
         } catch (Exception e) {
-            log.error("Purchase 정보 저장 실패 - orderId: {}, error: {}", orderId, e.getMessage());
+            log.error("Purchase 정보 저장 실패 - orderId: {}, error: {}", orderId, e.getMessage(), e);
+            // TODO: 결제 승인 후 저장 실패 시, Toss Payments API로 결제 취소 요청 필요
             throw new RuntimeException("주문 정보(Purchase) 저장 실패", e);
         }
 

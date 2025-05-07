@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -37,9 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class AladinService {
 
-
-
-    // application.properties에서 값 주입
     @Value("${aladin.api.key}")
     private String apiKey;
 
@@ -52,67 +52,24 @@ public class AladinService {
     private final RestTemplate restTemplate;
     private final BookRepository bookRepository;
     private final WebClient webClient;
-
-    public PaginatedAladinResponse searchBooks(String query, int page, int size) {
-        if (query == null || query.trim().isEmpty()) {
-            // 빈 결과 반환
-            return new PaginatedAladinResponse(Collections.emptyList(), 0, page, size);
-        }
-
-        // API 요청 URL 생성 (start와 MaxResults 파라미터 사용)
-        URI uri = UriComponentsBuilder
-                .fromUriString(apiUrl)
-                .queryParam("TTBKey", apiKey)
-                .queryParam("Query", query)
-                .queryParam("QueryType", "Keyword")
-                .queryParam("MaxResults", size)       // 페이지당 항목 수
-                .queryParam("start", page)           // 요청할 페이지 번호 (알라딘은 1부터 시작)
-                .queryParam("SearchTarget", "eBook") // eBook 검색 유지
-                .queryParam("output", "js")
-                .queryParam("Version", "20131101")
-                .encode(StandardCharsets.UTF_8)
-                .build()
-                .toUri();
-
-        try {
-            // API 호출 및 응답 받기 (AladinApiResponse는 전체 응답 구조 DTO)
-            AladinApiResponse response = restTemplate.getForObject(uri, AladinApiResponse.class);
-
-            if (response != null) {
-                List<AladinBookItem> books = (response.getItem() != null) ? response.getItem() : Collections.emptyList();
-                // 페이징된 결과 객체 생성하여 반환
-                return new PaginatedAladinResponse(books, response.getTotalResults(), page, size);
-            } else {
-                System.out.println("알라딘 API 응답이 null입니다.");
-                return new PaginatedAladinResponse(Collections.emptyList(), 0, page, size);
-            }
-        } catch (Exception e) {
-            System.err.println("알라딘 API 호출 중 오류 발생: " + e.getMessage());
-            return new PaginatedAladinResponse(Collections.emptyList(), 0, page, size); // 오류 시 빈 결과 반환
-        }
-    }
-
     private final ObjectMapper objectMapper;
     private final SyncStatusRepository syncStatusRepository;
 
-    // --- 상수 정의 ---
     private static final int MAX_RESULTS_PER_PAGE = 50;
-    // 알라딘 API 전체 페이지 제한과는 별개로, 한 번 실행 시 가져올 페이지 수 (배치 크기)
-    private static final int PAGES_PER_RUN = 20; // 예: 20 페이지 = 약 1000 아이템
+    private static final int PAGES_PER_RUN = 20;
     private static final Duration API_TIMEOUT = Duration.ofSeconds(15);
-    public static final int DEFAULT_BESTSELLER_CATEGORY_ID = 0; // 외부에서도 사용할 수 있도록 public static final
+    public static final int DEFAULT_BESTSELLER_CATEGORY_ID = 0;
 
-    // --- 결과 카운트 및 상태를 위한 DTO ---
     @lombok.Data
     @lombok.NoArgsConstructor
     public static class SyncResult {
-        private long totalApiItems = 0; // API에서 조회된 총 아이템 수 (이번 배치)
-        private long savedCount = 0;    // 새로 저장된 책 수 (이번 배치)
-        private long updatedCount = 0;  // 업데이트된 책 수 (이번 배치)
-        private boolean errorOccurred = false; // 에러 발생 여부
-        private int startPage = 1; // 이번 배치 시작 페이지
-        private int lastAttemptedPage = 0; // 이번 배치에서 시도한 마지막 페이지 번호
-        private int actualLastProcessedPage = 0; // 이번 배치에서 실제로 성공 처리된 마지막 페이지 번호
+        private long totalApiItems = 0;
+        private long savedCount = 0;
+        private long updatedCount = 0;
+        private boolean errorOccurred = false;
+        private int startPage = 1;
+        private int lastAttemptedPage = 0;
+        private int actualLastProcessedPage = 0;
 
         public void incrementSavedCount() { this.savedCount++; }
         public void incrementUpdatedCount() { this.updatedCount++; }
@@ -120,18 +77,174 @@ public class AladinService {
     }
 
     /**
-     * 알라딘 API에서 특정 카테고리의 *다음* 베스트셀러 배치(PAGES_PER_RUN 개수만큼)를 가져와 DB에 저장/업데이트합니다.
-     * DB에 저장된 마지막 처리 페이지 다음부터 시작합니다.
-     *
-     * @param categoryId 베스트셀러를 조회할 알라딘 카테고리 ID
-     * @return Mono<SyncResult> 동기화 결과 (이번 배치에 대한 정보)
+     * 알라딘 API를 통해 책을 검색하거나 목록을 조회합니다.
+     * 검색어가 있으면 키워드 검색, 없으면 정렬 기준에 따라 신간 또는 베스트셀러 목록을 반환합니다.
      */
+    public PaginatedAladinResponse searchBooks(String query, int page, int size, String categoryId, String sort) {
+        String effectiveSort = sort != null && List.of("PublishTime", "SalesPoint", "Title").contains(sort)
+                ? sort
+                : "PublishTime"; // 기본 정렬은 최신순
+        String effectiveCategoryId = (categoryId != null && !categoryId.trim().isEmpty())
+                ? categoryId
+                : "0"; // 알라딘 API에서 0은 보통 전체 국내도서를 의미 (문서 확인 필요)
+
+        UriComponentsBuilder uriBuilder;
+        String finalApiUrl; // 사용할 알라딘 API의 기본 URL (ItemSearch.aspx 또는 ItemList.aspx)
+
+        // --- 검색어 유무 및 정렬 기준에 따른 API 분기 ---
+        if (query == null || query.trim().isEmpty()) {
+            // 검색어가 없을 때
+            finalApiUrl = apiListUrl; // ItemList.aspx 사용
+            uriBuilder = UriComponentsBuilder.fromUriString(finalApiUrl)
+                    .queryParam("TTBKey", apiKey)
+                    .queryParam("MaxResults", size)
+                    .queryParam("start", page)
+                    .queryParam("SearchTarget", "eBook") // 또는 "eBook" (프로젝트 대상에 맞게)
+                    .queryParam("output", "js")
+                    .queryParam("Version", "20131101")
+                    .queryParam("CategoryId", effectiveCategoryId);
+
+            if ("PublishTime".equals(effectiveSort)) {
+                log.info("검색어 없음 + 최신순 정렬: Aladin 신간 목록 API 호출 (ItemNewSpecial)");
+                uriBuilder.queryParam("QueryType", "ItemNewSpecial");
+                // ItemList.aspx의 ItemNewAll은 자체적으로 최신순이므로 별도 Sort 파라미터 필요 없을 수 있음
+                // 필요하다면 알라딘 문서 확인 후 Sort 파라미터 추가
+            } else if ("SalesPoint".equals(effectiveSort)) {
+                log.info("검색어 없음 + 판매량순 정렬: Aladin 베스트셀러 API 호출 (Bestseller)");
+                uriBuilder.queryParam("QueryType", "Bestseller");
+                // ItemList.aspx의 Bestseller는 자체적으로 판매량순이므로 별도 Sort 파라미터 필요 없을 수 있음
+            } else if ("Title".equals(effectiveSort)) {
+                log.info("검색어 없음 + 가나다순 정렬: 처리 방식 결정 필요");
+                uriBuilder.queryParam("QueryType", "ItemNewSpecial");
+                // ★★★ 알라딘 ItemList API가 'Title' 정렬을 지원하는지 확인 필요 ★★★
+                // 1. 지원한다면:
+                // uriBuilder.queryParam("QueryType", "ItemNewAll"); // 또는 다른 적절한 QueryType
+                // uriBuilder.queryParam("Sort", "Title"); // 알라딘 API의 실제 파라미터명 사용
+                // 2. 지원하지 않는다면:
+                //  - 기본 정렬(예: 최신순)으로 대체하고 로그 남기기
+                //  - 또는 빈 결과를 반환하고 프론트에서 안내 메시지 표시
+                // 여기서는 예시로 신간 목록(기본 최신순)을 반환하거나,
+                // 특정 QueryType(예: 그냥 ItemList)에서 Title 정렬이 가능하다면 해당 옵션 사용
+                uriBuilder.queryParam("QueryType", "ItemNewAll"); // 예시: 신간을 대상으로 가나다순 시도 (API 지원 여부 확인)
+                // uriBuilder.queryParam("Sort", "Title"); // API가 지원한다면
+                log.warn("검색어 없이 가나다순 정렬 시, Aladin ItemList API의 Title 정렬 지원 여부에 따라 결과가 달라질 수 있습니다.");
+            } else {
+                // 기타 정렬 또는 기본값 (최신순)
+                log.info("검색어 없음 + 기본/기타 정렬: Aladin 신간 목록 API 호출 (ItemNewAll)");
+                uriBuilder.queryParam("QueryType", "ItemNewAll");
+            }
+        } else {
+            // 검색어가 있을 때 (기존 로직 유지)
+            finalApiUrl = apiUrl; // ItemSearch.aspx 사용
+            log.info("검색어 있음: Aladin 키워드 검색 API 호출. Query: {}, Sort: {}", query, effectiveSort);
+            uriBuilder = UriComponentsBuilder.fromUriString(finalApiUrl)
+                    .queryParam("TTBKey", apiKey)
+                    .queryParam("Query", query)
+                    .queryParam("QueryType", "Keyword")
+                    .queryParam("MaxResults", size)
+                    .queryParam("start", page)
+                    .queryParam("SearchTarget", "eBook") // 또는 "eBook"
+                    .queryParam("output", "js")
+                    .queryParam("Version", "20131101")
+                    .queryParam("CategoryId", effectiveCategoryId)
+                    .queryParam("Sort", effectiveSort); // 키워드 검색은 Sort 파라미터 지원
+        }
+
+        URI uri = uriBuilder.encode(StandardCharsets.UTF_8).build().toUri();
+        log.info("최종 호출 Aladin API URL: {}", uri.toString());
+
+        try {
+            AladinApiResponse response = restTemplate.getForObject(uri, AladinApiResponse.class);
+            if (response != null) {
+                List<AladinBookItem> books = (response.getItem() != null) ? response.getItem() : Collections.emptyList();
+                int total = response.getTotalResults() != null ? response.getTotalResults() : 0;
+                // 검색어 없는 ItemList API의 경우 totalResults가 정확하지 않거나 매우 클 수 있음
+                // 프론트엔드 페이지네이션과 사용자 경험을 위해 조정 필요할 수 있음
+                if ((query == null || query.trim().isEmpty()) && total == 0 && !books.isEmpty()) {
+                    // 예: ItemList API가 totalResults를 0으로 주지만 실제론 더 많은 결과가 있을 수 있는 경우
+                    // total = books.size() * 20; // 임의로 더 많은 결과가 있다고 가정 (페이지네이션 테스트용)
+                    log.warn("검색어 없는 목록 조회 시 API totalResults가 0이지만, 아이템이 존재합니다. 페이지네이션에 영향이 있을 수 있습니다.");
+                }
+                log.info("Aladin API 응답: totalResults={}, 현재 페이지 아이템 수={}", total, books.size());
+                return new PaginatedAladinResponse(books, total, page, size);
+            } else {
+                log.warn("알라딘 API 응답이 null입니다. URL: {}", uri);
+                return new PaginatedAladinResponse(Collections.emptyList(), 0, page, size);
+            }
+        } catch (Exception e) {
+            log.error("알라딘 API 호출 중 오류 발생. URL: {}. Error: {}", uri, e.getMessage(), e);
+            return new PaginatedAladinResponse(Collections.emptyList(), 0, page, size);
+        }
+    }
+
+//    public PaginatedAladinResponse getBestsellers(int page, int size, String categoryId, String sort) {
+//        String effectiveSort = sort != null && List.of("PublishTime", "SalesPoint", "Title").contains(sort)
+//                ? sort
+//                : "PublishTime";
+//        String effectiveCategoryId = (categoryId != null && !categoryId.trim().isEmpty())
+//                ? categoryId
+//                : String.valueOf(DEFAULT_BESTSELLER_CATEGORY_ID);
+//
+//        return fetchAladinPage(Integer.parseInt(effectiveCategoryId), page)
+//                .map(response -> {
+//                    List<AladinBookItem> books = (response.getItem() != null) ? response.getItem() : Collections.emptyList();
+//                    Integer totalResults = response.getTotalResults();
+//                    int total = totalResults != null ? totalResults : books.size();
+//                    books = books.size() > size ? books.subList(0, size) : books;
+//                    return new PaginatedAladinResponse(books, total, page, size);
+//                })
+//                .block();
+//    }
+
+    private Mono<AladinApiResponse> fetchAladinPage(int categoryId, int pageNumber) {
+        log.debug("알라딘 베스트셀러 API 요청: CategoryId={}, Page={}", categoryId, pageNumber);
+
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl(apiListUrl)
+                .queryParam("ttbkey", apiKey)
+                .queryParam("QueryType", "Bestseller")
+                .queryParam("MaxResults", MAX_RESULTS_PER_PAGE)
+                .queryParam("start", pageNumber)
+                .queryParam("SearchTarget", "eBook") // eBook -> Book
+                .queryParam("output", "js")
+                .queryParam("Version", "20131101")
+                .queryParam("CategoryId", categoryId)
+                .encode()
+                .build()
+                .toUri();
+
+        return webClient.get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(responseBody -> {
+                    log.info("[Bestseller CatId={}] API 응답 문자열 (페이지 {}): {}", categoryId, pageNumber, responseBody);
+                    try {
+                        if (responseBody != null && responseBody.trim().startsWith("{")) {
+                            AladinApiResponse responseDto = objectMapper.readValue(responseBody, com.my.bookduck.controller.response.AladinApiResponse.class);
+                            return Mono.just(responseDto);
+                        } else {
+                            log.error("[Bestseller CatId={}] API 응답이 JSON 형식이 아닙니다 (페이지 {}). 응답: {}", categoryId, pageNumber, responseBody);
+                            return Mono.error(new RuntimeException("API 응답이 JSON 형식이 아님: " + responseBody));
+                        }
+                    } catch (Exception e) {
+                        log.error("[Bestseller CatId={}] API 응답 JSON 파싱 실패 (페이지 {}): {}", categoryId, pageNumber, e.getMessage());
+                        return Mono.error(new RuntimeException("API 응답 JSON 파싱 실패", e));
+                    }
+                })
+                .timeout(API_TIMEOUT)
+                .doOnError(error -> {
+                    if (!(error instanceof RuntimeException && (error.getMessage().contains("파싱 실패") || error.getMessage().contains("JSON 형식이 아님")))) {
+                        log.error("알라딘 베스트셀러 API 페이지 {} (CatId={}) 호출 또는 기타 처리 오류: {}", pageNumber, categoryId, error.getMessage());
+                    }
+                });
+    }
+
     public Mono<SyncResult> fetchNextBestsellerBatch(int categoryId) {
         String syncKey = "bestseller_" + categoryId;
         log.info("알라딘 API 다음 베스트셀러 배치(SyncKey={}) 처리 시작", syncKey);
         SyncResult result = new SyncResult();
 
-        // 1. 마지막 처리 페이지 읽기
         return Mono.fromCallable(() -> syncStatusRepository.findById(syncKey)
                         .map(SyncStatus::getLastProcessedPage)
                         .orElse(0))
@@ -145,10 +258,9 @@ public class AladinService {
                             syncKey, lastProcessedPage, startPage, pagesToFetchThisRun);
                     AtomicInteger currentMaxProcessedPage = new AtomicInteger(lastProcessedPage);
 
-                    // 2. API 호출 및 처리 파이프라인
                     return Flux.range(startPage, pagesToFetchThisRun)
                             .concatMap(pageNumber -> fetchAladinPage(categoryId, pageNumber)
-                                            .doOnSuccess(response -> { /* ... 페이지 번호 추적 ... */
+                                            .doOnSuccess(response -> {
                                                 if (isResponseValid(response, syncKey, pageNumber)) {
                                                     currentMaxProcessedPage.accumulateAndGet(pageNumber, Math::max);
                                                     if (response.getItem() != null && !response.getItem().isEmpty()) {
@@ -156,11 +268,11 @@ public class AladinService {
                                                     }
                                                 }
                                             })
-                                            .flatMapMany(pageResponse -> Flux.fromIterable(/* ... 아이템 추출 ... */
+                                            .flatMapMany(pageResponse -> Flux.fromIterable(
                                                     (pageResponse != null && pageResponse.getItem() != null) ? pageResponse.getItem() : Collections.emptyList()
                                             ))
-                                            .onErrorResume(e -> { /* ... 개별 페이지 오류 처리 ... */
-                                                log.warn("[{}] 페이지 {} 처리 중 오류 발생하여 건너<0xEB><0x9A><0x81>니다: {}", syncKey, pageNumber, e.getMessage());
+                                            .onErrorResume(e -> {
+                                                log.warn("[{}] 페이지 {} 처리 중 오류 발생하여 건너뛰니다: {}", syncKey, pageNumber, e.getMessage());
                                                 return Flux.empty();
                                             }),
                                     1)
@@ -168,216 +280,99 @@ public class AladinService {
                             .publishOn(Schedulers.boundedElastic())
                             .flatMap(apiItem -> processBookItem(apiItem, result))
                             .collectList()
-                            // --- saveBooksInBatch 호출 및 후처리 수정 ---
                             .flatMap(booksToSaveOrUpdate ->
-                                    // saveBooksInBatch 호출. 성공하면 결과(result) 반환, 실패하면 에러 전파
                                     saveBooksInBatch(booksToSaveOrUpdate, result)
                                             .onErrorResume(saveError -> {
-                                                // saveBooksInBatch 에서 에러 발생 시 처리
                                                 log.error("[{}] DB 저장/업데이트 중 오류 발생!", syncKey, saveError);
-                                                result.setErrorOccurred(true); // 에러 플래그 설정
-                                                return Mono.just(result); // 에러 표시된 결과 반환
+                                                result.setErrorOccurred(true);
+                                                return Mono.just(result);
                                             })
                             )
-                            .flatMap(savedResult -> { // saveBooksInBatch 성공 또는 에러 처리 후 실행됨
+                            .flatMap(savedResult -> {
                                 int actualLastProcessed = currentMaxProcessedPage.get();
                                 savedResult.setActualLastProcessedPage(actualLastProcessed);
 
-                                // --- 상태 업데이트 조건 재확인 및 실행 ---
-                                // 1. 이번 배치 처리 중 명시적인 에러가 없었고 (`errorOccurred`가 false)
-                                // 2. 실제로 처리된 페이지 번호가 이전 기록보다 크다면
                                 if (!savedResult.isErrorOccurred() && actualLastProcessed > lastProcessedPage) {
                                     log.info("[{}] 성공적으로 페이지 처리 완료 ({} -> {}). Sync 상태 업데이트 시도.",
                                             syncKey, lastProcessedPage, actualLastProcessed);
-                                    // 상태 업데이트 시도
                                     return updateSyncStatus(syncKey, actualLastProcessed)
-                                            .thenReturn(savedResult) // 성공 시 최종 결과 반환
-                                            .onErrorResume(updateError -> { // 상태 업데이트 자체 실패 시
+                                            .thenReturn(savedResult)
+                                            .onErrorResume(updateError -> {
                                                 log.error("[{}] Sync 상태 업데이트 중 오류 발생!", syncKey, updateError);
-                                                savedResult.setErrorOccurred(true); // 에러 플래그 설정
-                                                return Mono.just(savedResult); // 에러 표시된 결과 반환
+                                                savedResult.setErrorOccurred(true);
+                                                return Mono.just(savedResult);
                                             });
                                 } else {
-                                    // 에러가 있었거나, 신규 처리된 페이지가 없는 경우
                                     if (savedResult.isErrorOccurred()) {
-                                        log.error("[{}] 이전 단계 에러로 인해 Sync 상태 업데이트 건너<0xEB><0x9A><0x81> (LastProcessed: {}, CurrentMax: {})",
+                                        log.error("[{}] 이전 단계 에러로 인해 Sync 상태 업데이트 건너뛰기 (LastProcessed: {}, CurrentMax: {})",
                                                 syncKey, lastProcessedPage, actualLastProcessed);
                                     } else {
-                                        log.warn("[{}] 신규 처리된 페이지 없음. Sync 상태 업데이트 건너<0xEB><0x9A><0x81> (LastProcessed: {}, CurrentMax: {})",
+                                        log.warn("[{}] 신규 처리된 페이지 없음. Sync 상태 업데이트 건너뛰기 (LastProcessed: {}, CurrentMax: {})",
                                                 syncKey, lastProcessedPage, actualLastProcessed);
                                     }
-                                    return Mono.just(savedResult); // 현재 결과 그대로 반환
+                                    return Mono.just(savedResult);
                                 }
                             });
                 })
-                // --- 최종 에러 처리 수정 ---
-                .onErrorResume(finalError -> { // 파이프라인의 예측 못한 최종 에러 처리
+                .onErrorResume(finalError -> {
                     log.error("[{}] 배치 처리 중 예측하지 못한 최종 에러 발생: {}", syncKey, finalError.getMessage(), finalError);
-                    result.setErrorOccurred(true); // 최종 에러 플래그 설정
-                    return Mono.just(result); // 에러 표시된 결과 반환
-                });
-        // .onErrorReturn(result.setErrorOccurred(true)); // 이것 대신 onErrorResume 사용
-    }
-
-    /**
-     * 알라딘 API 베스트셀러 특정 페이지를 호출하는 메소드 (ItemList.aspx 사용)
-     * 응답을 문자열로 받아 로깅 후, JSON 파싱 시도.
-     *
-     * @param categoryId 조회할 카테고리 ID
-     * @param pageNumber 가져올 페이지 번호 (1부터 시작)
-     * @return Mono<AladinApiResponse> API 응답 DTO (성공 시), 또는 에러 Mono (실패 시)
-     */
-    private Mono<AladinApiResponse> fetchAladinPage(int categoryId, int pageNumber) {
-        log.debug("알라딘 베스트셀러 API 요청: CategoryId={}, Page={}", categoryId, pageNumber);
-
-        // ItemList.aspx API에 맞는 파라미터 구성
-        URI uri = UriComponentsBuilder
-                .fromHttpUrl(apiListUrl) // apiUrl 이 ItemList.aspx 를 가리키는지 확인!
-                .queryParam("ttbkey", apiKey)
-                .queryParam("QueryType", "Bestseller") // 베스트셀러 타입 지정
-                .queryParam("MaxResults", MAX_RESULTS_PER_PAGE)
-                .queryParam("start", pageNumber)
-                // ItemList API는 SearchTarget이 필요 없을 수 있음 (API 문서 확인)
-                // 필요 없다면 아래 라인 주석 처리 또는 삭제 가능
-                .queryParam("SearchTarget", "Book")
-                .queryParam("output", "js") // JSON 응답 요청
-                .queryParam("Version", "20131101")
-                .queryParam("CategoryId", categoryId) // 카테고리 ID 지정
-                .encode() // 파라미터 인코딩
-                .build()
-                .toUri();
-
-        return webClient.get()
-                .uri(uri)
-                .retrieve()
-                // 1. 응답 본문을 문자열로 받기 (로깅 및 사전 확인용)
-                .bodyToMono(String.class)
-                // 2. 받은 문자열 처리 (로깅 및 파싱)
-                .flatMap(responseBody -> {
-                    // 2-1. 실제 응답 내용 로그 출력
-                    log.info("[Bestseller CatId={}] API 응답 문자열 (페이지 {}): {}", categoryId, pageNumber, responseBody);
-                    try {
-                        // 2-2. 응답이 JSON 형식인지 간단히 확인
-                        if (responseBody != null && responseBody.trim().startsWith("{")) {
-                            // 2-3. ObjectMapper를 사용하여 문자열을 DTO로 직접 변환 시도
-                            // *** 사용하는 DTO 클래스 경로 확인! ***
-                            AladinApiResponse responseDto = objectMapper.readValue(responseBody, com.my.bookduck.controller.response.AladinApiResponse.class);
-                            // 2-4. 성공 시 DTO를 담은 Mono 반환
-                            return Mono.just(responseDto);
-                        } else {
-                            // 2-5. 응답이 JSON 형식이 아닌 경우 (예: XML 에러)
-                            log.error("[Bestseller CatId={}] API 응답이 JSON 형식이 아닙니다 (페이지 {}). 응답: {}", categoryId, pageNumber, responseBody);
-                            // 에러 상황을 나타내는 Mono 반환
-                            return Mono.error(new RuntimeException("API 응답이 JSON 형식이 아님: " + responseBody));
-                        }
-                    } catch (Exception e) {
-                        // 2-6. JSON 파싱 중 예외 발생 시
-                        log.error("[Bestseller CatId={}] API 응답 JSON 파싱 실패 (페이지 {}): {}", categoryId, pageNumber, e.getMessage());
-                        // 파싱 실패를 나타내는 에러 Mono 반환 (원본 예외 포함)
-                        return Mono.error(new RuntimeException("API 응답 JSON 파싱 실패", e));
-                    }
-                })
-                // 3. 타임아웃 설정
-                .timeout(API_TIMEOUT)
-                // 4. 최종 에러 로깅 (이미 처리된 파싱/형식 에러는 제외)
-                .doOnError(error -> {
-                    // flatMap 내부에서 이미 처리된 파싱/형식 오류는 중복 로깅 방지
-                    if (!(error instanceof RuntimeException && (error.getMessage().contains("파싱 실패") || error.getMessage().contains("JSON 형식이 아님")))) {
-                        log.error("알라딘 베스트셀러 API 페이지 {} (CatId={}) 호출 또는 기타 처리 오류: {}", pageNumber, categoryId, error.getMessage());
-                    }
+                    result.setErrorOccurred(true);
+                    return Mono.just(result);
                 });
     }
 
-
-    /**
-     * API 응답 유효성 검사 및 로깅 (에러 코드 확인 등)
-     * @param response API 응답 DTO
-     * @param context 로깅 컨텍스트 문자열 (예: SyncKey)
-     * @param pageNumber 현재 페이지 번호
-     * @return boolean 응답이 유효하면 true (처리 계속), 아니면 false
-     */
     private boolean isResponseValid(AladinApiResponse response, String context, int pageNumber) {
         if (response == null) {
             log.warn("[{}] 알라딘 API 페이지 {} 응답이 null입니다.", context, pageNumber);
-            return false; // 응답 자체가 null이면 유효하지 않음
-        }
-        // 아이템 리스트가 null 인 경우 (정상 응답이지만 아이템이 없는 경우)
-        if (response.getItem() == null) {
-            log.debug("[{}] 알라딘 API 페이지 {} 응답에 item 필드가 null입니다. (totalResults={})", context, pageNumber, response.getTotalResults());
-            // item이 null 이어도 에러 코드가 없다면 유효한 응답으로 간주하고 처리 계속 (빈 리스트로 처리됨)
-        } else if (response.getItem().isEmpty()) {
-            log.debug("[{}] 알라딘 API 페이지 {} 응답의 item 리스트가 비어있습니다. (totalResults={})", context, pageNumber, response.getTotalResults());
-            // 비어있는 리스트도 유효한 응답
-        }
-        return true; // 위 조건들에 걸리지 않으면 유효한 응답으로 판단
-    }
-
-
-    /**
-     * AladinBookItem DTO가 유효한지 (ISBN13 존재 및 형식 확인)
-     * @param item 개별 책 아이템 DTO
-     * @return boolean 유효하면 true
-     */
-    private boolean isValidBookItem(AladinBookItem item) {
-        if (item == null || item.getIsbn13() == null) {
-            log.warn("부적합한 아이템 건너<0xEB><0x9A><0x81>니다 (ISBN13 없음 또는 형식 오류): title='{}', isbn13='{}'",
-                    (item != null ? item.getTitle() : "null item"), (item != null ? item.getIsbn13() : "null item"));
             return false;
         }
-        // 필요시 다른 필수 필드 검사 추가 (예: title)
-        // if (item.getTitle() == null || item.getTitle().trim().isEmpty()) return false;
+        if (response.getItem() == null) {
+            log.debug("[{}] 알라딘 API 페이지 {} 응답에 item 필드가 null입니다. (totalResults={})", context, pageNumber, response.getTotalResults());
+        } else if (response.getItem().isEmpty()) {
+            log.debug("[{}] 알라딘 API 페이지 {} 응답의 item 리스트가 비어있습니다. (totalResults={})", context, pageNumber, response.getTotalResults());
+        }
         return true;
     }
 
+    private boolean isValidBookItem(AladinBookItem item) {
+        if (item == null || item.getIsbn13() == null) {
+            log.warn("부적합한 아이템 건너뛰니다 (ISBN13 없음 또는 형식 오류): title='{}', isbn13='{}'",
+                    (item != null ? item.getTitle() : "null item"), (item != null ? item.getIsbn13() : "null item"));
+            return false;
+        }
+        return true;
+    }
 
-    /**
-     * 개별 AladinBookItem을 DB와 비교하여 처리하고, 저장/업데이트가 필요한 Book 엔티티를 반환.
-     * @param apiItem 알라딘 API에서 받은 책 정보
-     * @param result 동기화 결과 카운팅 객체 (savedCount, updatedCount 업데이트용)
-     * @return Mono<Book> 저장/업데이트 대상 엔티티, 또는 Mono.empty() 처리 불필요 시
-     */
     private Mono<Book> processBookItem(AladinBookItem apiItem, SyncResult result) {
-        // findByIsbn13은 블로킹 I/O 이므로 별도 스레드에서 실행
         return Mono.fromCallable(() -> bookRepository.findById(apiItem.getIsbn13()))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(existingBookOpt -> { // Optional<Book> 처리
+                .flatMap(existingBookOpt -> {
                     if (existingBookOpt.isPresent()) {
-                        // --- 기존 책 업데이트 로직 ---
                         Book existingBook = existingBookOpt.get();
-                        boolean updated = updateBookIfNeeded(existingBook, apiItem); // 필드 비교 및 업데이트
+                        boolean updated = updateBookIfNeeded(existingBook, apiItem);
                         if (updated) {
                             log.debug("기존 책 정보 업데이트 대상: ISBN={}", apiItem.getIsbn13());
-                            result.incrementUpdatedCount(); // 업데이트 카운트 증가
-                            return Mono.just(existingBook); // 업데이트된 엔티티 반환 (saveAll 대상)
+                            result.incrementUpdatedCount();
+                            return Mono.just(existingBook);
                         } else {
                             log.trace("기존 책 정보 변경 없음: ISBN={}", apiItem.getIsbn13());
-                            return Mono.empty(); // 변경 없으면 저장/업데이트 대상 아님
+                            return Mono.empty();
                         }
                     } else {
-                        // --- 새 책 저장 로직 ---
-                        Book newBook = convertToBookEntity(apiItem); // DTO -> Entity 변환
+                        Book newBook = convertToBookEntity(apiItem);
                         if (newBook != null) {
                             log.debug("새로운 책 저장 대상: ISBN={}", apiItem.getIsbn13());
-                            result.incrementSavedCount(); // 저장 카운트 증가
-                            return Mono.just(newBook); // 새 엔티티 반환 (saveAll 대상)
+                            result.incrementSavedCount();
+                            return Mono.just(newBook);
                         } else {
-                            // convertToBookEntity 에서 null 반환 (변환 실패)
-                            return Mono.empty(); // 저장 대상 아님
+                            return Mono.empty();
                         }
                     }
                 });
     }
 
-
-    /**
-     * 기존 Book 엔티티와 API 데이터를 비교하여 필요한 필드를 업데이트.
-     * @param existingBook DB에 저장된 Book 엔티티
-     * @param apiItem 알라딘 API에서 받은 정보
-     * @return boolean 정보가 업데이트되었으면 true, 아니면 false
-     */
     private boolean updateBookIfNeeded(Book existingBook, AladinBookItem apiItem) {
         boolean changed = false;
-        // null 안전 비교 및 업데이트
         if (!Objects.equals(existingBook.getTitle(), apiItem.getTitle())) {
             existingBook.setTitle(apiItem.getTitle());
             changed = true;
@@ -394,92 +389,62 @@ public class AladinService {
             existingBook.setPublishing(apiItem.getPublisher());
             changed = true;
         }
-        if (existingBook.getPrice() != apiItem.getPriceStandard()) { // int 비교
+        if (existingBook.getPrice() != apiItem.getPriceStandard()) {
             existingBook.setPrice(apiItem.getPriceStandard());
             changed = true;
         }
-        LocalDate apiPubDate = Book.parseDate(apiItem.getPubDate()); // static 메소드 사용
-        // API 에서 받은 날짜가 유효하고, 기존 날짜와 다를 경우 업데이트
+        LocalDate apiPubDate = Book.parseDate(apiItem.getPubDate());
         if (apiPubDate != null && !Objects.equals(existingBook.getPublicationDate(), apiPubDate)) {
             existingBook.setPublicationDate(apiPubDate);
             changed = true;
         }
-        // TODO: 필요에 따라 다른 필드 (설명, 카테고리 등) 비교 및 업데이트 로직 추가
-
         return changed;
     }
 
-
-    /**
-     * AladinBookItem DTO를 Book 엔티티로 변환. 실패 시 null 반환.
-     * @param item 알라딘 책 아이템 DTO
-     * @return Book 엔티티 또는 null
-     */
     private Book convertToBookEntity(AladinBookItem item) {
         try {
-            LocalDate publicationDate = Book.parseDate(item.getPubDate()); // static 메소드 활용
-
-            return Book.aladdinBuilder() // 엔티티의 빌더 사용 (이름 확인 필요)
+            LocalDate publicationDate = Book.parseDate(item.getPubDate());
+            return Book.aladdinBuilder()
                     .title(item.getTitle())
                     .cover(item.getCover())
                     .writer(item.getAuthor())
                     .publicationDate(publicationDate)
                     .publishing(item.getPublisher())
-                    .price(item.getPriceStandard()) // 필요시 priceSales 등 다른 가격 사용
+                    .price(item.getPriceStandard())
                     .isbn13(item.getIsbn13())
-                    // identifier, epubPath 등 API에서 오지 않는 필드는 null 또는 기본값
-                    .buildFromAladdin(); // 빌더의 build 메소드 이름 확인
+                    .buildFromAladdin();
         } catch (Exception e) {
             log.error("Book 엔티티 변환 중 오류 발생: isbn13={}, title={}, 오류: {}",
                     item.getIsbn13(), item.getTitle(), e.getMessage(), e);
-            return null; // 변환 실패 시 null 반환
+            return null;
         }
     }
 
-
-    /**
-     * 주어진 Book 엔티티 리스트를 DB에 일괄 저장/업데이트하고 결과를 반환.
-     * @param booksToSaveOrUpdate 저장 또는 업데이트할 Book 엔티티 리스트
-     * @param result 동기화 결과 DTO (로그 출력용)
-     * @return Mono<SyncResult> 작업 완료 후 결과 DTO
-     */
-    // @Transactional // 단일 saveAll 호출이므로 여기에 트랜잭션 걸 수 있음
     private Mono<SyncResult> saveBooksInBatch(List<Book> booksToSaveOrUpdate, SyncResult result) {
         if (booksToSaveOrUpdate == null || booksToSaveOrUpdate.isEmpty()) {
             log.info("DB에 저장하거나 업데이트할 책이 없습니다.");
-            // 변경사항이 없어도 결과 DTO는 반환해야 함
             return Mono.just(result);
         }
-        // saveAll은 블로킹 메소드이므로 별도 스레드에서 실행
         return Mono.fromRunnable(() -> {
-                    bookRepository.saveAll(booksToSaveOrUpdate); // JPA가 ID 존재 여부로 INSERT/UPDATE 결정
+                    bookRepository.saveAll(booksToSaveOrUpdate);
                     log.info("총 {}권의 책 정보를 저장 또는 업데이트 완료 (신규: {}, 업데이트: {}).",
                             result.getSavedCount() + result.getUpdatedCount(),
                             result.getSavedCount(), result.getUpdatedCount());
                 })
-                .subscribeOn(Schedulers.boundedElastic()) // DB 작업 스레드 지정
-                .thenReturn(result); // 작업 완료 후 업데이트된 결과 객체 반환
+                .subscribeOn(Schedulers.boundedElastic())
+                .thenReturn(result);
     }
 
-    /**
-     * 동기화 상태 (마지막 처리 페이지)를 DB에 저장 또는 업데이트 (블로킹)
-     * @param syncKey 상태 구분 키 (예: "bestseller_0")
-     * @param lastProcessedPage 저장할 마지막 처리 페이지 번호
-     * @return Mono<Void> 작업 완료 신호
-     */
-    // @Transactional // 단일 엔티티 저장/업데이트이므로 필요시 적용 가능
     private Mono<Void> updateSyncStatus(String syncKey, int lastProcessedPage) {
-        // DB 작업은 블로킹이므로 별도 스레드에서 실행
         return Mono.fromRunnable(() -> {
-                    // 키로 기존 상태 조회, 없으면 새로 생성
                     SyncStatus status = syncStatusRepository.findById(syncKey)
-                            .orElse(new SyncStatus(syncKey, 0)); // 초기 상태
-                    status.setLastProcessedPage(lastProcessedPage); // 페이지 번호 업데이트
-                    status.setLastUpdated(LocalDateTime.now()); // 업데이트 시간 기록
-                    syncStatusRepository.save(status); // DB에 저장 (INSERT or UPDATE)
+                            .orElse(new SyncStatus(syncKey, 0));
+                    status.setLastProcessedPage(lastProcessedPage);
+                    status.setLastUpdated(LocalDateTime.now());
+                    syncStatusRepository.save(status);
                     log.info("Sync 상태 업데이트 완료: Key={}, LastProcessedPage={}", syncKey, lastProcessedPage);
                 })
-                .subscribeOn(Schedulers.boundedElastic()) // 스레드 지정
-                .then(); // 작업 완료 신호만 반환 (결과값 없음)
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
     }
 }
