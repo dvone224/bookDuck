@@ -48,11 +48,11 @@ public class HomeController {
         }
         //return "home";
         //return "member/del";
-        if(u.getRole() == User.Role.ROLE_ADMIN){
-            return "admin/adminMain";
-        }else{
-            return "member/mypage";
-        }
+//        if(u.getRole() == User.Role.ROLE_ADMIN){
+//            return "admin/adminMain";
+//        }else{
+//            return "member/mypage";
+//        }
 
 
         Long userId = userDetails.getUser().getId();
