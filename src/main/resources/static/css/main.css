@@ -399,6 +399,13 @@ input[type="checkbox"]:checked + label::after {
     height: 100%;
 }
 
+.error{
+    color: red;
+    margin: 5px;
+    text-align: center;
+    font-size: var(--font-size-2);
+}
+
 
 /* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
 @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */

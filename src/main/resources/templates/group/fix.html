@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <!-- Thymeleaf 변수를 사용하여 동적인 타이틀 생성 -->
     <title th:text="'BookDuck² :: ' + (${group} ? ${group.name} : '그룹') + ' 정보 수정'">CREW 정보 수정</title>
     <!-- <style> 태그 -->
@@ -637,7 +638,7 @@ body {
 }
 
 .underline{
-    width: 130%;
+    width: 300%;
     height: 1px;
 }
 
@@ -779,6 +780,14 @@ input[type="checkbox"]:checked + label::after {
     height: 100%;
 }
 
+.error{
+    color: red;
+    margin: 5px;
+    text-align: center;
+    font-size: var(--font-size-2);
+}
+
+
 
 /* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
 @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
@@ -803,7 +812,7 @@ body{
 }
 
 form{
-    border: 1px solid red;
+/*    border: 1px solid red;*/
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -818,6 +827,66 @@ form{
     align-items: center;
 }
 
+.member-list{
+/*    border: 1px solid red;*/
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.member_one{
+/*    border: 1px solid violet;*/
+    width: 90px;
+    height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.member_img_box{
+    /*border: 1px solid palevioletred;*/
+    width: 90px;
+    height: 90px;
+    position: relative;
+}
+.member_img{
+    border: 3px solid var(--main-color-middle);
+    background: var(--main-color-light);
+    width: 80px;
+    height: 80px;
+    border-radius: var(--border-middle);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.btn_circle_mini{
+    width: 30px;
+    height: 30px;
+    color: white;
+    border-radius: var(--border-circle);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.member_name{
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.member_name>span{
+    font-size: var(--font-size-3);
+    font-weight: bold;
+    color: var(--main-color-dark);
+}
+
     </style>
 </head>
 <body>
@@ -828,7 +897,7 @@ form{
 
 <!-- 그룹 ID와 원래 이름을 data 속성으로 전달 (group이 null이 아닐 때만) -->
 <div id="groupInfo" th:if="${group}" th:data-group-id="${group.id}" th:data-original-name="${group.name}"></div>
-
+<!--테스트-->
 <!-- 서버 메시지 표시 (오류 또는 성공) -->
 <div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
 <div th:if="${successMsg}" class="success-message" th:text="${successMsg}"></div>
@@ -846,30 +915,52 @@ form{
             </div>
 
             <!-- 그룹 멤버 표시 (수정 불가) -->
-
             <div class="box white form-group">
-                <label>그룹 멤버</label>
+                <!--타이틀 박스-->
+                <div class="title dark_blue2">
+                    <label>CREW</label><div class="underline dark_blue1"></div>
+                </div>
         <!--        <p class="read-only-info">그룹 멤버는 수정할 수 없습니다.</p>-->
                 <!-- users 컬렉션 null 체크 및 비어있는지 확인 -->
-                <ul class="member-list" th:if="${group.users != null and not #lists.isEmpty(group.users)}">
+                <!--맴버 리스트-->
+                <div class="member-list" th:if="${group.users != null and not #lists.isEmpty(group.users)}">
                     <!-- 각 GroupUser의 user 객체 null 체크 추가 -->
-                    <li th:each="gu : ${group.users}" class="member-item" th:if="${gu.user != null}">
+                    <div class="member_one" th:each="gu : ${group.users}" th:if="${gu.user != null}">
                         <!-- 이미지 경로 null 체크 및 기본 이미지 설정 -->
-                        <img th:src="${gu.user.img ?: '/images/default-profile.png'}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}">
-                        <span th:text="${gu.user.nickName}">멤버 닉네임</span>
-                        <!-- Role enum 비교 시 T() 사용 -->
-                        <span class="leader-mark" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}">★</span>
-                    </li>
-                </ul>
+                        <div class="member_img_box">
+                            <div class="member_img"><img th:src="${gu.user.img ?: '/images/default-profile.png'}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}"></div>
+                            <!-- Role enum 비교 시 T() 사용 -->
+                            <div class="leader-mark btn_circle_mini yellow" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}"><i class="fa-solid fa-crown"></i></div>
+                        </div>
+                        <div class="member_name"><span th:text="${gu.user.nickName}">닉네임</span></div>
+                    </div>
+                </div>
                 <!-- 그룹 멤버 정보가 없는 경우 메시지 -->
-                <p th:if="${group.users == null or #lists.isEmpty(group.users)}" class="read-only-info">
+                <div th:if="${group.users == null or #lists.isEmpty(group.users)}" class="read-only-info error">
                     그룹 멤버 정보가 없습니다.
-                </p>
+                </div>
             </div>
 
             <!-- 그룹 도서 목록 및 추가 섹션 -->
             <div class="book-section">
                 <label>그룹 도서 목록</label>
+
+                <!-- 새 책 추가 검색 (항상 표시됨, 리더에게만 활성화할 경우 input에 disabled 추가 가능) -->
+                <div class="form-group book-search-container">
+                    <label for="bookSearchInput">추가할 책 검색 (보유 도서 내)</label>
+                    <input type="text" id="bookSearchInput" placeholder="추가할 책 제목을 검색하세요...">
+                    <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
+                    <ul id="bookSearchResults"></ul>
+                </div>
+
+                <!-- 선택된 추가할 책 정보 표시 -->
+                <div id="selectedBookDisplay" style="display: none;">
+                    <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
+                    <span id="selectedBookTitle"></span>
+                    <button type="button" id="cancelAddBook" title="추가 취소">×</button>
+                </div>
+                <!-- 추가할 책 ID 전송용 -->
+                <input type="hidden" id="newBookId" name="newBookId">
 
                 <!-- 현재 그룹 도서 목록 표시 (전체) -->
                 <!-- books 컬렉션 null 체크 및 비어있는지 확인 -->
@@ -902,22 +993,7 @@ form{
                     등록된 그룹 도서가 없습니다.
                 </p>
 
-                <!-- 새 책 추가 검색 (항상 표시됨, 리더에게만 활성화할 경우 input에 disabled 추가 가능) -->
-                <div class="form-group book-search-container">
-                    <label for="bookSearchInput">추가할 책 검색 (보유 도서 내)</label>
-                    <input type="text" id="bookSearchInput" placeholder="추가할 책 제목을 검색하세요...">
-                    <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
-                    <ul id="bookSearchResults"></ul>
-                </div>
 
-                <!-- 선택된 추가할 책 정보 표시 -->
-                <div id="selectedBookDisplay" style="display: none;">
-                    <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
-                    <span id="selectedBookTitle"></span>
-                    <button type="button" id="cancelAddBook" title="추가 취소">×</button>
-                </div>
-                <!-- 추가할 책 ID 전송용 -->
-                <input type="hidden" id="newBookId" name="newBookId">
             </div>
 
             <!-- 기존 책 ID 전송용 (첫 번째 책 ID - 서버 로직에 따라 필요 없을 수 있음) -->
