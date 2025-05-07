@@ -242,7 +242,7 @@
             align-items: center;
             padding: 10px;
             margin-bottom: 10px;
-            max-width: 600px;
+            max-width: 768px;
         }
 
         .title{
@@ -334,7 +334,7 @@
             border-radius: 45px;
             box-sizing: border-box;
             text-align: center;
-            max-width: 600px;
+            max-width: 768px;
         }
 
         .blue_line{
@@ -378,9 +378,9 @@
         /*input[type="checkbox"] + label{
             border:3px solid var(--main-color-middle);
         }*/
-        /*input[type="checkbox"] + label{
+        input[type="checkbox"] + label{
             border:3px solid var(--assist-color-middle);
-        }*/
+        }
         input[type="checkbox"]:checked + label::after {
             content: '✔';
             font-size: 16px; /* 체크 아이콘 크기 조정 */
@@ -399,9 +399,9 @@
         /*input[type="checkbox"]:checked + label::after{
             background: var(--main-color-middle);
         }*/
-        /*input[type="checkbox"]:checked + label::after{
+        input[type="checkbox"]:checked + label::after{
             background: var(--assist-color-middle);
-        }*/
+        }
 
         /*대표 이미지들 설정*/
         .processImg{
@@ -465,40 +465,23 @@
             align-items: center;
             cursor: pointer;
         }
+
         .header_one_bottom{
             display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .header_one_bottom .menu{
-            /*border: 1px solid black;*/
-            width: 33%;
-            height: 30px;
-            color: gray;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: end;
-            transition: all 0.4s;
-        }
-
-        .menu{
-            margin-bottom: 2px;
-            display: flex;
             flex-direction: column;
+        }
+
+        .box_none{
+/*            border: 1px solid blueviolet;*/
+            display: flex;
+        }
+
+        .box_none2{
+            /*border: 1px solid blue;*/
+            flex: 1;
+            display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .menu:hover{
-            font-size: var(--font-size-1);
-            /*color: darkblue;*/
-        }
-
-        .line_point{
-            width: 100%;
-/*            border: 1px solid orange;*/
         }
 
         .point_menu{
@@ -507,16 +490,140 @@
             background: var(--main-color-dark);
         }
 
+        .menu{
+/*            border: 1px solid blue;*/
+            height: var(--font-size-1);
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 5px;
+            color: var(--cancle-color-dark);
+            transition: 0.5s;
+        }
+
+        .menu:hover {
+            font-size: var(--font-size-1);
+        }
+
         .this_page{
+            color: var(--main-color-dark);
+            font-weight: bold;
+        }
+
+        .test_border{
+/*            border: 1px solid red;*/
+        }
+
+        .btn_box{
+            border: 1px solid blue;
+            height: 100px;
+        }
+
+        .seperate{
+            width: 100%;
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 768px;
+        }
+        .seperate_one{
+            flex: 1;
+        }
+        .seperate_two{
+            width: 45px;
+            height: 45px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: var(--main-color-dark);
         }
 
-        .test_border{
-            border: 1px solid red;
+        .btn_circle_mini{
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+            cursor: pointer;
+        }
+
+        .input_none_long{
+            border: none;
+            text-align: center;
+            width: 95%;
+            font-family: GowunBatang-Regular;
+            color: var(--assist-color-dark);
+        }
+
+        .input_none_long:focus{
+            outline: none;
+        }
+
+        .input_none_long:focus + .seperate_two,
+        .input_none_long:focus ~ .seperate {
+            border: 3px solid var(--assist-color-middle); /* 원하는 색으로 변경 */
+        }
+
+        .controller{
+/*            border: 1px solid red;*/
+            display: flex;
+            width: 100%;
+            justify-content: space-between; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+            max-width: 768px;
+            margin-bottom: 5px;
+        }
+
+        .agree{
+/*            border: 1px solid blue;*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .controller_list{
+/*            border: 1px solid orange;*/
+            display: flex;
+            color: var(--assist-color-dark);
+        }
+        .menu_down{
+            color: var(--assist-color-middle);
+            margin-left: 5px;
+        }
+
+        .space_list{
+/*            border: 1px solid red;*/
+            width: 100%;
+            max-width: 768px;
+        }
+        .one{
+            border: 1px solid blue;
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .book_img{
+            border: 1px solid black;
+            height: 200px;
+            width: 170px;
+            border-radius: var(--border-middle);
+        }
+
+        .crew_name>span{
+            font-size: var(--font-size-3);
+        }
+
+        .red{
+            color: red;
+            margin-right: 5px;
         }
 
 
@@ -543,45 +650,54 @@
                 </div>
             </div>
         </div>
+
         <div class="header_one_bottom test_border">
-            <div class="menu test_border" onclick="location.href='/home'">명예의 전당</div>
-            <div class="menu" onclick="location.href='/shop'">북덕이 서점<div class="point_menu dark_blue1"></div></div>
+            <div class="box_none">
+                <div class="menu this_page" onclick="location.href='/home'">명예의 전당</div>
+                <div class="menu" onclick="location.href='/shop'">북덕이 서점</div>
+            </div>
+            <div class="box_none">
+                <div class="box_none2"><div class="point_menu"></div></div>
+                <div class="box_none2"></div>
+            </div>
+            <div class="box_none">
+                <div class="line gray"></div>
+            </div>
         </div>
     </div>
 </header>
 
-<div class="line_point">
+<div class="container">
 
-    <div class="line gray"></div>
-</div>
-<!--<section class="content">
-    <div class="container">
-       &lt;!&ndash; <img class="make_crew">&ndash;&gt;
-        <div class="serch_box">
-            <input class="input_serch" type="text">
-&lt;!&ndash;            <img class="icon_serch" src="" href="/member/members">&ndash;&gt;
+    <div class="box btn_box">
+        모임 생성하기
+    </div>
+    <div class="seperate search-container input_long yellow_line">
+        <div class="seperate_one">
+            <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 책을 찾아볼까요?" aria-label="도서 검색">
         </div>
-        <div class="fake_toggle">
-            <div class="toggle_allBook">모든 책 최신순 보기</div>
-            <div class="fake_toggle_bar"></div>
-            <div class="toggle_myBook">내가 보유한 책 보기</div>
-            <div class="board_list">
-                <div class="board" th:if="${list.isEmpty()}">
-                    교환독서를 공개한 CREW가 없습니다.
-                </div>
-                <div class="board" th:if="${!list.isEmpty()}" th:each="board : ${list}">
-                    <img th:src="${board}">
-                    <p th:text="${board}">크루이름<span>crew</span></p>
-                    <p th:text="${board}">도서이름</p>
-                    <img src="">&lt;!&ndash;하트 이모티콘&ndash;&gt;
-                    <p th:text="${board}">0</p>
-                </div>
-            </div>
+        <div class="seperate_two">
+            <button class="btn_circle_mini yellow" id="searchButton"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
     </div>
-</section>
-&lt;!&ndash; /container &ndash;&gt;-->
-<h1>안녕난 박시현</h1>
+    <div class="controller">
+        <div class="agree dark_yellow2">
+            <input type="checkbox" id="agree">
+            <label for="agree"></label>내가 구매한 책만 보기
+        </div>
+        <div class="controller_list">최신순<div class="menu_down"><i class="fa-solid fa-caret-down"></i></div></div>
+        <!--<i class="fa-solid fa-caret-up"></i>-->
+    </div>
+    <div class="space_list">
+        <!--아래 반복-->
+        <div class="one">
+            <div class="book_img"></div>
+            <div class="crew_name">뽀닥뽀닥책읽기<span>CREW</span></div>
+            <div class="book_title">해리포터: 비밀의 방1</div>
+            <div class="cnt_like"><i class="fa-solid fa-heart red"></i>52</div>
+        </div>
+    </div>
+</div>
 </body>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </html>
