@@ -7,7 +7,7 @@
     <title th:text="'BookDuck² :: ' + (${group} ? ${group.name} : '그룹') + ' 정보 수정'">CREW 정보 수정</title>
     <!-- <style> 태그 -->
     <style>
-        /* --- 기본 스타일 --- */
+/*        !* --- 기본 스타일 --- *!
         body {
             font-family: sans-serif;
             max-width: 800px;
@@ -20,7 +20,7 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px; /* 제목 아래 여백 추가 */
+            margin-bottom: 30px; !* 제목 아래 여백 추가 *!
         }
         .form-group {
             margin-bottom: 20px;
@@ -29,15 +29,15 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            color: #555; /* 레이블 색상 약간 어둡게 */
+            color: #555; !* 레이블 색상 약간 어둡게 *!
         }
         input[type="text"] {
-            width: calc(100% - 22px); /* 패딩 고려한 너비 */
+            width: calc(100% - 22px); !* 패딩 고려한 너비 *!
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: 1em; /* 입력 필드 글자 크기 */
-            transition: border-color 0.2s ease-in-out; /* 포커스 시 부드러운 효과 */
+            font-size: 1em; !* 입력 필드 글자 크기 *!
+            transition: border-color 0.2s ease-in-out; !* 포커스 시 부드러운 효과 *!
         }
         input[type="text"]:focus {
             border-color: #66afe9;
@@ -50,13 +50,13 @@
             margin-top: 5px;
         }
 
-        /* --- 메시지 스타일 (오류, 성공) --- */
+        !* --- 메시지 스타일 (오류, 성공) --- *!
         .error-message, .success-message {
-            padding: 10px 15px; /* 패딩 조정 */
-            margin-bottom: 20px; /* 여백 증가 */
+            padding: 10px 15px; !* 패딩 조정 *!
+            margin-bottom: 20px; !* 여백 증가 *!
             border-radius: 4px;
             text-align: center;
-            font-size: 0.95em; /* 글자 크기 약간 조정 */
+            font-size: 0.95em; !* 글자 크기 약간 조정 *!
         }
         .error-message {
             background-color: #f8d7da;
@@ -69,7 +69,7 @@
             border: 1px solid #c3e6cb;
         }
 
-        /* --- 그룹 멤버 목록 스타일 --- */
+        !* --- 그룹 멤버 목록 스타일 --- *!
         .member-list {
             list-style: none;
             padding: 0;
@@ -83,12 +83,12 @@
             align-items: center;
             background-color: #fff;
             padding: 8px 12px;
-            border-radius: 20px; /* 더 둥글게 */
+            border-radius: 20px; !* 더 둥글게 *!
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease; /* 호버 효과 */
+            transition: transform 0.2s ease; !* 호버 효과 *!
         }
         .member-item:hover {
-            transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+            transform: translateY(-2px); !* 살짝 떠오르는 효과 *!
         }
         .member-item img {
             width: 30px;
@@ -96,118 +96,118 @@
             border-radius: 50%;
             margin-right: 8px;
             object-fit: cover;
-            border: 1px solid #eee; /* 이미지 테두리 */
+            border: 1px solid #eee; !* 이미지 테두리 *!
         }
         .member-item span {
             font-size: 0.9em;
-            color: #333; /* 글자색 진하게 */
+            color: #333; !* 글자색 진하게 *!
         }
         .leader-mark {
             color: gold;
             margin-left: 5px;
-            font-size: 1.1em; /* 아이콘 약간 크게 */
+            font-size: 1.1em; !* 아이콘 약간 크게 *!
         }
 
-        /* --- 책 관련 섹션 구분 --- */
+        !* --- 책 관련 섹션 구분 --- *!
         .book-section {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px dashed #ccc;
         }
 
-        /* --- 현재 그룹 도서 목록 스타일 --- */
+        !* --- 현재 그룹 도서 목록 스타일 --- *!
         .group-book-list {
             list-style: none;
             padding: 0;
             margin: 15px 0;
-            display: flex; /* 가로 정렬 */
-            gap: 15px; /* 아이템 간 간격 */
-            flex-wrap: wrap; /* 너비 부족 시 줄 바꿈 */
+            display: flex; !* 가로 정렬 *!
+            gap: 15px; !* 아이템 간 간격 *!
+            flex-wrap: wrap; !* 너비 부족 시 줄 바꿈 *!
         }
         .group-book-item {
-            position: relative; /* 버튼 위치 기준 */
+            position: relative; !* 버튼 위치 기준 *!
             background-color: #fff;
             border: 1px solid #eee;
             border-radius: 5px;
             padding: 10px;
-            padding-bottom: 45px; /* 버튼 들어갈 공간 추가 확보 */
+            padding-bottom: 45px; !* 버튼 들어갈 공간 추가 확보 *!
             display: flex;
-            flex-direction: column; /* 이미지 위, 텍스트 아래 */
-            align-items: center; /* 가운데 정렬 */
+            flex-direction: column; !* 이미지 위, 텍스트 아래 *!
+            align-items: center; !* 가운데 정렬 *!
             text-align: center;
-            width: calc(33.333% - 10px); /* 3개씩 배치 (gap 고려) */
-            box-sizing: border-box; /* 패딩, 보더 포함하여 너비 계산 */
+            width: calc(33.333% - 10px); !* 3개씩 배치 (gap 고려) *!
+            box-sizing: border-box; !* 패딩, 보더 포함하여 너비 계산 *!
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: box-shadow 0.2s ease; /* 호버 시 그림자 효과 */
-            min-height: 180px; /* 최소 높이 지정 (버튼 위치 안정화) */
+            transition: box-shadow 0.2s ease; !* 호버 시 그림자 효과 *!
+            min-height: 180px; !* 최소 높이 지정 (버튼 위치 안정화) *!
         }
         .group-book-item:hover {
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .group-book-item img {
             max-width: 70px;
-            height: 100px; /* 고정 높이 */
-            object-fit: cover; /* 비율 유지하며 채우기 */
+            height: 100px; !* 고정 높이 *!
+            object-fit: cover; !* 비율 유지하며 채우기 *!
             border-radius: 3px;
             margin-bottom: 8px;
-            background-color: #f0f0f0; /* 이미지 로딩 전 배경색 */
+            background-color: #f0f0f0; !* 이미지 로딩 전 배경색 *!
         }
-        .group-book-item span { /* 책 제목 */
+        .group-book-item span { !* 책 제목 *!
             font-size: 0.85em;
             color: #555;
-            /* 여러 줄 말줄임 처리 */
+            !* 여러 줄 말줄임 처리 *!
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* 최대 2줄 */
+            -webkit-line-clamp: 2; !* 최대 2줄 *!
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            height: 2.6em; /* 2줄 높이 확보 (font-size * line-height * lines) */
-            line-height: 1.3em; /* 줄간격 */
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
-            margin-bottom: 10px; /* 버튼과의 간격 */
+            height: 2.6em; !* 2줄 높이 확보 (font-size * line-height * lines) *!
+            line-height: 1.3em; !* 줄간격 *!
+            word-break: keep-all; !* 단어 단위 줄바꿈 *!
+            margin-bottom: 10px; !* 버튼과의 간격 *!
         }
         .no-books-message {
             color: #888;
             font-style: italic;
             margin: 15px 0;
-            text-align: center; /* 가운데 정렬 */
+            text-align: center; !* 가운데 정렬 *!
         }
 
-        /* 책 삭제 버튼 스타일 */
+        !* 책 삭제 버튼 스타일 *!
         .delete-book-btn {
             position: absolute;
             top: 5px;
             right: 5px;
-            background-color: rgba(255, 0, 0, 0.7); /* 반투명 빨강 */
+            background-color: rgba(255, 0, 0, 0.7); !* 반투명 빨강 *!
             color: white;
             border: none;
-            border-radius: 50%; /* 원형 버튼 */
+            border-radius: 50%; !* 원형 버튼 *!
             width: 20px;
             height: 20px;
             font-size: 12px;
             font-weight: bold;
-            line-height: 18px; /* 아이콘 세로 중앙 정렬 */
+            line-height: 18px; !* 아이콘 세로 중앙 정렬 *!
             text-align: center;
             cursor: pointer;
-            opacity: 0; /* 평소엔 숨김 */
+            opacity: 0; !* 평소엔 숨김 *!
             transition: opacity 0.2s ease-in-out;
-            padding: 0; /* 내부 패딩 제거 */
-            z-index: 5; /* 토글 버튼 위에 오도록 */
+            padding: 0; !* 내부 패딩 제거 *!
+            z-index: 5; !* 토글 버튼 위에 오도록 *!
         }
         .group-book-item:hover .delete-book-btn {
-            opacity: 1; /* 호버 시 나타남 */
+            opacity: 1; !* 호버 시 나타남 *!
         }
         .delete-book-btn:hover {
-            background-color: rgba(255, 0, 0, 1); /* 호버 시 진하게 */
+            background-color: rgba(255, 0, 0, 1); !* 호버 시 진하게 *!
         }
 
-        /* --- 공개/비공개 토글 버튼 스타일 --- */
+        !* --- 공개/비공개 토글 버튼 스타일 --- *!
         .toggle-privacy-btn {
-            position: absolute; /* li 요소 기준 절대 위치 */
-            bottom: 8px; /* 아래쪽에 배치 */
-            left: 50%; /* 가로 중앙 정렬 기준 */
-            transform: translateX(-50%); /* 정확히 가운데로 이동 */
-            background-color: #f0f0f0; /* 기본 배경 */
+            position: absolute; !* li 요소 기준 절대 위치 *!
+            bottom: 8px; !* 아래쪽에 배치 *!
+            left: 50%; !* 가로 중앙 정렬 기준 *!
+            transform: translateX(-50%); !* 정확히 가운데로 이동 *!
+            background-color: #f0f0f0; !* 기본 배경 *!
             color: #555;
             border: 1px solid #ccc;
             padding: 3px 8px;
@@ -215,49 +215,49 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-            width: 100px; /* 너비 고정 */
+            width: 100px; !* 너비 고정 *!
             text-align: center;
         }
-        .toggle-privacy-btn.is-public { /* 현재 공개 상태일 때 */
-            background-color: #ffebee; /* 연한 빨강 배경 (비공개 전환 유도) */
-            color: #c62828; /* 진한 빨강 글씨 */
+        .toggle-privacy-btn.is-public { !* 현재 공개 상태일 때 *!
+            background-color: #ffebee; !* 연한 빨강 배경 (비공개 전환 유도) *!
+            color: #c62828; !* 진한 빨강 글씨 *!
             border-color: #ef9a9a;
         }
-        .toggle-privacy-btn.is-private { /* 현재 비공개 상태일 때 */
-            background-color: #e8f5e9; /* 연한 녹색 배경 (공개 전환 유도) */
-            color: #2e7d32; /* 진한 녹색 글씨 */
+        .toggle-privacy-btn.is-private { !* 현재 비공개 상태일 때 *!
+            background-color: #e8f5e9; !* 연한 녹색 배경 (공개 전환 유도) *!
+            color: #2e7d32; !* 진한 녹색 글씨 *!
             border-color: #a5d6a7;
         }
         .toggle-privacy-btn:hover {
             opacity: 0.8;
         }
-        .toggle-privacy-btn:disabled { /* 처리 중 비활성화 */
+        .toggle-privacy-btn:disabled { !* 처리 중 비활성화 *!
             opacity: 0.5;
             cursor: not-allowed;
         }
 
 
-        /* --- 책 검색 영역 스타일 --- */
+        !* --- 책 검색 영역 스타일 --- *!
         .book-search-container {
-            position: relative; /* 검색 결과 위치 기준 */
+            position: relative; !* 검색 결과 위치 기준 *!
         }
         #bookSearchResults {
             position: absolute;
-            top: 100%; /* 입력 필드 바로 아래 */
+            top: 100%; !* 입력 필드 바로 아래 *!
             left: 0;
-            right: 0; /* 너비 100% */
+            right: 0; !* 너비 100% *!
             background-color: white;
             border: 1px solid #ccc;
-            border-top: none; /* 위쪽 테두리 제거 */
+            border-top: none; !* 위쪽 테두리 제거 *!
             max-height: 200px;
-            overflow-y: auto; /* 내용 많으면 스크롤 */
+            overflow-y: auto; !* 내용 많으면 스크롤 *!
             list-style: none;
             padding: 0;
             margin: 0;
-            z-index: 100; /* 다른 요소 위에 표시 */
+            z-index: 100; !* 다른 요소 위에 표시 *!
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border-radius: 0 0 4px 4px;
-            display: none; /* 초기 숨김 */
+            display: none; !* 초기 숨김 *!
             box-sizing: border-box;
         }
         #bookSearchResults li {
@@ -265,69 +265,69 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px; /* 이미지와 텍스트 간격 */
-            border-bottom: 1px solid #f0f0f0; /* 구분선 */
+            gap: 10px; !* 이미지와 텍스트 간격 *!
+            border-bottom: 1px solid #f0f0f0; !* 구분선 *!
         }
         #bookSearchResults li:last-child {
-            border-bottom: none; /* 마지막 항목 구분선 제거 */
+            border-bottom: none; !* 마지막 항목 구분선 제거 *!
         }
         #bookSearchResults li:hover {
             background-color: #f0f0f0;
         }
         #bookSearchResults img {
             max-width: 30px;
-            height: auto; /* 비율 유지 */
-            flex-shrink: 0; /* 이미지 크기 유지 */
+            height: auto; !* 비율 유지 *!
+            flex-shrink: 0; !* 이미지 크기 유지 *!
         }
-        #bookSearchResults span { /* 검색 결과 제목 */
+        #bookSearchResults span { !* 검색 결과 제목 *!
             font-size: 0.9em;
-            white-space: nowrap; /* 줄바꿈 방지 */
+            white-space: nowrap; !* 줄바꿈 방지 *!
             overflow: hidden;
-            text-overflow: ellipsis; /* 넘치면 말줄임 */
+            text-overflow: ellipsis; !* 넘치면 말줄임 *!
         }
 
-        /* --- 책 추가 중복 확인 메시지 스타일 --- */
+        !* --- 책 추가 중복 확인 메시지 스타일 --- *!
         .book-check-result {
             font-size: 0.85em;
             color: red;
-            display: block; /* 필요시 줄바꿈 */
-            margin-top: 5px; /* 입력창과의 간격 */
+            display: block; !* 필요시 줄바꿈 *!
+            margin-top: 5px; !* 입력창과의 간격 *!
             font-weight: normal;
         }
 
-        /* --- 선택된 추가할 책 표시 영역 --- */
+        !* --- 선택된 추가할 책 표시 영역 --- *!
         #selectedBookDisplay {
-            display: flex; /* flex로 변경 (JS에서 제어) */
+            display: flex; !* flex로 변경 (JS에서 제어) *!
             align-items: center;
             gap: 10px;
-            background-color: #e6ffed; /* 연한 녹색 배경 */
+            background-color: #e6ffed; !* 연한 녹색 배경 *!
             border: 1px solid #c3e6cb;
             padding: 8px 12px;
             border-radius: 4px;
-            margin-top: 10px; /* 검색창과의 간격 */
+            margin-top: 10px; !* 검색창과의 간격 *!
         }
         #selectedBookDisplay img {
             max-width: 30px;
             height: auto;
-            border-radius: 2px; /* 약간 둥글게 */
+            border-radius: 2px; !* 약간 둥글게 *!
         }
         #selectedBookDisplay span {
             font-size: 0.9em;
-            color: #155724; /* 어두운 녹색 글자 */
-            flex-grow: 1; /* 가능한 공간 차지 */
+            color: #155724; !* 어두운 녹색 글자 *!
+            flex-grow: 1; !* 가능한 공간 차지 *!
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         #cancelAddBook {
-            margin-left: auto; /* 오른쪽 끝으로 밀기 */
+            margin-left: auto; !* 오른쪽 끝으로 밀기 *!
             background: none;
             border: none;
-            color: #155724; /* 아이콘 색상 */
+            color: #155724; !* 아이콘 색상 *!
             cursor: pointer;
-            font-size: 1.3em; /* 아이콘 크기 */
+            font-size: 1.3em; !* 아이콘 크기 *!
             padding: 0 5px;
-            line-height: 1; /* 세로 정렬 도움 */
+            line-height: 1; !* 세로 정렬 도움 *!
             opacity: 0.7;
             transition: opacity 0.2s;
         }
@@ -335,12 +335,12 @@
             opacity: 1;
         }
 
-        /* --- 그룹 이름 중복 확인 스타일 --- */
+        !* --- 그룹 이름 중복 확인 스타일 --- *!
         .name-check-result {
             font-size: 0.85em;
             margin-left: 10px;
             font-weight: normal;
-            vertical-align: middle; /* 입력 필드와 세로 정렬 */
+            vertical-align: middle; !* 입력 필드와 세로 정렬 *!
         }
         .name-available {
             color: green;
@@ -348,43 +348,483 @@
         .name-unavailable {
             color: red;
         }
-        #groupName:disabled { /* 확인 중 비활성화 스타일 */
+        #groupName:disabled { !* 확인 중 비활성화 스타일 *!
             background-color: #eee;
             cursor: not-allowed;
         }
 
-        /* --- 제출 버튼 스타일 --- */
+        !* --- 제출 버튼 스타일 --- *!
         .submit-button {
             display: block;
             width: 100%;
             padding: 12px;
-            background-color: #5cb85c; /* 녹색 계열 */
+            background-color: #5cb85c; !* 녹색 계열 *!
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 1.1em;
-            font-weight: bold; /* 글자 약간 굵게 */
+            font-weight: bold; !* 글자 약간 굵게 *!
             cursor: pointer;
             transition: background-color 0.2s ease, box-shadow 0.2s ease;
-            margin-top: 30px; /* 위쪽 여백 */
+            margin-top: 30px; !* 위쪽 여백 *!
         }
         .submit-button:hover {
-            background-color: #4cae4c; /* 호버 시 약간 어둡게 */
+            background-color: #4cae4c; !* 호버 시 약간 어둡게 *!
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .submit-button:disabled { /* 비활성화 시 스타일 */
+        .submit-button:disabled { !* 비활성화 시 스타일 *!
             background-color: #cccccc;
             cursor: not-allowed;
             box-shadow: none;
-        }
+        }*/
+
+
+/*아이콘 임포트*/
+/* Fontawesome 4.7 */
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+/*로고용 폰트: cafe24슈퍼매직*/
+@font-face {
+    font-family: 'Cafe24Supermagic-Bold-v1.0';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/*홈페이지 메인 폰트: 고운바탕*/
+@font-face {
+    font-family: 'GowunBatang-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*고운돋움*/
+@font-face {
+    font-family: 'GowunDodum-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*조선굴림*/
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*온글잎콘콘*/
+@font-face {
+    font-family: 'Ownglyph_corncorn-Rg';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*나눔손글씨펜*/
+@import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+/*font-family: 'NanumPen';*/
+
+/*학교안심꼬꼬마*/
+@font-face {
+    font-family: 'TTHakgyoansimKkokkomaR';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*심경하*/
+@font-face {
+    font-family: 'SimKyungha';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*다이어리*/
+@font-face {
+    font-family: 'EarlyFontDiary';
+    src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 컬러 파레트 */
+:root{
+    --main-color-dark: #00479B;
+    --main-color-middle: #83C7FF;
+    --main-color-light: #E3F4FF;
+    --assist-color-dark: #CE7000;
+    --assist-color-middle: #FFB90B;
+    --assist-color-light: #FFF7E6;
+    --cancle-color-dark: #9B9B9B;
+    --cancle-color-middle: #D3D3D3;
+    --cancle-color-light: #EAEAEA;
+    --crown-color: #ffa500;
+
+    /*사용법: var(--main-color-middle)*/
+    --border-big: 20px;/*큰거...뭐가잇지...*/
+    --border-middle: 10px;/*img*/
+    --border-circle: 50%;/*동그리버튼*/
+
+    /*폰트 사이즈 정의*/
+    --font-size-0: 28px;
+    --font-size-1: 23px;
+    --font-size-2: 18px;
+    --font-size-3: 13px;
+    --font-size-4: 8px;
+
+    /*쪽지 색상 지정*/
+    --memo1-color-dark: #00479B;
+    --memo1-color-middle: #83C7FF;
+    --memo1-color-light: #E3F4FF;
+    --memo1-color-back: #B0CAD6;
+
+    --memo2-color-dark: #CE7000;
+    --memo2-color-middle: #FFB90B;
+    --memo2-color-light: #FFF7E6;
+    --memo2-color-back: #EAD4AD;
+
+    --memo3-coler-dark: #841A1A;
+    --memo3-coler-middle: #FF9494;
+    --memo3-coler-light: #FFE9E9;
+    --memo3-coler-back: #D6B0B0;
+
+    --memo4-coler-dark: #325900;
+    --memo4-coler-middle: #97CE41;
+    --memo4-coler-light: #F6FFD9;
+    --memo4-coler-back: #CCD3AE;
+
+    --memo5-coler-dark: #A04800;
+    --memo5-coler-middle: #FF8B00;
+    --memo5-coler-light: #FFE3CA;
+    --memo5-coler-back: #C9A88D;
+
+    --memo6-coler-dark: #6A297A;
+    --memo6-coler-middle: #AF80CE;
+    --memo6-coler-light: #F5EEFF;
+    --memo6-coler-back: #CDC3DD;
+
+    --memo7-coler-dark: #1F1F77;
+    --memo7-coler-middle: #7A8CE5;
+    --memo7-coler-light: #E9ECFF;
+    --memo7-coler-back: #B2B8D3;
+
+    --memo8-coler-dark: #006466;
+    --memo8-coler-middle: #66C6DD;
+    --memo8-coler-light: #EBFFFF;
+    --memo8-coler-back: #B8D3D2;
+}
+
+/* Global 스타일 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Gowun Batang";
+    font-size: var(--font-size-2);
+}
+
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%; /* 가로를 화면에 맞게 설정 */
+}
+
+/* 컨테이너 스타일 */
+.container {
+    border: 1px solid slateblue;
+    max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*버튼 기본 규격*/
+.btn_circle{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.btn_circle_big{
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+}
+
+.btn_long{
+    width: 100%;
+    height: 45px;
+    border-radius: 45px;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    max-width: 768px;
+}
+
+.btn_mini{
+    width: auto;
+    height: 25px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-size: var(--font-size-3);
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin-left: 5px;
+}
+
+.btn_icon{
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.box{
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-big);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 768px;
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    font-weight: bold;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.dot{
+    width: 15px;
+    height: 15px;
+    border-radius: var(--border-circle);
+    display: flex;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.underline{
+    width: 130%;
+    height: 1px;
+}
+
+.line{
+    width: 100%;
+    height: 1px;
+}
+
+.blue{
+    background: var(--main-color-middle);
+}
+.yellow{
+    background: var(--assist-color-middle);
+}
+.dark_blue1{
+    background: var(--main-color-dark);
+}
+.dark_yellow1{
+    background: var(--assist-color-dark);
+}
+.dark_blue2{
+    color: var(--main-color-dark);
+}
+.dark_yellow2{
+    color: var(--assist-color-dark);
+}
+.light_blue{
+    background: var(--main-color-light);
+}
+.light_yellow{
+    background: var(--assist-color-light);
+}
+.dark_gray1{
+    background: var(--cancle-color-dark);
+}
+.dark_gray2{
+    color: var(--cancle-color-dark);
+}
+.gray{
+    background: var(--cancle-color-middle);
+}
+.light_gray{
+    background: var(--cancle-color-light);
+}
+.white{
+    background: white;
+}
+
+.blue_line_thin{
+    border: 1px solid var(--main-color-middle);
+}
+.yellow_line_thin{
+    border: 1px solid var(--assist-color-middle);
+}
+
+.input_long{
+    margin-bottom: 10px;
+    width: 100%;
+    height: 45px;
+    border-radius: 45px;
+    box-sizing: border-box;
+    text-align: center;
+    max-width: 768px;
+}
+
+.blue_line{
+    border: 2px solid var(--main-color-middle);
+    color: var(--main-color-dark);
+}
+
+.blue_line:focus{
+    border: 4px solid var(--main-color-middle);
+    color: var(--main-color-dark);
+    outline: none;
+}
+
+.yellow_line{
+    border: 2px solid var(--assist-color-middle);
+    color: var(--assist-color-dark);
+}
+
+.yellow_line:focus{
+    border: 4px solid var(--assist-color-middle);
+    color: var(--assist-color-dark);
+    outline: none;
+}
+
+
+/*체크박스 CSS*/
+
+input[type="checkbox"]{
+    display: none;
+}
+input[type="checkbox"] + label{
+    margin-right: 5px;
+    display: inline-block;
+    background: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+}
+/*input[type="checkbox"] + label{
+    border:3px solid var(--main-color-middle);
+}*/
+/*input[type="checkbox"] + label{
+    border:3px solid var(--assist-color-middle);
+}*/
+input[type="checkbox"]:checked + label::after {
+    content: '✔';
+    font-size: 16px; /* 체크 아이콘 크기 조정 */
+    width: 22px; /* 내부 원 크기 */
+    height: 22px; /* 내부 원 크기 */
+    border: none; /* 중복 테두리 제거 */
+    color: white;
+    text-align: center;
+    line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+    position: absolute;
+    left: 50%; /* 중앙 정렬 */
+    top: 50%; /* 중앙 정렬 */
+    transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
+    border-radius: 50%; /* 내부 원형 유지 */
+}
+/*input[type="checkbox"]:checked + label::after{
+    background: var(--main-color-middle);
+}*/
+/*input[type="checkbox"]:checked + label::after{
+    background: var(--assist-color-middle);
+}*/
+
+/*대표 이미지들 설정*/
+.processImg{
+    width: 300px;
+    height: 300px;
+}
+.processImg img{
+    width: 100%;
+    height: 100%;
+}
+
+
+/* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
+@media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+    .container {
+        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+    }
+}
+
+@media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+    .container {
+        font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+    }
+}
+/* 헤더용 CSS들 */
+
+body{
+    background: var(--main-color-light);
+}
+
+.form_box{
+    width: 100%;
+}
+
+form{
+    border: 1px solid red;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.form-group{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
     </style>
 </head>
 <body>
-
+<div class="container">
 <!-- group 객체가 null일 경우를 대비하여 조건부 렌더링 -->
-<h1 th:if="${group}" th:text="${group.name} + ' 정보 수정'">그룹 정보 수정</h1>
-<h1 th:unless="${group}">그룹 정보 수정</h1>
+<!--<h1 th:if="${group}" th:text="${group.name} + ' 정보 수정'">그룹 정보 수정</h1>
+<h1 th:unless="${group}">그룹 정보 수정</h1>-->
 
 <!-- 그룹 ID와 원래 이름을 data 속성으로 전달 (group이 null이 아닐 때만) -->
 <div id="groupInfo" th:if="${group}" th:data-group-id="${group.id}" th:data-original-name="${group.name}"></div>
@@ -394,97 +834,100 @@
 <div th:if="${successMsg}" class="success-message" th:text="${successMsg}"></div>
 
 <!-- group 객체가 있을 경우에만 폼 표시 -->
-<form th:if="${group}" th:action="@{/group/fix/{groupId}(groupId=${group.id})}" method="post" id="groupFixForm">
+    <div class="form_box">
+        <form th:if="${group}" th:action="@{/group/fix/{groupId}(groupId=${group.id})}" method="post" id="groupFixForm">
 
-    <!-- 그룹 이름 수정 -->
-    <div class="form-group">
-        <label for="groupName">그룹 이름</label>
-        <!-- 서버에서 전달된 이전 입력값(submittedGroupName) 또는 현재 그룹 이름 사용 -->
-        <input type="text" id="groupName" name="groupName" th:value="${groupName ?: group.name}" required>
-        <span id="groupNameCheckResult" class="name-check-result"></span>
+            <!-- 그룹 이름 수정 -->
+            <div class="form-group">
+                <label for="groupName"></label>
+                <!-- 서버에서 전달된 이전 입력값(submittedGroupName) 또는 현재 그룹 이름 사용 -->
+                <input type="text" class="input_long blue_line" id="groupName" name="groupName" th:value="${groupName ?: group.name}" required>
+                <span id="groupNameCheckResult" class="name-check-result"></span>
+            </div>
+
+            <!-- 그룹 멤버 표시 (수정 불가) -->
+
+            <div class="box white form-group">
+                <label>그룹 멤버</label>
+        <!--        <p class="read-only-info">그룹 멤버는 수정할 수 없습니다.</p>-->
+                <!-- users 컬렉션 null 체크 및 비어있는지 확인 -->
+                <ul class="member-list" th:if="${group.users != null and not #lists.isEmpty(group.users)}">
+                    <!-- 각 GroupUser의 user 객체 null 체크 추가 -->
+                    <li th:each="gu : ${group.users}" class="member-item" th:if="${gu.user != null}">
+                        <!-- 이미지 경로 null 체크 및 기본 이미지 설정 -->
+                        <img th:src="${gu.user.img ?: '/images/default-profile.png'}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}">
+                        <span th:text="${gu.user.nickName}">멤버 닉네임</span>
+                        <!-- Role enum 비교 시 T() 사용 -->
+                        <span class="leader-mark" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}">★</span>
+                    </li>
+                </ul>
+                <!-- 그룹 멤버 정보가 없는 경우 메시지 -->
+                <p th:if="${group.users == null or #lists.isEmpty(group.users)}" class="read-only-info">
+                    그룹 멤버 정보가 없습니다.
+                </p>
+            </div>
+
+            <!-- 그룹 도서 목록 및 추가 섹션 -->
+            <div class="book-section">
+                <label>그룹 도서 목록</label>
+
+                <!-- 현재 그룹 도서 목록 표시 (전체) -->
+                <!-- books 컬렉션 null 체크 및 비어있는지 확인 -->
+                <ul class="group-book-list" id="currentGroupBooks" th:if="${group.books != null and not #lists.isEmpty(group.books)}">
+                    <!-- 각 GroupBook 및 내부 book 객체 null 체크 -->
+                    <li th:each="gb : ${group.books}" class="group-book-item" th:if="${gb.book != null}"
+                        th:data-book-id="${gb.book.id}"
+                        th:data-book-title="${gb.book.title}">
+                        <!-- 책 커버 null 체크 및 기본 이미지 설정 -->
+                        <img th:src="${gb.book.cover ?: '/images/default-book-cover.png'}" th:alt="${gb.book.title}">
+                        <!-- 책 제목 표시 -->
+                        <span th:title="${gb.book.title}" th:text="${gb.book.title}">책 제목</span>
+
+                        <!-- 삭제 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
+                        <button type="button" class="delete-book-btn" title="그룹에서 삭제">×</button>
+
+                        <!-- 공개/비공개 토글 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
+                        <!-- publicBookIds Set이 null이 아니고, book.id가 null이 아닐 때만 contains 체크 -->
+                        <button type="button"
+                                class="toggle-privacy-btn"
+                                th:classappend="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)} ? 'is-public' : 'is-private'"
+                                th:data-is-public="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)}"
+                                th:text="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id) ? '비공개로 전환' : '공개로 전환'}">
+                            상태 전환
+                        </button>
+                    </li>
+                </ul>
+                <!-- 그룹 도서가 없을 때 메시지 -->
+                <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message">
+                    등록된 그룹 도서가 없습니다.
+                </p>
+
+                <!-- 새 책 추가 검색 (항상 표시됨, 리더에게만 활성화할 경우 input에 disabled 추가 가능) -->
+                <div class="form-group book-search-container">
+                    <label for="bookSearchInput">추가할 책 검색 (보유 도서 내)</label>
+                    <input type="text" id="bookSearchInput" placeholder="추가할 책 제목을 검색하세요...">
+                    <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
+                    <ul id="bookSearchResults"></ul>
+                </div>
+
+                <!-- 선택된 추가할 책 정보 표시 -->
+                <div id="selectedBookDisplay" style="display: none;">
+                    <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
+                    <span id="selectedBookTitle"></span>
+                    <button type="button" id="cancelAddBook" title="추가 취소">×</button>
+                </div>
+                <!-- 추가할 책 ID 전송용 -->
+                <input type="hidden" id="newBookId" name="newBookId">
+            </div>
+
+            <!-- 기존 책 ID 전송용 (첫 번째 책 ID - 서버 로직에 따라 필요 없을 수 있음) -->
+            <input type="hidden" name="bookId" th:value="${group.books != null and not #lists.isEmpty(group.books) and group.books[0].book != null ? group.books[0].book.id : ''}">
+
+            <!-- 제출 버튼 (리더에게만 활성화할 경우 disabled 추가 가능) -->
+            <button type="submit" class="submit-button">수정 완료</button>
+
+        </form> <!-- 폼 끝 -->
     </div>
-
-    <!-- 그룹 멤버 표시 (수정 불가) -->
-    <div class="form-group">
-        <label>그룹 멤버</label>
-        <p class="read-only-info">그룹 멤버는 수정할 수 없습니다.</p>
-        <!-- users 컬렉션 null 체크 및 비어있는지 확인 -->
-        <ul class="member-list" th:if="${group.users != null and not #lists.isEmpty(group.users)}">
-            <!-- 각 GroupUser의 user 객체 null 체크 추가 -->
-            <li th:each="gu : ${group.users}" class="member-item" th:if="${gu.user != null}">
-                <!-- 이미지 경로 null 체크 및 기본 이미지 설정 -->
-                <img th:src="${gu.user.img ?: '/images/default-profile.png'}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}">
-                <span th:text="${gu.user.nickName}">멤버 닉네임</span>
-                <!-- Role enum 비교 시 T() 사용 -->
-                <span class="leader-mark" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}">★</span>
-            </li>
-        </ul>
-        <!-- 그룹 멤버 정보가 없는 경우 메시지 -->
-        <p th:if="${group.users == null or #lists.isEmpty(group.users)}" class="read-only-info">
-            그룹 멤버 정보가 없습니다.
-        </p>
-    </div>
-
-    <!-- 그룹 도서 목록 및 추가 섹션 -->
-    <div class="book-section">
-        <label>그룹 도서 목록</label>
-
-        <!-- 현재 그룹 도서 목록 표시 (전체) -->
-        <!-- books 컬렉션 null 체크 및 비어있는지 확인 -->
-        <ul class="group-book-list" id="currentGroupBooks" th:if="${group.books != null and not #lists.isEmpty(group.books)}">
-            <!-- 각 GroupBook 및 내부 book 객체 null 체크 -->
-            <li th:each="gb : ${group.books}" class="group-book-item" th:if="${gb.book != null}"
-                th:data-book-id="${gb.book.id}"
-                th:data-book-title="${gb.book.title}">
-                <!-- 책 커버 null 체크 및 기본 이미지 설정 -->
-                <img th:src="${gb.book.cover ?: '/images/default-book-cover.png'}" th:alt="${gb.book.title}">
-                <!-- 책 제목 표시 -->
-                <span th:title="${gb.book.title}" th:text="${gb.book.title}">책 제목</span>
-
-                <!-- 삭제 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
-                <button type="button" class="delete-book-btn" title="그룹에서 삭제">×</button>
-
-                <!-- 공개/비공개 토글 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
-                <!-- publicBookIds Set이 null이 아니고, book.id가 null이 아닐 때만 contains 체크 -->
-                <button type="button"
-                        class="toggle-privacy-btn"
-                        th:classappend="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)} ? 'is-public' : 'is-private'"
-                        th:data-is-public="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)}"
-                        th:text="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id) ? '비공개로 전환' : '공개로 전환'}">
-                    상태 전환
-                </button>
-            </li>
-        </ul>
-        <!-- 그룹 도서가 없을 때 메시지 -->
-        <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message">
-            등록된 그룹 도서가 없습니다.
-        </p>
-
-        <!-- 새 책 추가 검색 (항상 표시됨, 리더에게만 활성화할 경우 input에 disabled 추가 가능) -->
-        <div class="form-group book-search-container">
-            <label for="bookSearchInput">추가할 책 검색 (보유 도서 내)</label>
-            <input type="text" id="bookSearchInput" placeholder="추가할 책 제목을 검색하세요...">
-            <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
-            <ul id="bookSearchResults"></ul>
-        </div>
-
-        <!-- 선택된 추가할 책 정보 표시 -->
-        <div id="selectedBookDisplay" style="display: none;">
-            <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
-            <span id="selectedBookTitle"></span>
-            <button type="button" id="cancelAddBook" title="추가 취소">×</button>
-        </div>
-        <!-- 추가할 책 ID 전송용 -->
-        <input type="hidden" id="newBookId" name="newBookId">
-    </div>
-
-    <!-- 기존 책 ID 전송용 (첫 번째 책 ID - 서버 로직에 따라 필요 없을 수 있음) -->
-    <input type="hidden" name="bookId" th:value="${group.books != null and not #lists.isEmpty(group.books) and group.books[0].book != null ? group.books[0].book.id : ''}">
-
-    <!-- 제출 버튼 (리더에게만 활성화할 경우 disabled 추가 가능) -->
-    <button type="submit" class="submit-button">수정 완료</button>
-
-</form> <!-- 폼 끝 -->
 
 <!-- group 객체가 없을 경우 표시할 메시지 -->
 <div th:unless="${group}" class="error-message">
@@ -874,6 +1317,6 @@
 
     }); // End of DOMContentLoaded
 </script> <!-- 스크립트 끝 -->
-
+</div>
 </body>
 </html>
