@@ -6,90 +6,59 @@
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck²::북덕이 eBook 서점</title>
     <style>
+        /* (스타일 코드는 이전 답변과 동일 - 생략하지 않음) */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-        @font-face { font-family: 'Cafe24Supermagic-Bold-v1.0'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2'); font-weight: 700; font-style: normal; }
         @font-face { font-family: 'GowunBatang-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
-        @font-face { font-family: 'GowunDodum-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
         :root {
             --main-color-dark: #00479B; --main-color-middle: #83C7FF; --main-color-light: #E3F4FF;
             --assist-color-dark: #CE7000; --assist-color-middle: #FFB90B; --assist-color-light: #FFF7E6;
             --font-size-0: 28px; --font-size-1: 23px; --font-size-2: 18px; --font-size-3: 13px; --font-size-4: 8px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "GowunBatang-Regular", sans-serif; font-size: var(--font-size-2); }
-        body { margin: 0; padding: 0; width: 100%; }
-        .container { max-width: 100%; padding: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .btn_circle { width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 10px; }
-        .btn_circle_mini { border: none; width: 35px; height: 35px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; background-color: transparent; padding: 0; }
-        .btn_circle_mini i { font-size: 1.2em; }
-        .btn_long { width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer; border: none; font-weight: bold; max-width: 768px; }
+        body { margin: 0; padding: 0; width: 100%; background-color: #f8f9fa;}
+        .container { max-width: 1200px; margin: 20px auto; padding: 15px; }
+        .category-select { width: 100%; max-width: 768px; height: 45px; border-radius: 45px; border: 2px solid var(--assist-color-middle); background-color: white; color: var(--assist-color-dark); font-family: GowunBatang-Regular; font-size: 16px; padding: 0 30px 0 15px; margin-bottom: 15px; cursor: pointer; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFB90B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: .65em auto; }
+        .category-select:disabled { background-color: #eee; cursor: not-allowed; opacity: 0.7; }
         .input_long { margin-bottom: 10px; width: 100%; height: 45px; border-radius: 45px; box-sizing: border-box; text-align: center; max-width: 768px; display: flex; align-items: center; padding: 0 15px; }
-        .input_none_long { border: none; text-align: left; width: 100%; height: 100%; font-family: GowunBatang-Regular; color: var(--assist-color-dark); background: transparent; padding-left: 5px; }
-        .input_none_long:focus { outline: none; }
         .yellow_line { border: 2px solid var(--assist-color-middle); color: var(--assist-color-dark); background-color: white; }
-        .blue { background: var(--main-color-middle); }
-        .yellow { background: var(--assist-color-middle); }
         .seperate { width: 100%; height: 45px; display: flex; justify-content: space-between; align-items: center; max-width: 768px; }
         .seperate_one { flex: 1; height: 100%; display: flex; align-items: center; }
+        .input_none_long { border: none; text-align: left; width: 100%; height: 100%; font-family: GowunBatang-Regular; color: var(--assist-color-dark); background: transparent; padding-left: 5px; }
+        .input_none_long:focus { outline: none; }
         .seperate_two { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; padding-right: 5px; }
+        .btn_circle_mini { border: none; width: 35px; height: 35px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; background-color: transparent; padding: 0; }
+        .btn_circle_mini i { font-size: 1.2em; color: var(--assist-color-middle); }
+        button:disabled .btn_circle_mini i { color: #ccc; }
         .controller { display: flex; width: 100%; justify-content: space-between; align-items: center; max-width: 768px; margin-bottom: 5px; margin-top: 15px; padding: 0 5px; }
         .book_cnt { color: var(--main-color-dark); font-size: var(--font-size-3); }
-        .controller_list { display: flex; color: var(--assist-color-dark); font-size: var(--font-size-3); cursor: pointer; }
+        .controller_list { display: flex; align-items: center; color: var(--assist-color-dark); font-size: var(--font-size-3); cursor: pointer; position: relative; padding: 5px 0; }
         .menu_down { color: var(--assist-color-middle); margin-left: 5px; }
-        .box_none { width: 100%; max-width: 786px; margin-top: 10px; }
+        .dropdown { display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: #fff; min-width: 120px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1); z-index: 10; border-radius: 4px; right: 0; top: 100%; border: 1px solid #eee; margin-top: 2px; }
+        .dropdown-content div { color: #333; padding: 10px 15px; text-decoration: none; display: block; font-size: 14px; cursor: pointer; white-space: nowrap; }
+        .dropdown-content div:hover { background-color: #f1f1f1; }
+        .controller_list:hover .dropdown-content { display: block; }
+        .box_none { width: 100%; max-width: 1200px; margin-top: 10px; }
         .line { width: 100%; height: 1px; background: #eee; margin-bottom: 15px; }
-        .category-select { width: 100%; max-width: 768px; height: 45px; border-radius: 45px; border: 2px solid var(--assist-color-middle); background-color: white; color: var(--assist-color-dark); font-family: GowunBatang-Regular; font-size: var(--font-size-3); padding: 0 15px; margin-bottom: 10px; cursor: pointer; }
-        .category-select:focus { outline: none; }
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { display: none; position: absolute; background-color: #fff; min-width: 120px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 8px; right: 0; }
-        .dropdown-content div { color: var(--assist-color-dark); padding: 12px 16px; text-decoration: none; display: block; font-size: var(--font-size-3); cursor: pointer; }
-        .dropdown-content div:hover { background-color: var(--assist-color-light); }
-        .dropdown:hover .dropdown-content { display: block; }
-        #results {
-            max-width: 1200px; width: 100%; display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-        @media (min-width: 768px) {
-            #results { grid-template-columns: repeat(2, 1fr); }
-        }
-        .book-item {
-            background-color: #fff; border: 1px solid #ddd; border-radius: 8px;
-            padding: 15px; display: flex; align-items: flex-start;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+        #results { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        @media (max-width: 640px) { #results { grid-template-columns: 1fr; } }
+        .book-item { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px; display: flex; align-items: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .book-item.clickable-book-item { cursor: pointer; }
-        .book-item:hover.clickable-book-item {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-        }
-        .book-item img {
-            width: 70px; height: 100px; border-radius: 4px; margin-right: 15px;
-            object-fit: cover; flex-shrink: 0; background-color: #f0f0f0;
-        }
-        .book-info {
-            flex: 1; display: flex; flex-direction: column; min-height: 100px;
-        }
-        .book-info h3 {
-            font-size: 1.05rem; color: #333; margin: 0 0 5px; font-weight: bold;
-            overflow: hidden; text-overflow: ellipsis;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-            line-height: 1.3;
-        }
-        .book-info p {
-            font-size: 0.85rem; color: #666; margin: 2px 0;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .status-message { grid-column: 1 / -1; text-align: center; padding: 20px; font-size: 1rem; border-radius: 4px; margin-top: 20px; }
-        .loading { background-color: #e8f4fd; color: #3498db; }
-        .error { background-color: #ffe6e6; color: #e74c3c; }
-        .no-results { background-color: #f0f0f0; color: #777; }
-        #paginationContainer { margin-top: 30px; text-align: center; width: 100%; }
+        .book-item:hover.clickable-book-item { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.12); }
+        .book-item img { width: 80px; height: 115px; border-radius: 4px; margin-right: 15px; object-fit: cover; flex-shrink: 0; background-color: #f0f0f0; }
+        .book-info { flex: 1; display: flex; flex-direction: column; min-height: 115px; }
+        .book-info h3 { font-size: 1.05rem; color: #333; margin: 0 0 5px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; }
+        .book-info p { font-size: 0.85rem; color: #666; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .status-message { grid-column: 1 / -1; text-align: center; padding: 30px; font-size: 1rem; border-radius: 4px; margin-top: 20px; }
+        .loading { background-color: #e8f4fd; color: #3498db; border: 1px solid #bce8f1; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .no-results { background-color: #e9ecef; color: #6c757d; border: 1px solid #dee2e6; }
+        #paginationContainer { margin-top: 40px; text-align: center; width: 100%; margin-bottom: 40px; }
         .pagination { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
-        .pagination button, .pagination span { display: inline-block; padding: 8px 12px; border: 1px solid #ddd; background-color: #fff; color: #3498db; cursor: pointer; border-radius: 4px; font-size: 0.9rem; transition: background-color 0.3s, color 0.3s; text-align: center; min-width: 40px; }
-        .pagination button:hover:not(:disabled) { background-color: #3498db; color: #fff; }
-        .pagination button:disabled, .pagination button.current { background-color: #f0f0f0; color: #999; cursor: default; border-color: #ddd; }
-        .pagination button.current { background-color: #3498db; color: #fff; border-color: #3498db; font-weight: bold; }
+        .pagination button, .pagination span { display: inline-block; padding: 8px 12px; border: 1px solid #ddd; background-color: #fff; color: var(--main-color-middle); cursor: pointer; border-radius: 4px; font-size: 0.9rem; transition: background-color 0.3s, color 0.3s; text-align: center; min-width: 40px; }
+        .pagination button:hover:not(:disabled) { background-color: var(--main-color-middle); color: #fff; }
+        .pagination button:disabled, .pagination button.current { background-color: #f0f0f0; color: #aaa; cursor: default; border-color: #ddd; }
+        .pagination button.current { background-color: var(--main-color-middle); color: #fff; border-color: var(--main-color-middle); font-weight: bold; }
         .pagination span { border: none; background-color: transparent; color: #777; cursor: default; padding: 8px 5px; align-self: center; }
     </style>
 </head>
@@ -123,8 +92,8 @@
     <div class="controller">
         <div class="book_cnt">0건</div>
         <div class="controller_list dropdown">
-            <div id="sortLabel">최신순</div>
-            <div class="menu_down"><i class="fas fa-caret-down"></i></div>
+            <span id="sortLabel">최신순</span>
+            <span class="menu_down"><i class="fas fa-caret-down"></i></span>
             <div class="dropdown-content">
                 <div data-sort="PublishTime">최신순</div>
                 <div data-sort="SalesPoint">판매량순</div>
@@ -158,308 +127,211 @@
     let totalResults = 0;
     const itemsPerPage = 10;
 
-    // 정렬 선택 이벤트
+    // --- 이벤트 리스너 ---
     dropdownItems.forEach(item => {
         item.addEventListener('click', () => {
-            console.log('Sort option clicked:', item.dataset.sort, item.textContent);
-            currentSort = item.dataset.sort;
-            sortLabel.textContent = item.textContent;
-            currentPage = 1; // 페이지 리셋
-            console.log('Current sort updated to:', currentSort);
-            performSearch();
+            const newSort = item.dataset.sort;
+            if (currentSort !== newSort) {
+                currentSort = newSort;
+                sortLabel.textContent = item.textContent;
+                currentPage = 1;
+                performSearch(true);
+            }
         });
     });
-
-    // 카테고리 선택 이벤트
     categorySelect.addEventListener('change', () => {
         currentCategory = categorySelect.value;
-        currentPage = 1; // 페이지 리셋
-        console.log('Category changed to:', currentCategory);
-        performSearch();
+        currentPage = 1;
+        performSearch(true);
     });
-
-    // 검색 버튼 클릭 이벤트
     searchButton.addEventListener('click', () => {
         currentQuery = searchInput.value.trim();
         currentPage = 1;
-        console.log('Search button clicked with query:', currentQuery);
-        performSearch();
+        performSearch(true);
     });
-
-    // 검색 입력란 Enter 키 이벤트
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+            e.preventDefault();
             currentQuery = searchInput.value.trim();
             currentPage = 1;
-            console.log('Enter key pressed with query:', currentQuery);
-            performSearch();
+            performSearch(true);
+        }
+    });
+    resultsContainer.addEventListener('click', function(event) {
+        const clickedItem = event.target.closest('.clickable-book-item');
+        if (clickedItem) {
+            const isbn13 = clickedItem.dataset.isbn13;
+            console.log("isbn = ",isbn13)
+            if (isbn13 && /^\d+$/.test(isbn13)) {
+                window.location.href = `/payment?bookId=${encodeURIComponent(isbn13)}`;
+            } else {
+                alert('상품 정보(ISBN)가 올바르지 않아 이동할 수 없습니다.');
+            }
         }
     });
 
-    // API 호출 함수
+    // --- API 호출 함수 ---
     async function fetchBooks(query, page, category, sort) {
-        let apiUrl;
-        if (query.trim() === '') {
-            apiUrl = `/api/search/bestsellers?page=${page}&size=${itemsPerPage}`;
-            if (category) {
-                apiUrl += `&categoryId=${encodeURIComponent(category)}`;
-            }
-            if (sort) {
-                apiUrl += `&sort=${encodeURIComponent(sort)}`;
-            }
-            console.log('Fetching bestsellers with URL:', apiUrl, { query, category, sort });
-        } else {
-            apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
-            if (category) {
-                apiUrl += `&categoryId=${encodeURIComponent(category)}`;
-            }
-            if (sort) {
-                apiUrl += `&sort=${encodeURIComponent(sort)}`;
-            }
-            console.log('Fetching books with URL:', apiUrl, { query, category, sort });
+        let apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
+        if (category) {
+            apiUrl += `&categoryId=${encodeURIComponent(category)}`;
         }
+        apiUrl += `&sort=${encodeURIComponent(sort || 'PublishTime')}`;
+        console.log("[FetchBooks] API URL:", apiUrl);
         try {
-            const response = await fetch(apiUrl, {
-                cache: 'no-store',
-                headers: { 'Accept': 'application/json' }
-            });
+            const response = await fetch(apiUrl, { cache: 'no-store' });
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('API Response Error:', response.status, response.statusText, 'Body:', errorText);
-                throw new Error(`HTTP 오류! 상태: ${response.status}`);
+                throw new Error(`HTTP 오류 (${response.status}): ${errorText || response.statusText}`);
             }
-            const data = await response.json();
-            console.log('API Response Data (first 3 books):', data.books?.slice(0, 3).map(b => ({
-                title: b.title,
-                isbn13: b.isbn13,
-                pubDate: b.pubDate,
-                categoryId: b.categoryId
-            })));
-            return data;
+            const responseText = await response.text();
+            if (!responseText) return { books: [], totalResults: 0, currentPage: page };
+            try {
+                return JSON.parse(responseText);
+            } catch (parseError) {
+                console.error("[FetchBooks] JSON 파싱 오류:", parseError, "응답:", responseText);
+                throw new Error("서버 응답 형식 오류");
+            }
         } catch (error) {
-            console.error('Fetch Error:', error);
-            throw error;
+            console.error("[FetchBooks] API 호출 중 오류:", error);
+            throw new Error(`데이터 로딩 실패: ${error.message}`);
         }
     }
 
-    // 상태 메시지 표시 함수
+    // --- 상태 메시지 표시 함수 ---
     function displayStatusMessage(type, message) {
         resultsContainer.innerHTML = `<div class="status-message ${type}">${message}</div>`;
         paginationContainer.innerHTML = '';
         if (bookCountElement) {
-            bookCountElement.textContent = type === 'loading' ? '...' : '0건';
+            bookCountElement.textContent = (type === 'loading') ? '...' : '0건';
         }
     }
 
-    // 검색 결과 표시 함수
+    // --- 검색 결과 표시 함수 ---
     function displayResults(paginatedResponse) {
         resultsContainer.innerHTML = '';
-        const categoryText = currentCategory ? categorySelect.options[categorySelect.selectedIndex]?.text : '전체 카테고리';
-
-        if (!paginatedResponse || !paginatedResponse.books) {
-            console.error('Invalid API response structure:', paginatedResponse);
-            displayStatusMessage('error', '결과를 표시할 수 없습니다. (응답 형식 오류)');
+        if (!paginatedResponse || typeof paginatedResponse.books === 'undefined' || typeof paginatedResponse.totalResults === 'undefined') {
+            console.error("Invalid API response in displayResults:", paginatedResponse);
+            displayStatusMessage('error', '결과 형식이 올바르지 않습니다.');
             return;
         }
-
         const books = paginatedResponse.books;
-        totalResults = paginatedResponse.totalResults || 0;
+        if (currentPage === 1) { // 새 검색이거나 첫 페이지일 때만 totalResults 업데이트
+            totalResults = paginatedResponse.totalResults || 0;
+        }
         if (bookCountElement) {
-            bookCountElement.textContent = `${totalResults}건`;
+            bookCountElement.textContent = `${totalResults.toLocaleString()}건`;
         }
 
-        if (totalResults === 0 || !books || books.length === 0) {
-            let message;
-            if (currentQuery) {
-                message = `"${categoryText} > ${currentQuery}" (eBook)에 대한 검색 결과가 없습니다.`;
-            } else if (currentCategory) {
-                message = `"${categoryText}" eBook 베스트셀러 결과가 없습니다.`;
-            } else {
-                message = 'eBook 베스트셀러 결과가 없습니다.';
-            }
+        if (totalResults === 0) {
+            let message = '';
+            const queryText = currentQuery.trim();
+            const categoryOption = categorySelect.options[categorySelect.selectedIndex];
+            const categoryText = categoryOption ? categoryOption.text : '';
+            const hasQuery = queryText !== '';
+            const hasCategory = currentCategory !== '' && categoryText !== '전체 카테고리';
+
+            if (hasQuery && hasCategory) message = `"${queryText}" (${categoryText}) 검색 결과가 없습니다.`;
+            else if (hasQuery) message = `"${queryText}" 검색 결과가 없습니다.`;
+            else if (hasCategory) message = `(${categoryText}) 카테고리에 해당하는 책이 없습니다.`;
+            else message = '표시할 책이 없습니다.';
             displayStatusMessage('no-results', message);
-            renderPagination(totalResults, currentPage, itemsPerPage);
-            return;
-        }
-
-        console.log('Displaying books:', books.map(book => ({
-            title: book.title,
-            isbn13: book.isbn13,
-            pubDate: book.pubDate,
-            categoryId: book.categoryId
-        })));
-
-        books.forEach(book => {
-            const bookElement = document.createElement('div');
-            bookElement.classList.add('book-item', 'clickable-book-item');
-            bookElement.dataset.isbn13 = book.isbn13 || '';
-
-            const coverUrl = book.cover || '/img/default_book_cover.png';
-            const title = book.title || '제목 없음';
-            const author = book.author || '저자 정보 없음';
-            const publisher = book.publisher || '출판사 정보 없음';
-            const price = book.priceStandard;
-
-            const coverHtml = `<img src="${coverUrl}" alt="${title} 표지" loading="lazy" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">`;
-            const priceHtml = (typeof price === 'number' && price > 0)
-                ? `<p><strong>가격:</strong> ${price.toLocaleString()}원</p>`
-                : '<p><strong>가격:</strong> 정보 없음</p>';
-
-            bookElement.innerHTML = `
-                ${coverHtml}
-                <div class="book-info">
-                    <h3>${title}</h3>
-                    <p><strong>저자:</strong> ${author}</p>
-                    <p><strong>출판사:</strong> ${publisher}</p>
-                    ${priceHtml}
-                </div>
-            `;
-            bookElement.addEventListener('click', () => {
-                const bookId = bookElement.dataset.isbn13;
-                if (bookId) {
-                    console.log('Book clicked:', { title, bookId });
-                    window.location.href = `/payment?bookId=${encodeURIComponent(bookId)}`;
-                } else {
-                    console.error('Book ID missing for:', title);
-                    alert('Book 정보를 불러올 수 없습니다.');
-                }
+        } else if (!books || books.length === 0) {
+            displayStatusMessage('no-results', '해당 페이지에 결과가 없습니다.');
+        } else {
+            books.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.classList.add('book-item', 'clickable-book-item');
+                bookElement.dataset.isbn13 = book.isbn13 || '';
+                const coverUrl = book.cover || '/img/default_book_cover.png';
+                const title = book.title || '제목 없음';
+                const author = book.author || '저자 정보 없음';
+                const publisher = book.publisher || '출판사 정보 없음';
+                const price = book.priceStandard;
+                const coverHtml = `<img src="${coverUrl}" alt="${title} 표지" loading="lazy" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">`;
+                const priceHtml = (typeof price === 'number' && price > 0) ? `<p><strong>가격:</strong> ${price.toLocaleString()}원</p>` : '';
+                bookElement.innerHTML = `${coverHtml}<div class="book-info"><h3>${title}</h3><p><strong>저자:</strong> ${author}</p><p><strong>출판사:</strong> ${publisher}</p>${priceHtml}</div>`;
+                resultsContainer.appendChild(bookElement);
             });
-            resultsContainer.appendChild(bookElement);
-        });
-
+        }
         renderPagination(totalResults, currentPage, itemsPerPage);
     }
 
-    // 페이지네이션 UI 렌더링 함수
+    // --- 페이지네이션 UI 렌더링 함수 ---
     function renderPagination(totalResults, currentPage, itemsPerPage) {
         paginationContainer.innerHTML = '';
         if (!totalResults || totalResults <= itemsPerPage) return;
         const totalPages = Math.ceil(totalResults / itemsPerPage);
         if (totalPages <= 1) return;
-
-        const paginationGroup = document.createElement('div');
-        paginationGroup.classList.add('pagination');
-        paginationGroup.setAttribute('aria-label', '검색 결과 페이지네이션');
-
-        const prevButton = document.createElement('button');
-        prevButton.innerHTML = '«';
-        prevButton.disabled = currentPage === 1;
-        prevButton.setAttribute('aria-label', '이전 페이지');
-        prevButton.addEventListener('click', () => goToPage(currentPage - 1));
-        paginationGroup.appendChild(prevButton);
-
-        const maxPageButtons = 5;
-        let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
-        let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
-        startPage = Math.max(1, endPage - maxPageButtons + 1);
-
-        if (startPage > 1) {
-            const firstButton = document.createElement('button');
-            firstButton.textContent = '1';
-            firstButton.setAttribute('aria-label', '1 페이지');
-            firstButton.addEventListener('click', () => goToPage(1));
-            paginationGroup.appendChild(firstButton);
-            if (startPage > 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.setAttribute('aria-hidden', 'true');
-                paginationGroup.appendChild(ellipsis);
-            }
-        }
-        for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.textContent = i;
-            pageButton.setAttribute('aria-label', `${i} 페이지`);
-            if (i === currentPage) {
-                pageButton.classList.add('current');
-                pageButton.disabled = true;
-                pageButton.setAttribute('aria-current', 'page');
-            } else {
-                pageButton.addEventListener('click', () => goToPage(i));
-            }
-            paginationGroup.appendChild(pageButton);
-        }
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.setAttribute('aria-hidden', 'true');
-                paginationGroup.appendChild(ellipsis);
-            }
-            const lastButton = document.createElement('button');
-            lastButton.textContent = totalPages;
-            lastButton.setAttribute('aria-label', `${totalPages} 페이지`);
-            lastButton.addEventListener('click', () => goToPage(totalPages));
-            paginationGroup.appendChild(lastButton);
-        }
-
-        const nextButton = document.createElement('button');
-        nextButton.innerHTML = '»';
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.setAttribute('aria-label', '다음 페이지');
-        nextButton.addEventListener('click', () => goToPage(currentPage + 1));
-        paginationGroup.appendChild(nextButton);
-
+        const paginationGroup = document.createElement('div'); paginationGroup.classList.add('pagination'); paginationGroup.setAttribute('aria-label', '검색 결과 페이지네이션');
+        const firstPageButton = document.createElement('button'); firstPageButton.innerHTML = '«'; firstPageButton.disabled = currentPage === 1; firstPageButton.setAttribute('aria-label', '첫 페이지'); firstPageButton.addEventListener('click', () => goToPage(1)); paginationGroup.appendChild(firstPageButton);
+        const prevButton = document.createElement('button'); prevButton.innerHTML = '‹'; prevButton.disabled = currentPage === 1; prevButton.setAttribute('aria-label', '이전 페이지'); prevButton.addEventListener('click', () => goToPage(currentPage - 1)); paginationGroup.appendChild(prevButton);
+        const maxPageButtons = 5; let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2)); let endPage = Math.min(totalPages, startPage + maxPageButtons - 1); startPage = Math.max(1, endPage - maxPageButtons + 1);
+        if (startPage > 1) { const ellipsis = document.createElement('span'); ellipsis.textContent = '...'; ellipsis.setAttribute('aria-hidden', 'true'); paginationGroup.appendChild(ellipsis); }
+        for (let i = startPage; i <= endPage; i++) { const pageButton = document.createElement('button'); pageButton.textContent = i; pageButton.setAttribute('aria-label', `${i} 페이지`); if (i === currentPage) { pageButton.classList.add('current'); pageButton.disabled = true; pageButton.setAttribute('aria-current', 'page'); } else { pageButton.addEventListener('click', () => goToPage(i)); } paginationGroup.appendChild(pageButton); }
+        if (endPage < totalPages) { const ellipsis = document.createElement('span'); ellipsis.textContent = '...'; ellipsis.setAttribute('aria-hidden', 'true'); paginationGroup.appendChild(ellipsis); }
+        const nextButton = document.createElement('button'); nextButton.innerHTML = '›'; nextButton.disabled = currentPage === totalPages; nextButton.setAttribute('aria-label', '다음 페이지'); nextButton.addEventListener('click', () => goToPage(currentPage + 1)); paginationGroup.appendChild(nextButton);
+        const lastPageButton = document.createElement('button'); lastPageButton.innerHTML = '»'; lastPageButton.disabled = currentPage === totalPages; lastPageButton.setAttribute('aria-label', '마지막 페이지'); lastPageButton.addEventListener('click', () => goToPage(totalPages)); paginationGroup.appendChild(lastPageButton);
         paginationContainer.appendChild(paginationGroup);
     }
 
-    // 특정 페이지로 이동하는 함수
+    // --- 특정 페이지로 이동하는 함수 ---
     async function goToPage(pageNumber) {
         const totalPages = Math.ceil(totalResults / itemsPerPage);
         if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) return;
-
         currentPage = pageNumber;
-        displayStatusMessage('loading', `페이지 ${pageNumber} 로딩 중...`);
-        searchButton.disabled = true;
-        searchInput.disabled = true;
-        categorySelect.disabled = true;
-
-        try {
-            const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
-            displayResults(paginatedResponse);
-        } catch (error) {
-            console.error('Error during fetchBooks:', error);
-            displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}`);
-        } finally {
-            searchButton.disabled = false;
-            searchInput.disabled = false;
-            categorySelect.disabled = false;
-        }
+        await performSearch(false); // isNewSearch = false 로 페이지 이동
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 검색 실행 함수
-    async function performSearch() {
-        const categoryText = currentCategory ? categorySelect.options[categorySelect.selectedIndex]?.text : '전체 카테고리';
-        let displayQuery;
-        if (currentQuery.trim() === '') {
-            displayQuery = currentCategory ? `"${categoryText}" eBook 베스트셀러` : 'eBook 베스트셀러';
-            console.log('Performing bestseller search:', { category: currentCategory, sort: currentSort });
+    // --- 검색 실행 함수 ---
+    async function performSearch(isNewSearch = true) {
+        if (isNewSearch) {
+            currentPage = 1;
+            // totalResults는 API 응답 후 displayResults에서 업데이트
+        }
+        console.log(`[PerformSearch] isNewSearch: ${isNewSearch}, State:`, { query: currentQuery, category: currentCategory, sort: currentSort, page: currentPage });
+
+        const displayQueryText = currentQuery.trim() === '' ? '전체 도서' : `"${currentQuery}"`;
+        const categoryOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryText = categoryOption ? categoryOption.text : '';
+        let loadingMessage;
+
+        if (currentCategory !== '' && categoryText !== '전체 카테고리') {
+            loadingMessage = isNewSearch ? `(${categoryText}) ${displayQueryText} 검색 중...` : `(${categoryText}) 페이지 ${currentPage} 로딩 중...`;
         } else {
-            displayQuery = `"${categoryText} > ${currentQuery}" (eBook)`;
-            console.log('Performing keyword search:', { query: currentQuery, category: currentCategory, sort: currentSort });
+            loadingMessage = isNewSearch ? `${displayQueryText} 검색 중...` : `페이지 ${currentPage} 로딩 중...`;
         }
-        displayStatusMessage('loading', `${displayQuery} 검색 중...`);
-        searchButton.disabled = true;
-        searchInput.disabled = true;
-        categorySelect.disabled = true;
+
+        displayStatusMessage('loading', loadingMessage);
+        searchButton.disabled = true; searchInput.disabled = true; categorySelect.disabled = true;
+        document.querySelector('.controller_list').style.pointerEvents = 'none';
 
         try {
             const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
             displayResults(paginatedResponse);
         } catch (error) {
-            console.error('Error during fetchBooks:', error);
-            displayStatusMessage('error', `검색 중 오류가 발생했습니다: ${error.message}`);
+            console.error("[PerformSearch] Error:", error);
+            displayStatusMessage('error', `오류: ${error.message}`);
+            if(isNewSearch) totalResults = 0; // 새 검색 중 오류면 결과 없음
+            renderPagination(totalResults, currentPage, itemsPerPage);
         } finally {
-            searchButton.disabled = false;
-            searchInput.disabled = false;
-            categorySelect.disabled = false;
+            searchButton.disabled = false; searchInput.disabled = false; categorySelect.disabled = false;
+            document.querySelector('.controller_list').style.pointerEvents = 'auto';
         }
     }
 
-    // 페이지 로드 시 초기 검색 실행
-    performSearch();
+    // --- 페이지 로드 시 초기 검색 실행 ---
+    document.addEventListener('DOMContentLoaded', () => {
+        currentQuery = '';
+        currentPage = 1;
+        currentCategory = categorySelect.value;
+        currentSort = 'PublishTime';
+        sortLabel.textContent = '최신순';
+        console.log('Initial state set, performing initial search.');
+        performSearch(true);
+    });
+
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93b898c40ebfed8b',t:'MTc0NjUzNTc1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93b8e0555a80ada7',t:'MTc0NjUzODY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

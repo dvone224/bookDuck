@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter; // Setter 추가
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList; // import 추가
 import java.util.List;
 
@@ -19,6 +21,11 @@ public class Purchase {
     private String purchaseId; // 필드명 변경 (PurchaseId -> purchaseId)
 
     private String userId;
+
+
+    @CreatedDate // 엔티티 생성 시 자동으로 현재 시간 저장
+    @Column(nullable = false, updatable = false) // null 허용 안 함, 업데이트 불가
+    private LocalDateTime purchasedAt; // 구매 일시 (날짜와 시간 포함)
 
     // mappedBy 속성 값은 PurchaseItems 클래스의 Purchase 필드명과 일치해야 함
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) // FetchType.LAZY 유지 권장

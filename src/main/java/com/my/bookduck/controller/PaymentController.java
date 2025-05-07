@@ -40,28 +40,45 @@ public class PaymentController {
      */
     @GetMapping({"", "/"})
     public String showPaymentForm(
-            @RequestParam Long bookId, // 단일 상품 ID만 받음
+            @RequestParam Long bookId,
             Model model,
             @AuthenticationPrincipal BDUserDetails userDetails,
             RedirectAttributes redirectAttributes) {
 
         log.info("결제 폼 요청 수신 (단일 상품) - Book ID: [{}]", bookId);
 
-        if (userDetails == null) { /* ... 로그인 확인 및 리다이렉트 ... */ redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다."); return "redirect:/login-form"; }
-        if (bookId == null) { /* ... bookId 없음 오류 처리 및 리다이렉트 ... */ redirectAttributes.addFlashAttribute("errorMessage", "상품 정보가 없습니다."); return "redirect:/book/books"; }
+        if (userDetails == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/login-form";
+        }
+        if (bookId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "상품 정보가 없습니다.");
+            return "redirect:/book/books"; // 또는 적절한 에러 페이지/이전 페이지
+        }
 
         try {
             Book book = bookService.getBookById(bookId);
-            if (book == null) { /* ... 책 없음 오류 처리 및 리다이렉트 ... */ redirectAttributes.addFlashAttribute("errorMessage", "상품 정보를 찾을 수 없습니다."); return "redirect:/book/books"; }
+            if (book == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "상품 정보를 찾을 수 없습니다. (ID: " + bookId + ")");
+                return "redirect:/book/books";
+            }
 
             // 모델에 단일 상품 정보 설정
             model.addAttribute("productName", book.getTitle());
             model.addAttribute("amount", book.getPrice());
-            model.addAttribute("isbn", String.valueOf(book.getId())); // 단일 ID 전달
+            model.addAttribute("isbn", String.valueOf(book.getId())); // JavaScript용 문자열 ID
+            model.addAttribute("bookCover", book.getCover()); // Book 엔티티에 getCover() 메소드가 있다고 가정
 
+            log.info("결제 폼 표시 - 상품명: {}, 가격: {}, 표지: {}", book.getTitle(), book.getPrice(), book.getCover());
             return "paymentForm";
-        } catch (Exception e) { /* ... 예외 처리 및 리다이렉트 ... */ redirectAttributes.addFlashAttribute("errorMessage", "오류 발생"); return "redirect:/book/books"; }
+
+        } catch (Exception e) {
+            log.error("결제 폼 로딩 중 오류 발생 - Book ID: {}", bookId, e);
+            redirectAttributes.addFlashAttribute("errorMessage", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+            return "redirect:/book/books";
+        }
     }
+
 
     /**
      * 사용자가 특정 책을 소장하고 있는지 비동기적으로 확인하는 API 엔드포인트.

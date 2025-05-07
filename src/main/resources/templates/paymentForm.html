@@ -5,20 +5,19 @@
     <script src="https://js.tosspayments.com/v1/payment"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BookDuck² :: 결제하기</title> <!-- 타이틀 업데이트 -->
+    <title>BookDuck² :: 결제하기</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        h2 { text-align: center; margin-bottom: 20px; }
-        form { border: 1px solid #eee; padding: 20px; border-radius: 8px; background-color: #fafafa; }
-        form label { display: block; margin-bottom: 8px; font-weight: bold; color: #555;}
-        form input[type="text"], form input[type="number"] {
-            width: calc(100% - 18px); padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;
-        }
-        form input[readonly] { background-color: #eee; cursor: not-allowed; }
-        form button {
-            padding: 10px 20px; color: white; border: none; border-radius: 4px;
-            cursor: pointer; font-size: 1rem; margin-right: 10px; transition: background-color 0.2s;
-        }
+        /* (스타일 코드는 이전과 동일하게 유지) */
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
+        h2 { text-align: center; margin-bottom: 25px; color: #333; }
+        .product-info-container { display: flex; align-items: flex-start; margin-bottom: 20px; padding: 20px; background-color: #fff; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .product-image { width: 100px; height: 140px; object-fit: cover; border-radius: 4px; margin-right: 20px; border: 1px solid #ddd; background-color: #f0f0f0; }
+        .payment-details { flex-grow: 1; }
+        form { border: none; padding: 0; background-color: transparent; box-shadow: none; }
+        form label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.9em;}
+        form input[type="text"], form input[type="number"] { width: calc(100% - 18px); padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }
+        form input[readonly] { background-color: #e9ecef; cursor: not-allowed; }
+        form button { padding: 10px 20px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; margin-right: 10px; transition: background-color 0.2s; font-weight: bold; }
         form button:hover:not(:disabled) { opacity: 0.9; }
         #payment-button { background-color: #007bff; }
         #payment-button:hover:not(:disabled) { background-color: #0056b3; }
@@ -27,199 +26,220 @@
         form button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
         .message-box { margin-bottom: 15px; padding: 10px; border-radius: 4px; border: 1px solid; }
         .error-message { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
-        /* .owned-message 스타일은 JavaScript에서 필요시 동적으로 추가 가능 */
-        .button-group { margin-top: 15px; }
+        .button-group { margin-top: 20px; display: flex; justify-content: flex-start; }
     </style>
 </head>
 <body>
 
-<h2>상품 정보</h2>
+<h2>상품 정보 및 결제</h2>
 
-<!-- 서버 메시지 표시 -->
 <div th:if="${paymentError}" class="message-box error-message" th:text="${paymentError}"></div>
 <div th:if="${errorMessage}" class="message-box error-message" th:text="${errorMessage}"></div>
 
-<!-- 로그인 필요 메시지 -->
 <div th:if="${session.loginuser == null}">
-    <p>결제하거나 장바구니에 담으려면 <a href="/login-form">로그인</a>이 필요합니다.</p>
+    <p style="text-align: center; padding: 20px; background-color: #fff; border-radius: 8px;">
+        결제하거나 장바구니에 담으려면 <a href="/login-form" style="color: #007bff; font-weight: bold;">로그인</a>이 필요합니다.
+    </p>
 </div>
 
-<!-- 로그인 상태일 때 폼 표시 -->
 <div th:if="${session.loginuser != null}">
-    <form id="payment-form">
-        <label for="product-name">상품명:</label>
-        <input type="text" id="product-name" readonly required th:value="${productName}">
+    <div class="product-info-container">
+        <img th:if="${bookCover}" th:src="${bookCover}" alt="상품 이미지" class="product-image" onerror="this.onerror=null; this.src='/img/default_book_cover.png';"/>
+        <img th:unless="${bookCover}" src="/img/default_book_cover.png" alt="상품 이미지 없음" class="product-image"/>
 
-        <label for="amount">가격(원):</label>
-        <input type="number" id="amount" readonly required th:value="${amount}">
-
-        <label for="customer-name">구매자 이름:</label>
-        <input type="text" id="customer-name" required th:value="${session.loginuser.nickName}">
-
-        <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
-        <input type="hidden" id="isbn" name="isbn" th:value="${isbn}" /> <!-- String ISBN 값 -->
-
-        <!-- 버튼 그룹 -->
-        <div class="button-group">
-            <button type="button" id="payment-button">결제하기</button>
-            <button type="button" id="add-to-cart-button">장바구니 담기</button>
+        <div class="payment-details">
+            <form id="payment-form">
+                <label for="product-name">상품명:</label>
+                <input type="text" id="product-name" readonly required th:value="${productName}">
+                <label for="amount">가격(원):</label>
+                <input type="number" id="amount" readonly required th:value="${amount}">
+                <label for="customer-name">구매자 이름:</label>
+                <input type="text" id="customer-name" required th:value="${session.loginuser.nickName}">
+                <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
+                <input type="hidden" id="isbn" name="isbn" th:value="${isbn}" />
+                <div class="button-group">
+                    <button type="button" id="payment-button">결제하기</button>
+                    <button type="button" id="add-to-cart-button">장바구니 담기</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
-<!-- JavaScript (로그인 상태일 때만 포함) -->
 <script th:inline="javascript" th:if="${session.loginuser != null}">
     /*<![CDATA[*/
-    const clientKey = "test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1"; // ★★ 실제 키로 변경 ★★
-    const tossPayments = TossPayments(clientKey);
-    const paymentButton = document.getElementById("payment-button");
-    const addToCartButton = document.getElementById("add-to-cart-button");
 
-    // --- 결제하기 버튼 클릭 리스너 (비동기 소유 확인 로직 포함) ---
-    paymentButton.addEventListener("click", async function (e) {
-        e.preventDefault();
-        if (paymentButton.disabled) { return; }
+    // --- ★★★ 전역 변수 및 SDK 초기화 위치 변경 ★★★ ---
+    const clientKey = /*[[${'test_ck_ma60RZblrqomEqDaE0WM3wzYWBn1'}]]*/ "YOUR_FALLBACK_TEST_CLIENT_KEY"; // Thymeleaf 주입 실패 대비 폴백 키
+    let tossPayments = null; // SDK 객체
+    let paymentButton = null; // 결제 버튼
+    let addToCartButton = null; // 장바구니 버튼
 
-        const userId = document.getElementById("userId").value;
-        const isbn = document.getElementById("isbn").value;
-
-        if (!userId || !isbn || isbn === 'ISBN 정보 없음' || isbn.trim() === '') { alert("결제 정보 부족."); return; }
-
-        let bookId; // Long 타입 Book ID
+    /** Toss Payments SDK 초기화 함수 */
+    function initializeTossPaymentsSDK() {
         try {
-            bookId = parseInt(isbn.trim(), 10);
-            if (isNaN(bookId)) throw new Error();
-        } catch (error) { alert("도서 정보(ISBN) 형식 오류."); return; }
-
-        paymentButton.disabled = true;
-        paymentButton.textContent = "소유 확인 중...";
-
-        // 비동기 소유 여부 확인
-        try {
-            const checkResponse = await fetch(`/payment/check-ownership?bookId=${bookId}`); // API 호출 (userId는 필요시 쿼리 파라미터나 헤더로 전달)
-
-            if (!checkResponse.ok) {
-                const errorData = await checkResponse.json().catch(() => ({ error: "서버 확인 응답 오류" }));
-                throw new Error(errorData.error || `소유 확인 실패 (${checkResponse.status})`);
+            if (typeof TossPayments === 'function') {
+                tossPayments = TossPayments(clientKey); // 객체 생성 및 할당
+                console.log("Toss Payments SDK 초기화 성공.");
+                // SDK 초기화 후 버튼 활성화 (필요시)
+                if (paymentButton) paymentButton.disabled = false; // 초기에는 비활성화 되어 있다고 가정
+                if (addToCartButton) addToCartButton.disabled = false;
+            } else {
+                console.error("Toss Payments SDK (TossPayments 함수)가 window 객체에 정의되지 않았습니다. SDK 스크립트 로드를 확인하세요.");
+                throw new Error("Toss SDK 로드 실패"); // 명시적 에러 발생
             }
-            const data = await checkResponse.json();
-
-            if (data.isOwned === true) {
-                alert("이미 소장 중인 상품입니다.");
-                paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return;
-            }
-            console.log("소유하지 않음 확인. 결제 진행.");
-
-        } catch (error) {
-            console.error("소유 확인 오류:", error);
-            alert("소유 여부 확인 중 오류: " + error.message);
-            paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return;
+        } catch (sdkError) {
+            console.error("Toss Payments SDK 초기화 중 오류:", sdkError);
+            alert("결제 시스템 초기화 중 오류가 발생했습니다. 페이지를 새로고침하거나 잠시 후 다시 시도해주세요.");
+            // SDK 초기화 실패 시 결제 관련 버튼 비활성화
+            if (paymentButton) paymentButton.disabled = true;
+            if (addToCartButton) addToCartButton.disabled = true;
         }
+    }
 
-        // 결제 로직 시작
-        paymentButton.textContent = "결제 처리 중...";
+    /** DOM 로드 완료 후 실행될 메인 로직 */
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM 콘텐츠 로드 완료. 스크립트 초기화 시작.");
 
-        const productName = document.getElementById("product-name").value;
-        const amount = parseInt(document.getElementById("amount").value);
-        const customerName = document.getElementById("customer-name").value;
+        // HTML 요소 참조
+        paymentButton = document.getElementById("payment-button");
+        addToCartButton = document.getElementById("add-to-cart-button");
 
-        if (isNaN(amount) || amount <= 0) { alert("결제 금액 오류."); paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return; }
+        // SDK 초기화 시도
+        initializeTossPaymentsSDK(); // SDK 초기화 함수 호출
 
-        const orderId = "order-" + new Date().getTime() + "-" + Math.random().toString(36).substring(2, 8);
-        const baseUrl = window.location.origin;
-        let successUrl = `${baseUrl}/payment/success?userId=${encodeURIComponent(userId)}&orderName=${encodeURIComponent(productName)}&customerName=${encodeURIComponent(customerName)}&isbn=${encodeURIComponent(isbn)}`; // isbn 유지 (필요시 bookId로 변경)
-        const failUrl = `${baseUrl}/payment/fail?orderId=${orderId}`;
+        // --- 결제하기 버튼 이벤트 리스너 ---
+        if (paymentButton) {
+            paymentButton.addEventListener("click", async function (e) {
+                e.preventDefault();
+                console.log("결제하기 버튼 클릭됨.");
 
-        console.log("Requesting payment...", { amount, orderId, orderName: productName, customerName, userId, isbn }); // isbn 유지
-
-        tossPayments.requestPayment("카드", { amount, orderId, orderName: productName, customerName, successUrl, failUrl })
-            .then(res => console.log("Payment redirecting...", res))
-            .catch(err => {
-                console.error("Toss Error:", err);
-                paymentButton.disabled = false; paymentButton.textContent = "결제하기";
-                if (err.code === "USER_CANCEL") alert("결제 취소됨.");
-                else alert("결제 오류: " + (err.message || "알 수 없는 오류"));
-            });
-    });
-
-    // --- ✨ 장바구니 담기 로직 (비동기 소유 확인 추가) ✨ ---
-    addToCartButton.addEventListener("click", async function() { // async 추가
-        if (addToCartButton.disabled) { return; } // 중복 클릭 방지
-
-        const userId = document.getElementById("userId").value;
-        const isbn = document.getElementById("isbn").value; // String ISBN
-
-        // 기본 유효성 검사
-        if (!userId || !isbn || isbn === 'ISBN 정보 없음' || isbn.trim() === '') { alert("장바구니에 담을 상품 정보가 부족합니다."); return; }
-
-        let bookId; // Long 타입 Book ID
-        try {
-            bookId = parseInt(isbn.trim(), 10);
-            if (isNaN(bookId)) throw new Error();
-        } catch (error) { alert("유효하지 않은 도서 정보(ISBN) 형식입니다."); return; }
-
-        addToCartButton.disabled = true;
-        addToCartButton.textContent = "소유 확인 중..."; // 상태 변경
-
-        // --- 비동기 소유 여부 확인 (결제하기 로직과 동일하게) ---
-        try {
-            // ✨ API 호출 경로: /payment/check-ownership 사용 (동일한 API 활용) ✨
-            const checkResponse = await fetch(`/payment/check-ownership?bookId=${bookId}`); // API 호출
-
-            if (!checkResponse.ok) {
-                const errorData = await checkResponse.json().catch(() => ({ error: "서버 확인 응답 오류" }));
-                throw new Error(errorData.error || `소유 확인 실패 (${checkResponse.status})`);
-            }
-            const data = await checkResponse.json();
-
-            if (data.isOwned === true) { // ✨ 소유 중인 경우 ✨
-                alert("이미 소장 중인 상품은 장바구니에 담을 수 없습니다."); // 사용자 알림
-                addToCartButton.disabled = false; addToCartButton.textContent = "장바구니 담기"; return; // 함수 종료
-            }
-            console.log("소유하지 않음 확인. 장바구니 추가 진행.");
-
-        } catch (error) { // API 호출 또는 처리 중 오류 발생 시
-            console.error("소유 확인 오류 (장바구니):", error);
-            alert("소유 여부 확인 중 오류 발생: " + error.message);
-            addToCartButton.disabled = false; addToCartButton.textContent = "장바구니 담기"; return; // 함수 종료
-        }
-        // --- 소유 여부 확인 끝 ---
-
-        // --- 장바구니 추가 로직 시작 (소유하지 않은 경우에만 실행됨) ---
-        addToCartButton.textContent = "담는 중..."; // 버튼 텍스트 변경
-
-        const formData = new FormData();
-        formData.append('userId', userId);
-        // ✨ 백엔드 /cart 가 bookId (숫자)를 기대한다면 bookId를 보내야 합니다.
-        // formData.append('bookId', isbn); // 기존 코드 (문자열 ISBN 전송)
-        formData.append('bookId', bookId); // 수정: 파싱된 숫자 bookId 전송
-
-        fetch('/cart', { method: 'POST', body: formData }) // POST /cart 로 요청
-            .then(response => {
-                if (response.ok) {
-                    alert('장바구니에 상품을 담았습니다!');
-                } else {
-                    // 서버에서 보낸 에러 메시지를 파싱하여 보여주도록 개선
-                    response.json().then(data => {
-                        alert('장바구니 담기 실패: ' + (data.message || '알 수 없는 서버 오류'));
-                    }).catch(() => {
-                        response.text().then(text => {
-                            alert('장바구니 담기 실패: ' + (text || '서버 응답 오류'));
-                        })
-                    });
+                if (!tossPayments) { // ★★★ SDK 객체 유효성 검사 ★★★
+                    alert("결제 시스템이 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.");
+                    console.error("결제 시도: Toss Payments SDK가 초기화되지 않았습니다.");
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error('장바구니 추가 중 네트워크 또는 스크립트 오류:', error);
-                alert('장바구니 담기 중 오류가 발생했습니다.');
-            })
-            .finally(() => {
-                // 성공/실패 여부와 관계 없이 버튼 상태 복원
-                addToCartButton.disabled = false;
-                addToCartButton.textContent = "장바구니 담기";
+                if (paymentButton.disabled) { console.log("결제 버튼 이미 비활성화됨."); return; }
+
+                // 폼 데이터 가져오기
+                const userId = document.getElementById("userId").value;
+                const isbn = document.getElementById("isbn").value;
+                if (!userId || !isbn || isbn === 'ISBN 정보 없음' || isbn.trim() === '') { alert("결제 정보가 부족합니다."); return; }
+
+                let bookId;
+                try { bookId = parseInt(isbn.trim(), 10); if (isNaN(bookId)) throw new Error("ISBN 형식이 숫자가 아님"); }
+                catch (error) { alert("도서 정보(ISBN) 형식이 올바르지 않습니다: " + error.message); return; }
+
+                paymentButton.disabled = true; paymentButton.textContent = "소유 확인 중...";
+
+                // 소유 여부 확인
+                try {
+                    const checkResponse = await fetch(`/payment/check-ownership?bookId=${bookId}`);
+                    if (!checkResponse.ok) {
+                        const errorData = await checkResponse.json().catch(() => ({ error: "소유 확인 API 응답 오류" }));
+                        throw new Error(errorData.error || `소유 확인 실패 (${checkResponse.status})`);
+                    }
+                    const data = await checkResponse.json();
+                    if (data.isOwned === true) {
+                        alert("이미 소장 중인 상품입니다.");
+                        paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return;
+                    }
+                    console.log("소유하지 않음 확인. 결제 진행.");
+                } catch (error) {
+                    console.error("소유 확인 API 호출 오류:", error);
+                    alert("소유 여부 확인 중 오류 발생: " + error.message);
+                    paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return;
+                }
+
+                // 결제 로직 시작
+                paymentButton.textContent = "결제 처리 중...";
+                const productName = document.getElementById("product-name").value;
+                const amount = parseInt(document.getElementById("amount").value);
+                const customerName = document.getElementById("customer-name").value;
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert("결제 금액이 올바르지 않습니다.");
+                    paymentButton.disabled = false; paymentButton.textContent = "결제하기"; return;
+                }
+
+                const orderId = "order-" + Date.now() + "-" + Math.random().toString(36).substring(2, 8);
+                const baseUrl = window.location.origin;
+                const successUrl = `${baseUrl}/payment/success?userId=${encodeURIComponent(userId)}&orderName=${encodeURIComponent(productName)}&customerName=${encodeURIComponent(customerName)}&isbn=${encodeURIComponent(isbn)}&amount=${amount}`;
+                const failUrl = `${baseUrl}/payment/fail?orderId=${orderId}`;
+
+                const paymentParams = { amount, orderId, orderName: productName, customerName, successUrl, failUrl };
+                console.log("Toss Payments 요청 파라미터:", paymentParams);
+
+                try {
+                    console.log("tossPayments.requestPayment 호출 시도...");
+                    await tossPayments.requestPayment("카드", paymentParams);
+                    // 성공 시 토스 페이지로 리다이렉트되므로 이후 코드는 거의 실행되지 않음
+                    console.log("Toss Payments 리다이렉션 중...");
+                } catch (err) {
+                    console.error("Toss Payments API 호출 오류:", err);
+                    paymentButton.disabled = false; paymentButton.textContent = "결제하기";
+                    if (err.code === "USER_CANCEL") {
+                        alert("결제가 취소되었습니다.");
+                    } else {
+                        alert(`결제 오류가 발생했습니다.\n코드: ${err.code || 'N/A'}\n메시지: ${err.message || '알 수 없는 오류'}`);
+                    }
+                }
             });
-        // --- 장바구니 추가 로직 끝 ---
-    });
+        } else {
+            console.warn("결제 버튼(#payment-button)을 찾을 수 없습니다.");
+        }
+
+        // 장바구니 담기 버튼 이벤트 리스너
+        if (addToCartButton) {
+            addToCartButton.addEventListener("click", async function() {
+                // (장바구니 담기 로직은 이전 답변과 동일하게 유지 - tossPayments 객체 유효성 검사 추가 가능)
+                if (!tossPayments) { /* SDK 준비 안 됨 처리 */ return; }
+                // ... (기존 장바구니 담기 로직) ...
+                if (addToCartButton.disabled) { return; }
+                const userId = document.getElementById("userId").value;
+                const isbn = document.getElementById("isbn").value;
+                if (!userId || !isbn || isbn === 'ISBN 정보 없음' || isbn.trim() === '') { alert("장바구니 상품 정보 부족"); return; }
+                let bookId;
+                try { bookId = parseInt(isbn.trim(), 10); if (isNaN(bookId)) throw new Error("ISBN 형식 숫자 아님"); }
+                catch (error) { alert("유효하지 않은 도서 정보(ISBN): " + error.message); return; }
+
+                addToCartButton.disabled = true; addToCartButton.textContent = "소유 확인 중...";
+                try {
+                    const checkResponse = await fetch(`/payment/check-ownership?bookId=${bookId}`);
+                    if (!checkResponse.ok) {
+                        const errorData = await checkResponse.json().catch(() => ({ error: "소유 확인 API 응답 오류" }));
+                        throw new Error(errorData.error || `소유 확인 실패 (${checkResponse.status})`);
+                    }
+                    const data = await checkResponse.json();
+                    if (data.isOwned === true) {
+                        alert("이미 소장 중인 상품은 장바구니에 담을 수 없습니다.");
+                        addToCartButton.disabled = false; addToCartButton.textContent = "장바구니 담기"; return;
+                    }
+                    console.log("소유하지 않음. 장바구니 추가 진행.");
+                } catch (error) {
+                    console.error("소유 확인 오류(장바구니):", error);
+                    alert("소유 여부 확인 중 오류: " + error.message);
+                    addToCartButton.disabled = false; addToCartButton.textContent = "장바구니 담기"; return;
+                }
+
+                addToCartButton.textContent = "담는 중...";
+                const formData = new FormData();
+                formData.append('userId', userId); formData.append('bookId', bookId);
+
+                fetch('/cart', { method: 'POST', body: formData })
+                    .then(response => {
+                        if (response.ok) { alert('장바구니에 상품을 담았습니다!'); }
+                        else { response.json().then(data => alert('담기 실패: ' + (data.message || '서버 오류'))).catch(() => response.text().then(text => alert('담기 실패: ' + (text || '응답 오류'))));}
+                    })
+                    .catch(error => { console.error('장바구니 추가 오류:', error); alert('장바구니 추가 중 오류 발생'); })
+                    .finally(() => { addToCartButton.disabled = false; addToCartButton.textContent = "장바구니 담기"; });
+            });
+        } else {
+            console.warn("장바구니 담기 버튼(#add-to-cart-button)을 찾을 수 없습니다.");
+        }
+
+        console.log("페이지 스크립트 초기화 완료.");
+    }); // DOMContentLoaded 끝
 
     /*]]>*/
 </script>
