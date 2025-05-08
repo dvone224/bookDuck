@@ -89,4 +89,27 @@ public class UserBookService {
         log.info("UserBook (userId: {}, bookId: {})의 mark가 '{}'(으)로 성공적으로 업데이트되었습니다.", userId, bookId, cfi);
     }
 
+    @Transactional(readOnly = true)
+    public String getUserBookMark(Long userId, Long bookId) {
+        if (userId == null || bookId == null) {
+            log.warn("userId 또는 bookId가 null입니다. 페이지 표시를 조회할 수 없습니다.");
+            throw new IllegalArgumentException("사용자 ID와 책 ID는 반드시 제공되어야 합니다.");
+        }
+
+        UserBookId userBookId = new UserBookId(userId, bookId);
+        // findById는 Optional<UserBook>을 반환
+        return userBookRepository.findById(userBookId)
+                .map(UserBook::getMark) // UserBook 객체가 존재하면 mark 값을 가져옴
+                .orElseGet(() -> { // UserBook 객체가 없으면 (처음 읽는 책 등)
+                    log.info("userId: {}, bookId: {} 에 해당하는 UserBook 레코드가 없거나 mark가 null입니다.", userId, bookId);
+                    // EntityNotFoundException을 던지거나 null을 반환할 수 있습니다.
+                    // 컨트롤러에서 EntityNotFoundException을 처리하므로 여기서도 동일하게 처리하거나,
+                    // null을 반환하여 컨트롤러에서 mark가 없는 경우로 판단하도록 할 수 있습니다.
+                    // 여기서는 EntityNotFoundException을 발생시키도록 하여, 해당 UserBook이 없는 경우를 명확히 합니다.
+                    // 만약 UserBook은 있지만 mark만 없는 경우를 구분하고 싶다면 로직 수정 필요.
+                    // throw new EntityNotFoundException(String.format("UserBook (userId: %d, bookId: %d)을(를) 찾을 수 없습니다.", userId, bookId));
+                    return null; // UserBook이 없거나 mark가 null/비어있으면 null 반환 -> 컨트롤러에서 404 처리
+                });
+    }
+
 }
