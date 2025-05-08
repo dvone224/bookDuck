@@ -261,8 +261,8 @@ public class BookController {
                             log.info("***** Serving OPF File Content for '{}' (Book ID {}). Length: {}. Content:\n{}",
                                     internalPath, id, fileContent.length, contentForLogging);
                         } else {
-                            log.info("Serving text content of '{}' (Book ID {}). Length: {}. Logged content preview:\n{}",
-                                    internalPath, id, fileContent.length, contentForLogging);
+//                            log.info("Serving text content of '{}' (Book ID {}). Length: {}. Logged content preview:\n{}",
+//                                    internalPath, id, fileContent.length, contentForLogging);
                         }
                     } catch (Exception e) { // 문자열 변환 중 예외 발생 가능성 고려
                         log.warn("Could not convert content of '{}' (Book ID {}) to string for logging. Serving as binary. Length: {}",
@@ -528,6 +528,46 @@ public class BookController {
             log.error("페이지 표시 업데이트 중 예기치 않은 서버 오류 발생: userId={}, bookId={}",
                     request.getUserId(), request.getBookId(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("페이지 표시 업데이트 중 서버 내부 오류가 발생했습니다.");
+        }
+    }
+
+    @GetMapping("/mark")
+    public ResponseEntity<?> getUserBookMark(
+            @RequestParam("userId") Long userId,
+            @RequestParam("bookId") Long bookId) {
+
+        if (userId == null || bookId == null) {
+            log.warn("잘못된 요청 (GET /mark): userId 또는 bookId가 누락되었습니다. userId={}, bookId={}", userId, bookId);
+            return ResponseEntity.badRequest().body("필수 파라미터(userId, bookId)가 누락되었습니다.");
+        }
+
+        try {
+            log.info("페이지 표시 조회 요청 수신 (GET /mark): userId={}, bookId={}", userId, bookId);
+            String markCfi = userBookService.getUserBookMark(userId, bookId); // 서비스 메소드 호출
+
+            if (markCfi != null && !markCfi.trim().isEmpty()) {
+                // 성공적으로 mark 값을 찾은 경우, JSON 형태로 반환
+                // JavaScript에서 response.json()으로 파싱할 수 있도록 Map 또는 DTO 사용
+                java.util.Map<String, String> responseBody = new java.util.HashMap<>();
+                responseBody.put("mark", markCfi);
+                responseBody.put("userId", String.valueOf(userId)); // 부가 정보 (선택적)
+                responseBody.put("bookId", String.valueOf(bookId)); // 부가 정보 (선택적)
+                return ResponseEntity.ok(responseBody);
+            } else {
+                // mark 값이 없거나 비어있는 경우 (예: 처음 읽는 책)
+                log.info("저장된 페이지 표시 없음 (GET /mark): userId={}, bookId={}", userId, bookId);
+                // 404 Not Found 또는 빈 내용을 포함한 200 OK를 반환할 수 있음.
+                // 클라이언트에서 404를 처리하도록 하는 것이 더 명확할 수 있음.
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("저장된 페이지 표시(mark)가 없습니다.");
+            }
+        } catch (EntityNotFoundException e) { // UserBook 자체가 없는 경우
+            log.warn("페이지 표시 조회 실패 (GET /mark): 해당 UserBook을 찾을 수 없습니다. userId={}, bookId={}. 오류: {}",
+                    userId, bookId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        catch (Exception e) {
+            log.error("페이지 표시 조회 중 예기치 않은 서버 오류 발생 (GET /mark): userId={}, bookId={}", userId, bookId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("페이지 표시 조회 중 서버 내부 오류가 발생했습니다.");
         }
     }
 
