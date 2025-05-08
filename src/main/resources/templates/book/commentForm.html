@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>쪽지 작성</title>
+    <style>
+        .selected-text-preview { background-color: #f0f0f0; padding: 10px; border: 1px solid #ccc; margin-bottom: 15px; white-space: pre-wrap; }
+        textarea { width: 100%; min-height: 150px; }
+        .form-actions { margin-top: 15px; }
+        .error { color: red; font-size: 0.9em; }
+        .message.success { color: green; }
+        .message.error { color: red; }
+    </style>
+</head>
+<body>
+<h1><span th:text="${bookTitle}">책 제목</span>: 쪽지 작성</h1>
+
+<!-- 성공/에러 메시지 표시 (RedirectAttributes로 전달된 경우) -->
+<div th:if="${message}" class="message success" th:text="${message}"></div>
+<div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+
+<div th:if="${selectedText}">
+    <h3>선택한 내용:</h3>
+    <div class="selected-text-preview" th:text="${selectedText}"></div>
+</div>
+
+<!--
+    폼의 action은 @PostMapping("/comments")를 가리키도록 설정
+    th:object는 컨트롤러에서 model.addAttribute("commentForm", ...)으로 넘겨준 객체 이름과 일치
+-->
+<form th:action="@{/comments}" th:object="${commentForm}" method="post">
+    <!-- 숨겨진 필드로 주요 정보 전달 (bookId, cfi, chapterHref는 DTO에 이미 포함되어 있음) -->
+    <input type="hidden" th:field="*{bookId}" />
+    <input type="hidden" th:field="*{cfi}" />
+    <input type="hidden" th:field="*{chapterHref}" />
+    <!-- selectedText는 DTO에 포함시키지 않고, 사용자가 입력하는 comment만 DTO의 comment 필드와 바인딩 -->
+
+    <div>
+        <label for="comment">쪽지 내용:</label><br/>
+        <textarea id="comment" th:field="*{comment}" placeholder="여기에 쪽지 내용을 입력하세요..." required></textarea>
+        <!-- th:if와 th:errors를 사용하여 유효성 검사 에러 메시지 표시 (Spring Validation 사용 시) -->
+        <div th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" class="error"></div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit">저장</button>
+        <!-- 취소 버튼: 이전 페이지(뷰어)로 돌아가기. bookId를 사용. -->
+        <a th:href="@{'/viewer/' + ${bookId}}">취소</a>
+    </div>
+</form>
+
+</body>
+</html>

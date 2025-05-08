@@ -141,7 +141,7 @@ public class BookController {
         return "book/booklist";
     }
 
-    @GetMapping("/read/{id}")
+    @GetMapping("/viewer/{id}")
     public String ebookReaderPage(@PathVariable Long id, Model model) {
         model.addAttribute("bookId", id);
         Book book = bookService.findById(id);
