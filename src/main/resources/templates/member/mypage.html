@@ -189,42 +189,54 @@
     <!-- 프로필 정보 -->
     <div class="profile_img_box">
         <div class="profile_img">
-            <img th:src="${(loginuser != null and loginuser.img != null and !loginuser.img.isEmpty()) ? '/image/getimg?fileName=' + #uris.escapePath(loginuser.img) : '/img/bookduck_login.png'}"
+            <!-- 메인 프로필 이미지 -->
+            <img th:src="${(loginuser != null and loginuser.img != null and !loginuser.img.isEmpty()) ?
+                           (loginuser.img.startsWith('http') ? loginuser.img : '/image/getimg?fileName=' + #uris.escapePath(loginuser.img)) :
+                           '/img/bookduck_login.png'}"
                  alt="Profile Image" id="userProfileImage"
                  onerror="this.onerror=null; this.src='/img/bookduck_login.png';">
-            <img id="useroriginimg" src="/img/bookduck_login.png" alt="Profile Image">
-            <img src="/img/bookduck_login.png" alt="Profile Image">
-            <input type="hidden" id="originImg" th:value="${session.loginuser.img}">
+
+            <!-- JS로 제어될 수 있는 원본 이미지 (필요시 사용, 초기에는 숨김 또는 JS로 관리) -->
+            <img id="useroriginimg"
+                 th:src="${(loginuser != null and loginuser.img != null and !loginuser.img.isEmpty()) ?
+                           (loginuser.img.startsWith('http') ? loginuser.img : '/image/getimg?fileName=' + #uris.escapePath(loginuser.img)) :
+                           '/img/bookduck_login.png'}"
+                 alt="Original Profile Image"
+                 style="display:none;"
+            onerror="this.onerror=null; this.src='/img/bookduck_login.png';">
+
+            <!-- 정적 플레이스홀더 (위의 userProfileImage가 기본 이미지를 처리하므로 중복될 수 있음, 필요 없다면 제거 가능) -->
+            <!-- <img src="/img/bookduck_login.png" alt="Profile Image"> -->
+
+            <input type="hidden" id="originImg" th:value="${loginuser?.img}"> <!-- 컨트롤러에서 전달된 loginuser 객체의 img 사용 -->
         </div>
         <div class="btn_circle yellow fix" onclick="location.href='/userupdate'">
             <i class="fa-solid fa-pen icon_white"></i>
         </div>
     </div>
-    <div class="nickname dark_blue2" th:text="${loginuser.nickName} + '님'">닉네임님</div>
+    <div class="nickname dark_blue2" th:text="${loginuser?.nickName != null ? loginuser.nickName + '님' : '로그인 정보 없음'}">닉네임님</div>
 
     <!-- MY CREW 섹션 -->
     <div class="my_crew box light_blue">
         <div class="title dark_blue2">MY CREW<div class="line_long dark_blue1"></div></div>
         <div class="box_temp">
-            <!-- 그룹 목록 미리보기 (엔티티 포함 DTO 기준 접근) -->
+            <!-- 그룹 목록 미리보기 -->
             <div class="crew_list" th:if="${not #lists.isEmpty(myGroupsPreview)}">
                 <div class="crew_one" th:each="groupView : ${myGroupsPreview}" th:data-group-id="${groupView.group.id}">
                     <div class="crew_book_img">
-                        <!-- 그룹 대표 이미지 (Lazy 로딩 주의!) -->
-                        <img th:src="${(groupView.group != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null) ? groupView.group.books[0].book.cover : '/img/default_crew_icon.png'}"
-                             alt="Crew Image" src="/img/default_crew_icon.png"
+                        <img th:src="${(groupView.group != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null and groupView.group.books[0].book.cover != null) ?
+                                       (groupView.group.books[0].book.cover.startsWith('http') ? groupView.group.books[0].book.cover : '/image/getimg?fileName=' + #uris.escapePath(groupView.group.books[0].book.cover) ) :
+                                       '/img/default_crew_icon.png'}"
+                             alt="Crew Image"
                              onerror="this.onerror=null; this.src='/img/default_crew_icon.png';">
                     </div>
                     <div class="crew_tag">CREW</div>
-                    <!-- 그룹 이름 (groupView.group.name 사용) -->
                     <div class="crew_name" th:text="${groupView.group?.name ?: '이름 없음'}" th:title="${groupView.group?.name}">그룹 이름</div>
                 </div>
             </div>
             <div class="no-content" th:if="${#lists.isEmpty(myGroupsPreview)}">
                 <p>가입한 그룹이 없습니다.</p>
             </div>
-
-            <!-- 그룹 더보기 버튼: 페이지 이동 -->
             <div class="box_side" th:if="${hasMoreGroups}">
                 <button class="more btn_mini blue" onclick="location.href='/group/list'">더보기</button>
             </div>
@@ -239,16 +251,18 @@
             <div class="book_list" th:if="${not #lists.isEmpty(myBooksPreview)}">
                 <div class="book_one" th:each="book : ${myBooksPreview}">
                     <div class="book_img">
-                        <img th:src="${book.cover}" th:alt="${book.title}" src="/img/default_book_cover.png" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
+                        <img th:src="${(book.cover != null and !book.cover.isEmpty()) ?
+                                       (book.cover.startsWith('http') ? book.cover : '/image/getimg?fileName=' + #uris.escapePath(book.cover)) :
+                                       '/img/default_book_cover.png'}"
+                             th:alt="${book.title}"
+                             onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
                     </div>
-                    <div class="book_one_title" th:title="${book.title}"></div>
+                    <div class="book_one_title" th:text="${book.title}" th:title="${book.title}"></div> <!-- 책 제목 표시 추가 -->
                 </div>
             </div>
             <div class="no-content" th:if="${#lists.isEmpty(myBooksPreview)}">
                 <p>내 서재에 등록된 책이 없습니다.</p>
             </div>
-
-            <!-- 책 더보기 버튼: 모달 호출 -->
             <div class="box_side" th:if="${hasMoreBooks}">
                 <button class="more btn_mini yellow" onclick="openModal('book')">더보기</button>
             </div>
@@ -267,8 +281,7 @@
         <span class="close-button" onclick="closeModal('bookModal')">×</span>
         <h3 class="modal-title">내 서재</h3>
         <div id="bookListContainer" class="modal-list">
-            <!-- 책 목록이 여기에 동적으로 삽입됩니다 -->
-            <div class="loader" style="display: none;"></div> <!-- 로딩 스피너 -->
+            <div class="loader" style="display: none;"></div>
         </div>
     </div>
 </div>
@@ -279,27 +292,25 @@
         <span class="close-button" onclick="closeModal('groupModal')">×</span>
         <h3 class="modal-title" id="groupModalTitle">그룹 도서 목록</h3>
         <div id="groupListContainer" class="modal-list">
-            <!-- 책 목록이 여기에 동적으로 삽입됩니다 -->
-            <div class="loader" style="display: none;"></div> <!-- 로딩 스피너 -->
+            <div class="loader" style="display: none;"></div>
         </div>
     </div>
 </div>
 
 <!-- ======================= JavaScript ======================= -->
 <script>
-    // 모달 열기 함수 (책 및 그룹 공용)
     function openModal(type, groupId, groupName) {
         let modalId, listContainerId, apiUrl, title;
 
         if (type === 'book') {
             modalId = 'bookModal';
             listContainerId = 'bookListContainer';
-            apiUrl = '/api/my-books';
+            apiUrl = '/api/my-books'; // 이 API는 책 객체 리스트를 반환 (id, title, cover, writer 포함)
             title = '내 서재';
         } else if (type === 'group') {
             modalId = 'groupModal';
             listContainerId = 'groupListContainer';
-            apiUrl = `/group/api/group/${groupId}/books`;
+            apiUrl = `/group/api/group/${groupId}/books`; // 이 API는 책 객체 리스트를 반환 (cover, title 등 포함)
             title = `${groupName || '그룹'} 도서 목록`;
         } else {
             console.error('Unsupported modal type:', type);
@@ -313,14 +324,24 @@
         if (!loader) {
             loader = document.createElement('div');
             loader.className = 'loader';
-            listContainer.appendChild(loader);
+            // loader는 listContainer의 첫 번째 자식으로 추가하거나, 특정 위치에 추가
+            if (listContainer.firstChild) {
+                listContainer.insertBefore(loader, listContainer.firstChild);
+            } else {
+                listContainer.appendChild(loader);
+            }
         }
 
-        Array.from(listContainer.children).forEach(child => {
-            if (!child.classList.contains('loader')) {
-                listContainer.removeChild(child);
-            }
-        });
+        // 기존 목록(ul) 제거 (로더 제외)
+        const existingUl = listContainer.querySelector('ul.modal-book-list');
+        if (existingUl) {
+            listContainer.removeChild(existingUl);
+        }
+        const existingNoBooksMessage = listContainer.querySelector('.modal-no-books');
+        if (existingNoBooksMessage) {
+            listContainer.removeChild(existingNoBooksMessage);
+        }
+
         loader.style.display = 'block';
         modalTitle.textContent = title;
         modal.style.display = 'block';
@@ -334,45 +355,43 @@
             })
             .then(data => {
                 loader.style.display = 'none';
-
                 if (!data || data.length === 0) {
-                    listContainer.innerHTML = '<div class="modal-no-books">등록된 도서가 없습니다.</div>';
+                    const noBooksDiv = document.createElement('div');
+                    noBooksDiv.className = 'modal-no-books';
+                    noBooksDiv.textContent = (type === 'book' ? '내 서재에 등록된 책이 없습니다.' : '등록된 그룹 도서가 없습니다.');
+                    listContainer.appendChild(noBooksDiv);
                     return;
                 }
-
-                renderModalBookList(data, listContainer);
+                renderModalBookList(data, listContainer, type); // type 전달
             })
             .catch(error => {
                 console.error(`Error fetching ${type} data:`, error);
                 loader.style.display = 'none';
-                Array.from(listContainer.children).forEach(child => {
-                    if (!child.classList.contains('loader')) {
-                        listContainer.removeChild(child);
-                    }
-                });
-                listContainer.innerHTML = `<div class="modal-no-books">${error.message || '오류가 발생했습니다.'}</div>`;
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'modal-no-books'; // 동일한 스타일 사용
+                errorDiv.textContent = error.message || '오류가 발생했습니다.';
+                listContainer.appendChild(errorDiv);
             });
     }
 
-    // 모달 닫기 함수
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.style.display = 'none';
             const listContainer = modal.querySelector('.modal-list');
             if (listContainer) {
-                Array.from(listContainer.children).forEach(child => {
-                    if (!child.classList.contains('loader')) {
-                        listContainer.removeChild(child);
-                    }
-                });
+                // 모달 닫을 때 ul.modal-book-list 와 .modal-no-books 메시지 제거
+                const ul = listContainer.querySelector('ul.modal-book-list');
+                if (ul) listContainer.removeChild(ul);
+                const noBooksMessage = listContainer.querySelector('.modal-no-books');
+                if (noBooksMessage) listContainer.removeChild(noBooksMessage);
+
                 const loader = listContainer.querySelector('.loader');
                 if (loader) loader.style.display = 'none';
             }
         }
     }
 
-    // 모달 외부 클릭 시 닫기
     window.onclick = function(event) {
         const bookModal = document.getElementById('bookModal');
         const groupModal = document.getElementById('groupModal');
@@ -383,25 +402,30 @@
         }
     }
 
-    // 그룹 책 목록 렌더링 함수 (list.html 기반)
-    function renderModalBookList(books, listContainer) {
+    function renderModalBookList(books, listContainer, type) { // type 파라미터 추가
         if (!listContainer) return;
 
-        if (!books || books.length === 0) {
-            listContainer.innerHTML = '<div class="modal-no-books">등록된 그룹 도서가 없습니다.</div>';
-            return;
-        }
-
         const ul = document.createElement('ul');
-        ul.className = 'modal-book-list';
+        ul.className = 'modal-book-list'; // CSS 클래스명 일치 확인
 
         books.forEach(book => {
             const li = document.createElement('li');
             li.className = 'modal-book-item';
 
             const img = document.createElement('img');
-            img.src = book.cover ? book.cover : '/img/default_book_cover.png';
+            let coverUrl = book.cover || '/img/default_book_cover.png';
+            if (coverUrl && !coverUrl.startsWith('http') && !coverUrl.startsWith('/image/getimg')) {
+                // 로컬 파일명으로 간주될 수 있는 경우 (S3 URL이 아니면서, 이미 /image/getimg 형식이 아닌 경우)
+                // 이 부분은 API 응답의 cover 필드 형식에 따라 조정 필요
+                // 현재 API(/api/my-books, /group/api/group/{groupId}/books)는 이미 완전한 URL 또는 기본 이미지 경로를 반환한다고 가정
+            }
+            // API 응답의 cover가 이미 S3 URL이거나 '/image/getimg?fileName=...' 형태, 또는 기본 이미지 경로라고 가정
+            img.src = coverUrl.startsWith('http') ? coverUrl : (coverUrl.includes('/image/getimg') ? coverUrl : (coverUrl === '/img/default_book_cover.png' ? coverUrl : '/image/getimg?fileName=' + encodeURIComponent(coverUrl)));
+
+
             img.alt = book.title || '책 표지';
+            img.onerror = function() { this.onerror=null; this.src='/img/default_book_cover.png'; };
+
 
             const span = document.createElement('span');
             span.textContent = book.title || '제목 없음';
@@ -411,22 +435,14 @@
             li.appendChild(span);
             ul.appendChild(li);
         });
-
-        Array.from(listContainer.children).forEach(child => {
-            if (!child.classList.contains('loader')) {
-                listContainer.removeChild(child);
-            }
-        });
         listContainer.appendChild(ul);
     }
 
-    // 그룹 클릭 이벤트 리스너
     const crewList = document.querySelector('.crew_list');
     if (crewList) {
         crewList.addEventListener('click', function(event) {
             const crewItem = event.target.closest('.crew_one');
             if (!crewItem) return;
-
             const groupId = crewItem.dataset.groupId;
             const groupName = crewItem.querySelector('.crew_name')?.textContent || '그룹';
             if (groupId) {
@@ -437,23 +453,36 @@
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
-<script>
-    const originImg = document.getElementById('originImg').value;
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+        const originImgValue = $('#originImg').val();
 
-    if (originImg.length != 0) {
-        // 이미지 URL 설정
-        $('#useroriginimg')
-            .attr("src", "/image/getimg?fileName=" + encodeURIComponent(originImg))
-            .on("load", function () {
-                //console.log("Image loaded successfully: " + originImg);
-            })
-            .on("error", function () {
-                console.log("Image failed to load: " + originImg);
-                $(this).attr("src", "/img/bookduck_login.png");
-            });
-    } else {
-        $('#useroriginimg').attr("src", "/img/bookduck_login.png"); // 기본 이미지 설정
-    }
+        if (originImgValue && originImgValue.length !== 0) {
+            let imgSrc = "";
+            if (originImgValue.startsWith('http')) {
+                imgSrc = originImgValue; // Full URL
+            } else {
+                imgSrc = "/image/getimg?fileName=" + encodeURIComponent(originImgValue); // Local filename
+            }
+
+            $('#useroriginimg')
+                .attr("src", imgSrc)
+                .on("error", function () {
+                    console.log("User origin image failed to load: " + imgSrc);
+                    $(this).attr("src", "/img/bookduck_login.png");
+                });
+
+            // 만약 userProfileImage도 JS로 설정하고 싶다면 (Thymeleaf SSR 대신)
+            // $('#userProfileImage').attr("src", imgSrc).on("error", function() { $(this).attr("src", "/img/bookduck_login.png"); });
+
+        } else {
+            $('#useroriginimg').attr("src", "/img/bookduck_login.png");
+            // $('#userProfileImage').attr("src", "/img/bookduck_login.png");
+        }
+    });
+    /*]]>*/
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c66c908c7eb0bd',t:'MTc0NjY4MDc0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c69c4798f67bcf',t:'MTc0NjY4MjcwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<!-- Cloudflare 스크립트는 문제와 직접적인 관련이 없으므로 제거하거나 유지 (원본대로) -->
+</body>
 </html>
