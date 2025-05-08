@@ -35,7 +35,7 @@ public class BookSearchController {
         int effectiveSize = Math.min(Math.max(size, 1), 50); // 알라딘 API 최대 50개 제한 고려
 
         // 서비스 호출 시 모든 파라미터 전달
-        return aladinService.searchBooks(query, page, effectiveSize, categoryId, sort);
+         return aladinService.searchBooks(query, page, effectiveSize, categoryId, sort);
     }
 
 //    @GetMapping("/bestsellers")

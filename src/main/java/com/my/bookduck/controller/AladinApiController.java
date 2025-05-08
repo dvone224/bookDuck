@@ -101,4 +101,43 @@ public class AladinApiController {
                 });
     }
 
+    @PostMapping("/ebooks/fetch-by-keyword")
+    public Mono<ResponseEntity<String>> fetchEBooksByKeyword(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "Keyword") String queryType, // Keyword, Title, Publisher 등
+            @RequestParam(defaultValue = "0") int categoryId,         // 0이면 전체 카테고리
+            @RequestParam(defaultValue = "10") int maxPages) {       // 한 번에 가져올 최대 페이지 수 (너무 크면 API 부하 및 시간 소요)
+        log.info("알라딘 eBook 대량 검색 및 저장 요청 수신: keyword={}, queryType={}, categoryId={}, maxPages={}",
+                keyword, queryType, categoryId, maxPages);
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Mono.just(ResponseEntity.badRequest().body("검색어(keyword)는 필수입니다."));
+        }
+        if (maxPages <= 0 || maxPages > 50) { // 예시: 최대 50페이지 (5000건) 정도로 제한
+            return Mono.just(ResponseEntity.badRequest().body("maxPages는 1에서 50 사이의 값이어야 합니다."));
+        }
+
+        return aladinService.fetchAndStoreEBooksBySearch(keyword, queryType, categoryId, maxPages)
+                .map(result -> {
+                    String messageBody = String.format(
+                            "알라딘 eBook 대량 검색(키워드:%s, 타입:%s, CatId:%d) 작업 완료. " +
+                                    "시도한 마지막 페이지: %d, 총 API 아이템: %d, 신규 저장: %d, 업데이트: %d",
+                            keyword, queryType, categoryId,
+                            result.getLastAttemptedPage(), // SyncResult에 이 필드가 적절히 채워져야 함
+                            result.getTotalApiItems(), result.getSavedCount(), result.getUpdatedCount()
+                    );
+                    if (result.isErrorOccurred()) {
+                        log.error("eBook 대량 검색 작업 중 오류 발생. 상세: {}", messageBody);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageBody + " (오류 발생)");
+                    }
+                    log.info(messageBody);
+                    return ResponseEntity.ok(messageBody);
+                })
+                .onErrorResume(error -> {
+                    log.error("알라딘 eBook 대량 검색 작업 최종 에러", error);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("eBook 대량 검색 작업 중 예상치 못한 오류 발생: " + error.getMessage()));
+                });
+    }
+
 }
