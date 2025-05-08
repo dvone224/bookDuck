@@ -843,6 +843,7 @@ form{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 0px 10px;
 }
 
 .member_img_box{
@@ -887,6 +888,10 @@ form{
     color: var(--main-color-dark);
 }
 
+.form-group, .book-section{
+    width: 100%;
+}
+
     </style>
 </head>
 <body>
@@ -910,7 +915,7 @@ form{
             <div class="form-group">
                 <label for="groupName"></label>
                 <!-- 서버에서 전달된 이전 입력값(submittedGroupName) 또는 현재 그룹 이름 사용 -->
-                <input type="text" class="input_long blue_line" id="groupName" name="groupName" th:value="${groupName ?: group.name}" required>
+                <input type="text" class="input_long blue_line" id="groupName" name="groupName" th:value="${groupName ?: group.name}"placeholder="수정할 그룹 이름을 입력하세요" required>
                 <span id="groupNameCheckResult" class="name-check-result"></span>
             </div>
 
@@ -943,12 +948,11 @@ form{
 
             <!-- 그룹 도서 목록 및 추가 섹션 -->
             <div class="book-section">
-                <label>그룹 도서 목록</label>
-
+                <label></label>
                 <!-- 새 책 추가 검색 (항상 표시됨, 리더에게만 활성화할 경우 input에 disabled 추가 가능) -->
                 <div class="form-group book-search-container">
-                    <label for="bookSearchInput">추가할 책 검색 (보유 도서 내)</label>
-                    <input type="text" id="bookSearchInput" placeholder="추가할 책 제목을 검색하세요...">
+                    <label for="bookSearchInput"></label>
+                    <input class="input_long yellow_line" type="text" id="bookSearchInput" placeholder="추가할 도서를 입력하세요">
                     <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
                     <ul id="bookSearchResults"></ul>
                 </div>
