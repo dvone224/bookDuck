@@ -305,6 +305,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     const GLOBAL_BOOK_ID = /*[[${bookId}]]*/ null;
+    const GLOBAL_USER_ID = /*[[${loginuser != null ? loginuser.id : null}]]*/ null;
     // 이 부분이 EPUB 내부 파일 서빙 엔드포인트의 기본 경로여야 합니다.
     const GLOBAL_BOOK_URL_BASE = /*[[@{/book/api/epub-content/}]]*/ '/fallback-base-path/';
 

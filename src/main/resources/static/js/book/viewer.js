@@ -13,30 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSettingsButton = document.getElementById('close-settings');
     const selectionActionButton = document.getElementById('selection-action-button');
 
-    const settingsButtonsContainer = settingsContentBottom.querySelector('.setting-group:first-of-type');
-    const tocButtonInSettings = settingsButtonsContainer.children[1];
-    const notesButtonInSettings = settingsButtonsContainer.children[2];
-    const viewSettingsButtonInSettings = settingsButtonsContainer.children[3];
+    const settingsButtonsContainer = settingsContentBottom ? settingsContentBottom.querySelector('.setting-group:first-of-type') : null;
+    const tocButtonInSettings = settingsButtonsContainer ? settingsButtonsContainer.children[1] : null;
+    const notesButtonInSettings = settingsButtonsContainer ? settingsButtonsContainer.children[2] : null;
+    const viewSettingsButtonInSettings = settingsButtonsContainer ? settingsButtonsContainer.children[3] : null;
+
 
     // --- EPUB.js Variables ---
     let book;
     let rendition;
 
     // --- Thymeleaf Variables ---
+    // GLOBAL_BOOK_ID와 GLOBAL_USER_ID는 HTML의 <script th:inline="javascript"> 블록에서 이미 const로 선언됨
+    // GLOBAL_BOOK_URL_TEMPLATE도 마찬가지
     const bookId = (typeof GLOBAL_BOOK_ID !== 'undefined' && GLOBAL_BOOK_ID !== null) ? String(GLOBAL_BOOK_ID) : null;
-    const bookUrl = (typeof GLOBAL_BOOK_URL_TEMPLATE !== 'undefined' && bookId !== null) ? GLOBAL_BOOK_URL_TEMPLATE : null;
+    const userId = (typeof GLOBAL_USER_ID !== 'undefined' && GLOBAL_USER_ID !== null) ? String(GLOBAL_USER_ID) : null;
+    // bookUrl은 GLOBAL_BOOK_URL_TEMPLATE을 사용합니다.
+    const bookUrl = (typeof GLOBAL_BOOK_URL_TEMPLATE !== 'undefined' && GLOBAL_BOOK_URL_TEMPLATE !== null) ? GLOBAL_BOOK_URL_TEMPLATE : null;
+
 
     // --- State Variables ---
     let isTocVisible = false;
     let areSettingsVisible = false;
     let settingsTimeout;
-    let lastMouseUpPosition = {x: 0, y: 0}; // 페이지 클릭 위치 판단에 사용
+    let lastMouseUpPosition = {x: 0, y: 0};
     let isMouseDown = false;
     let isDragging = false;
     let startDragPosition = {x: 0, y: 0};
     const DRAG_THRESHOLD = 5;
 
-    // ★★★ 쪽지 기능 관련 상태 변수 (추가) ★★★
     let currentSelectionCfiForComment = null;
     let currentChapterHrefForComment = null;
     let currentSelectedTextForComment = null;
@@ -71,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const attachIframeListeners = () => {
         if (!rendition || !rendition.manager || !rendition.manager.views) {
-            console.warn("[WARN] attachIframeListeners: Rendition or views not ready.");
+            console.warn("[WARN] attachIframeListeners: Rendition 또는 views가 준비되지 않았습니다.");
             return;
         }
         let currentViewContents;
@@ -90,13 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
             iframeDoc.addEventListener('mousemove', handleIframeMouseMove);
             iframeDoc.addEventListener('mouseup', handleIframeMouseUp);
         } else {
-            console.warn("[WARN] attachIframeListeners: Could not get iframe document.");
+            console.warn("[WARN] attachIframeListeners: iframe 문서를 가져올 수 없습니다.");
         }
     };
 
     function handleIframeMouseDown(event) {
         isMouseDown = true;
-        isDragging = false; // 드래그 시작 시 false로 초기화
+        isDragging = false;
         startDragPosition = {x: event.clientX, y: event.clientY};
     }
 
@@ -106,15 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const dy = Math.abs(event.clientY - startDragPosition.y);
         if (!isDragging && (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD)) {
             isDragging = true;
-            // 드래그 시작 시 액션 버튼이 보이면 숨김
             if (selectionActionButton && selectionActionButton.style.display === 'block') {
                 selectionActionButton.style.display = 'none';
             }
         }
     }
 
-    // handleIframeMouseUp은 주로 lastMouseUpPosition 설정과
-    // 드래그 후 '쪽지 쓰기' 버튼 표시에 관여합니다.
     function handleIframeMouseUp(event) {
         let iframeEl = null;
         try {
@@ -124,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 iframeEl = event.view.frameElement;
             }
         } catch (e) {
-            console.warn("[WARN] handleIframeMouseUp: Error accessing frameElement:", e);
+            console.warn("[WARN] handleIframeMouseUp: frameElement 접근 중 오류:", e);
         }
 
         if (iframeEl) {
@@ -144,10 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const wasDraggingOnMouseUp = isDragging;
         isMouseDown = false;
-        // isDragging 상태는 rendition.on('click')에서 판단 후 필요시 초기화
 
         setTimeout(() => {
-            // currentSelectedTextForComment는 rendition.on("selected")에서 업데이트됨
             if (wasDraggingOnMouseUp && currentSelectedTextForComment && selectionActionButton) {
                 let buttonTop = lastMouseUpPosition.y + 15;
                 let buttonLeft = lastMouseUpPosition.x - (selectionActionButton.offsetWidth / 2);
@@ -173,43 +173,91 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectionActionButton.style.top = `${buttonTop}px`;
                 selectionActionButton.style.left = `${buttonLeft}px`;
                 selectionActionButton.style.display = 'block';
-                selectionActionButton.textContent = `쪽지 쓰기`; // 버튼 텍스트 변경
+                selectionActionButton.textContent = `쪽지 쓰기`;
             }
         }, 0);
     }
 
+    // ★★★ CFI를 백엔드로 저장하는 함수 (CSRF 관련 코드 제거) ★★★
+    async function saveCurrentPageMark(cfiToSave) {
+        if (!userId || !bookId || !cfiToSave) {
+            console.warn("현재 페이지 표시를 저장할 수 없습니다: userId, bookId 또는 CFI 정보가 누락되었습니다.", {userId, bookId, cfiToSave});
+            return;
+        }
+
+        console.log(`[DEBUG] 페이지 표시 저장 시도: CFI=${cfiToSave}, bookId=${bookId}, userId=${userId}`);
+
+        try {
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            // CSRF 토큰 관련 헤더 추가 로직 제거
+
+            const response = await fetch('/book/mark', { // 백엔드 API 엔드포인트 (프로젝트에 맞게 수정)
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    userId: userId,
+                    bookId: bookId,
+                    mark: cfiToSave
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('페이지 표시 저장 실패 (백엔드):', response.status, errorText);
+            } else {
+                console.log('페이지 표시가 백엔드에 성공적으로 저장되었습니다:', cfiToSave);
+            }
+        } catch (error) {
+            console.error('페이지 표시 저장 중 네트워크 오류 또는 JavaScript 오류 발생:', error);
+        }
+    }
+
 
     const initEpubViewer = () => {
-        console.log("[DEBUG] initEpubViewer: Function called.");
-        if (!bookUrl || !bookId) {
-            if (viewerElement) viewerElement.innerHTML = `<p>Book URL/ID missing.</p>`;
+        console.log("[DEBUG] initEpubViewer: 함수 호출됨.");
+        if (!bookUrl || !bookId) { // bookUrl은 GLOBAL_BOOK_URL_TEMPLATE을 사용
+            if (viewerElement) viewerElement.innerHTML = `<p>책 URL (${bookUrl}) 또는 ID (${bookId})가 없습니다.</p>`;
             hideLoading();
             return;
         }
         showLoading();
         try {
-            book = ePub(bookUrl);
-            // if (bookUrl) { /* Manual fetch (optional) */ } // 이 줄은 특별한 의미가 없어 보임
+            console.log("[DEBUG] ePub 객체 생성 시도, URL:", bookUrl);
+            book = ePub(bookUrl); // ePub(url, options) 형태. options는 필요시 추가.
             if (book?.opened?.then) book.opened.catch(err => console.error("book.opened REJECTED:", err));
 
             if (book?.ready?.then) {
                 book.ready.then(() => {
+                    console.log("[DEBUG] Book ready. Rendition 생성 시도.");
                     rendition = book.renderTo(viewerElement, {
-                        width: "100%", height: "100%", flow: "paginated", allowScriptedContent: false,
+                        width: "100%", height: "100%", flow: "paginated", allowScriptedContent: false, // 보안상 false 권장
                     });
                     if (!rendition) {
-                        throw new Error("Rendition creation failed.");
+                        throw new Error("Rendition 생성 실패.");
                     }
+                    console.log("[DEBUG] Rendition 생성 완료.");
 
                     rendition.on("relocated", loc => {
-                        localStorage.setItem(`epub-location-${bookId}`, loc.start.cfi);
+                        const currentCfi = loc.start.cfi;
+                        localStorage.setItem(`epub-location-${bookId}`, currentCfi);
+                        console.log(`[DEBUG] Relocated. CFI: ${currentCfi}, Chapter Href: ${loc.start.href}`);
+
+
                         if (loc && loc.start && loc.start.href) {
                             currentChapterHrefForComment = loc.start.href;
                         }
-                        setTimeout(attachIframeListeners, 50);
+
+                        // ★★★ 페이지 이동 시 CFI를 백엔드에 저장 ★★★
+                        if (currentCfi && userId && bookId) {
+                            saveCurrentPageMark(currentCfi);
+                        }
+                        // ★★★ CFI 저장 로직 끝 ★★★
+
+                        setTimeout(attachIframeListeners, 50); // iframe 이벤트 리스너 재부착
                     });
 
-                    // ★★★ rendition.on("selected", ...) 쪽지 기능 위한 상태 변수 업데이트 ★★★
                     rendition.on("selected", (cfiRange, contents) => {
                         const sel = contents.window.getSelection();
                         const txt = sel.toString().trim();
@@ -220,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (rendition && rendition.currentLocation() && rendition.currentLocation().start) {
                                 currentChapterHrefForComment = rendition.currentLocation().start.href;
                             }
-                            console.log("[DEBUG] Selected:", {
+                            console.log("[DEBUG] 선택됨:", {
                                 cfi: cfiRange,
                                 text: txt,
                                 chapter: currentChapterHrefForComment
@@ -231,53 +279,43 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (selectionActionButton?.style.display === 'block') {
                                 selectionActionButton.style.display = 'none';
                             }
-                            console.log("[DEBUG] Selection cleared.");
+                            console.log("[DEBUG] 선택 해제됨.");
                         }
                     });
-
 
                     rendition.on('displayed', (section) => {
                         if (section && section.href) {
                             currentChapterHrefForComment = section.href;
-                            console.log("[DEBUG] Displayed new section, chapterHref:", currentChapterHrefForComment);
+                            console.log("[DEBUG] 새 섹션 표시됨, chapterHref:", currentChapterHrefForComment);
                         }
                         setTimeout(attachIframeListeners, 100);
                     });
 
-                    // ★★★ rendition.on('click', ...) 페이지 이동 로직 원복 ★★★
-                    // 이 부분은 초기 제공 코드의 로직을 따릅니다.
-                    // 즉, iframe 내부의 클릭 좌표가 아닌, lastMouseUpPosition (전체 페이지 기준 좌표)를 사용합니다.
                     rendition.on('click', function handleRenditionClick(event) {
                         const clickWasDragEnd = isDragging;
                         if (clickWasDragEnd) {
-                            isDragging = false; // 드래그였으면 다음 클릭을 위해 isDragging 리셋
-                            return; // 드래그 후의 클릭은 페이지 넘김/설정 토글을 하지 않음
+                            isDragging = false;
+                            return;
                         }
 
-                        // currentView는 이 로직에서 직접 사용되지 않지만, 참조를 위해 남겨둘 수 있음
-                        // let currentView = rendition?.manager?.current ? rendition.manager.current() : rendition?.manager?.views?.first();
                         if (!rendition || !rendition.currentLocation()) return;
 
                         const btnVisible = selectionActionButton?.style.display === 'block';
-                        // 쪽지 쓰기 버튼이 보이고, 클릭 대상이 버튼 자신이거나 그 자식 요소가 *아닌 경우*에만 버튼을 숨김.
-                        // 그리고 페이지 넘김/설정 토글 로직으로 넘어가지 않도록 return.
                         if (btnVisible && event.target !== selectionActionButton && !selectionActionButton.contains(event.target)) {
                             if (selectionActionButton) selectionActionButton.style.display = 'none';
                             return;
                         }
-                        // 쪽지 쓰기 버튼이 보이고, 클릭 대상이 버튼 자신이거나 그 자식 요소인 경우, 아무것도 안 함 (버튼의 자체 클릭 이벤트가 처리).
                         if (btnVisible && (event.target === selectionActionButton || selectionActionButton.contains(event.target))) {
                             return;
                         }
 
                         const origEvent = event.originalEvent || event;
                         if (origEvent.target.closest('#settings-bar')) return;
-                        if (origEvent.target.closest('a[href]')) return; // 링크 클릭은 EPUB.js가 처리
+                        if (origEvent.target.closest('a[href]')) return;
 
-                        // 페이지 넘김 로직 (초기 제공 코드 기준)
-                        const clickX_page = lastMouseUpPosition.x; // mouseup 시점의 전체 페이지 x 좌표
+                        const clickX_page = lastMouseUpPosition.x;
                         const scrollX = window.scrollX || window.pageXOffset;
-                        const clickX_viewport = clickX_page - scrollX; // 뷰포트 기준 x 좌표
+                        const clickX_viewport = clickX_page - scrollX;
                         const vpWidth = window.innerWidth;
 
                         if (clickX_viewport < vpWidth / 3) {
@@ -291,44 +329,50 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
 
-                    return rendition.display();
+                    console.log("[DEBUG] Rendition.display() 호출 시도.");
+                    return rendition.display(); // 초기 위치 표시
                 })
                     .then((section) => {
                         hideLoading();
+                        console.log("[DEBUG] 책 초기 표시 완료.");
                         loadToc();
                         loadPersistentSettings();
                         if (section && section.href) {
                             currentChapterHrefForComment = section.href;
-                            console.log("[DEBUG] Initial display, chapterHref:", currentChapterHrefForComment);
+                            console.log("[DEBUG] 초기 표시, chapterHref:", currentChapterHrefForComment);
                         } else if (rendition && rendition.currentLocation() && rendition.currentLocation().start) {
                             currentChapterHrefForComment = rendition.currentLocation().start.href;
-                            console.log("[DEBUG] Initial display (fallback), chapterHref:", currentChapterHrefForComment);
+                            console.log("[DEBUG] 초기 표시 (폴백), chapterHref:", currentChapterHrefForComment);
                         }
-                        setTimeout(attachIframeListeners, 100);
-                        if (book.packaging?.metadata) console.log("Book rendered:", book.packaging.metadata.title);
+                        setTimeout(attachIframeListeners, 100); // 초기 로드 후 iframe 리스너 부착
+                        if (book.packaging?.metadata) console.log("책 렌더링됨:", book.packaging.metadata.title);
+
                         const lastLoc = localStorage.getItem(`epub-location-${bookId}`);
-                        if (lastLoc) return rendition.display(lastLoc);
+                        if (lastLoc) {
+                            console.log("[DEBUG] 저장된 위치로 이동 시도:", lastLoc);
+                            return rendition.display(lastLoc);
+                        }
                     })
                     .catch(err => {
-                        console.error("EPUB processing chain error:", err);
+                        console.error("EPUB 처리 중 오류:", err);
                         hideLoading();
-                        if (viewerElement) viewerElement.innerHTML = `<p>Error loading EPUB: ${err.message || err}</p>`;
+                        if (viewerElement) viewerElement.innerHTML = `<p>EPUB 로딩 오류: ${err.message || err}</p>`;
                     });
             } else {
-                console.error("book.ready not available.");
+                console.error("book.ready 사용 불가.");
                 hideLoading();
-                if (viewerElement) viewerElement.innerHTML = `<p>EPUB book object not ready.</p>`;
+                if (viewerElement) viewerElement.innerHTML = `<p>EPUB 책 객체가 준비되지 않았습니다.</p>`;
             }
         } catch (e) {
-            console.error("ePub instantiation error:", e);
+            console.error("ePub 인스턴스 생성 오류:", e);
             hideLoading();
-            if (viewerElement) viewerElement.innerHTML = `<p>Error instantiating EPUB: ${e.message || e}</p>`;
+            if (viewerElement) viewerElement.innerHTML = `<p>EPUB 생성 오류: ${e.message || e}</p>`;
         }
     };
 
     const loadToc = () => {
         if (!book?.loaded?.navigation?.then) {
-            if (tocList) tocList.innerHTML = '<li>TOC load fail.</li>';
+            if (tocList) tocList.innerHTML = '<li>목차 로딩 실패.</li>';
             return;
         }
         book.loaded.navigation.then(nav => {
@@ -339,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 actualToc.forEach(item => {
                     const li = document.createElement('li');
                     const a = document.createElement('a');
-                    a.textContent = (item.label || "Untitled").trim();
+                    a.textContent = (item.label || "제목 없음").trim();
                     a.href = item.href;
                     a.addEventListener('click', e => {
                         e.preventDefault();
@@ -353,13 +397,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     frag.appendChild(li);
                 });
             } else {
-                if (tocList) tocList.innerHTML = '<li>Table of Contents is empty or in an invalid format.</li>';
+                if (tocList) tocList.innerHTML = '<li>목차가 비어 있거나 형식이 잘못되었습니다.</li>';
             }
             tocList.innerHTML = '';
             tocList.appendChild(frag);
         }).catch(err => {
-            if (tocList) tocList.innerHTML = '<li>TOC error.</li>';
-            console.error("TOC load error:", err);
+            if (tocList) tocList.innerHTML = '<li>목차 로딩 오류.</li>';
+            console.error("목차 로딩 오류:", err);
         });
     };
 
@@ -400,9 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, true);
     };
 
-    // --- Settings ---
     const applyDarkMode = (isDark) => {
-        console.log(`[DEBUG DARKMODE] applyDarkMode called with isDark: ${isDark}`);
+        console.log(`[DEBUG DARKMODE] applyDarkMode 호출됨, isDark: ${isDark}`);
         document.body.classList.toggle('dark-mode', isDark);
 
         if (rendition?.themes) {
@@ -419,25 +462,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (const selector in commonStyles) {
                     rendition.themes.override(selector, commonStyles[selector]);
                 }
-                console.log(`[DEBUG DARKMODE] Overriding theme to ${isDark ? 'DARK' : 'LIGHT'}`);
+                console.log(`[DEBUG DARKMODE] 테마를 ${isDark ? 'DARK' : 'LIGHT'}(으)로 변경 중`);
                 if (rendition.display && typeof rendition.display === 'function') {
                     const currentLocation = rendition.currentLocation();
                     if (currentLocation?.start?.cfi) {
                         rendition.display(currentLocation.start.cfi)
-                            .catch(err => console.error("[ERROR DARKMODE] Error re-displaying with CFI after override:", err));
+                            .catch(err => console.error("[ERROR DARKMODE] CFI로 재표시 중 오류(테마 변경 후):", err));
                     } else {
                         rendition.display()
-                            .catch(err => console.error("[ERROR DARKMODE] Error re-displaying (no CFI) after override:", err));
+                            .catch(err => console.error("[ERROR DARKMODE] 재표시 중 오류(CFI 없음, 테마 변경 후):", err));
                     }
                 }
             } catch (themeError) {
-                console.error("[ERROR] applyDarkMode: Error overriding EPUB.js theme:", themeError);
+                console.error("[ERROR] applyDarkMode: EPUB.js 테마 변경 중 오류:", themeError);
             }
         } else {
-            console.warn("[WARN] applyDarkMode: Rendition or themes object not available.");
+            console.warn("[WARN] applyDarkMode: Rendition 또는 themes 객체 사용 불가.");
         }
         if (toggleDarkModeButton) {
-            toggleDarkModeButton.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            toggleDarkModeButton.textContent = isDark ? '라이트 모드' : '다크 모드';
         }
         localStorage.setItem('epub-dark-mode', String(isDark));
     };
@@ -452,6 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleSettings(false);
             setTimeout(() => toggleToc(true), 50);
         });
+
         if (toggleDarkModeButton) {
             toggleDarkModeButton.addEventListener('click', () => {
                 const bodyHasDarkModeClass = document.body.classList.contains('dark-mode');
@@ -461,60 +505,72 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (closeSettingsButton) closeSettingsButton.addEventListener('click', () => toggleSettings(false));
+
         if (viewSettingsButtonInSettings) viewSettingsButtonInSettings.addEventListener('click', () => {
-            alert("View settings (TBD)");
+            alert("보기 설정 (구현 예정)");
             clearTimeout(settingsTimeout);
         });
         if (notesButtonInSettings) notesButtonInSettings.addEventListener('click', () => {
-            alert("Notes (TBD)");
+            alert("노트 (구현 예정)");
             clearTimeout(settingsTimeout);
         });
     };
 
-    // ★★★ setupSelectionAction 함수 수정 (페이지 이동 로직) ★★★
     const setupSelectionAction = () => {
         if (!selectionActionButton) return;
         selectionActionButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // 이벤트 버블링 방지
+            event.stopPropagation();
 
-            // 쪽지 작성에 필요한 정보들이 모두 유효한지 확인
             if (currentSelectionCfiForComment && bookId && currentChapterHrefForComment && currentSelectedTextForComment) {
-                // URL 파라미터를 만들기 위한 객체 생성
                 const params = new URLSearchParams({
                     bookId: String(bookId),
                     cfi: currentSelectionCfiForComment,
-                    selectedText: currentSelectedTextForComment.substring(0, 200), // URL 길이 고려
+                    selectedText: currentSelectedTextForComment.substring(0, 200),
                     chapterHref: currentChapterHrefForComment
                 });
-
-                // 쪽지 작성 페이지로 이동
-                console.log(`[DEBUG] Navigating to /comments/new with params: ${params.toString()}`);
-                window.location.href = `/comments/new?${params.toString()}`;
+                console.log(`[DEBUG] 쪽지 작성 페이지로 이동: /comments/new, 파라미터: ${params.toString()}`);
+                window.location.href = `/comments/new?${params.toString()}`; // 실제 쪽지 작성 페이지 URL로 변경
             } else {
-                // 필요한 정보가 하나라도 누락된 경우 사용자에게 알림
                 alert("선택된 내용이 없거나, 위치 정보를 가져올 수 없습니다. 다시 시도해 주세요.");
-                console.warn("Cannot navigate to comment form. Missing info:", {
+                console.warn("쪽지 작성 폼으로 이동 불가. 정보 누락:", {
                     cfi: currentSelectionCfiForComment,
                     bookId: bookId,
                     chapterHref: currentChapterHrefForComment,
                     text: currentSelectedTextForComment
                 });
             }
-            selectionActionButton.style.display = 'none'; // 버튼 숨김
+            selectionActionButton.style.display = 'none';
         });
     };
 
-    console.log("[DEBUG] DOMContentLoaded: Starting initialization sequence.");
+    // 초기화 시작
+    console.log("[DEBUG] DOMContentLoaded: 초기화 시퀀스 시작.");
+    console.log("[DEBUG] Thymeleaf 변수 값:", {bookId, userId, bookUrl});
+
     if (viewerElement && loadingIndicator && tocList && tocContainer && tocOverlay && settingsBar && selectionActionButton) {
-        initEpubViewer();
-        setupNavigationAndInteractions();
-        setupSettingsControls();
-        setupSelectionAction();
-        if (settingsContentBottom) settingsContentBottom.classList.remove('settings-visible');
-        areSettingsVisible = false;
-        console.log("[DEBUG] DOMContentLoaded: Initialization sequence complete.");
+        if (!userId) {
+            console.warn("[WARN] 사용자 ID를 가져올 수 없습니다. 페이지 표시 저장 기능이 비활성화될 수 있습니다.");
+        }
+        if (!bookId) {
+            console.warn("[WARN] 책 ID를 가져올 수 없습니다. 페이지 표시 저장 및 기타 책 관련 기능이 비활성화될 수 있습니다.");
+        }
+        if (!bookUrl) {
+            console.error("[CRITICAL] 책 URL(bookUrl)을 결정할 수 없습니다. 뷰어를 초기화할 수 없습니다.");
+            if (viewerElement) viewerElement.innerHTML = `<p>책 내용을 불러올 수 없습니다. (URL 구성 오류)</p>`;
+            hideLoading(); // 로딩 표시 숨김
+        } else {
+            initEpubViewer();
+            setupNavigationAndInteractions();
+            setupSettingsControls();
+            setupSelectionAction();
+            if (settingsContentBottom) settingsContentBottom.classList.remove('settings-visible');
+            areSettingsVisible = false;
+        }
+        console.log("[DEBUG] DOMContentLoaded: 초기화 시퀀스 완료 (또는 URL 문제로 부분 완료).");
     } else {
-        console.error("[CRITICAL] DOMContentLoaded: One or more critical UI elements missing.");
-        // ... (누락 요소 로깅 및 사용자 메시지 표시는 이전과 동일하게 유지)
+        console.error("[CRITICAL] DOMContentLoaded: 하나 이상의 필수 UI 요소가 누락되었습니다.");
+        if (!viewerElement) console.error("누락된 요소: viewerElement");
+        // ... 기타 요소들
+        alert("뷰어 초기화에 필요한 중요 요소가 없어 페이지를 정상적으로 표시할 수 없습니다.");
     }
 });

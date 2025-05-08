@@ -1,6 +1,7 @@
 package com.my.bookduck.controller;
 
 import com.my.bookduck.config.auth.BDUserDetails;
+import com.my.bookduck.controller.request.UpdateUserBookMarkRequest;
 import com.my.bookduck.controller.response.BookLIstViewResponse;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.book.Category;
@@ -10,6 +11,7 @@ import com.my.bookduck.service.BookService;
 import com.my.bookduck.service.CategoryService;
 import com.my.bookduck.service.EBookService;
 import com.my.bookduck.service.UserBookService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -479,6 +481,53 @@ public class BookController {
         }catch(Exception e){
             //log.error("errMsg: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /**
+     * 사용자의 책 읽은 위치(mark/CFI)를 업데이트합니다.
+     * 클라이언트의 fetch('/api/userbook/mark', ...) 요청을 처리합니다.
+     *
+     * @param request 클라이언트로부터 받은 UserBookMarkUpdateRequest DTO 객체
+     * @return 성공 또는 실패에 대한 ResponseEntity
+     */
+    @PostMapping("/mark") // HTTP POST 메서드와 /mark 경로에 매핑
+    public ResponseEntity<?> updateUserBookMark(@RequestBody UpdateUserBookMarkRequest request) {
+        // @RequestBody 어노테이션은 HTTP 요청의 본문(body)에 담긴 JSON 데이터를
+        // UserBookMarkUpdateRequest 객체로 자동 변환(역직렬화)해줍니다.
+
+        // 간단한 유효성 검사 (필수 값 누락 확인)
+        if (request.getUserId() == null || request.getBookId() == null ||
+                request.getMark() == null || request.getMark().trim().isEmpty()) {
+            log.warn("잘못된 요청: userId, bookId, 또는 mark가 누락되었거나 mark가 비어있습니다. Request: {}", request);
+            return ResponseEntity.badRequest().body("필수 파라미터(userId, bookId, mark)가 누락되었거나 mark가 비어있습니다.");
+        }
+
+        try {
+            log.info("페이지 표시 업데이트 요청 수신: userId={}, bookId={}, mark(CFI)={}",
+                    request.getUserId(), request.getBookId(), request.getMark());
+
+            // 서비스 계층의 메소드 호출하여 비즈니스 로직 수행
+            userBookService.updateUserBookMark(request.getUserId(), request.getBookId(), request.getMark());
+
+            // 성공 응답 반환
+            return ResponseEntity.ok().body("페이지 표시가 성공적으로 업데이트되었습니다.");
+
+        } catch (EntityNotFoundException e) {
+            // 서비스에서 UserBook 엔티티를 찾지 못했을 경우 발생하는 예외 처리
+            log.warn("페이지 표시 업데이트 실패: 해당 UserBook을 찾을 수 없습니다. userId={}, bookId={}. 오류: {}",
+                    request.getUserId(), request.getBookId(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()); // 404 Not Found 응답
+        } catch (IllegalArgumentException e) {
+            // 서비스에서 기타 잘못된 인자 값으로 인해 발생하는 예외 처리
+            log.warn("페이지 표시 업데이트 실패: 잘못된 인자 값입니다. userId={}, bookId={}. 오류: {}",
+                    request.getUserId(), request.getBookId(), e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400 Bad Request 응답
+        } catch (Exception e) {
+            // 그 외 예기치 않은 서버 오류 처리
+            log.error("페이지 표시 업데이트 중 예기치 않은 서버 오류 발생: userId={}, bookId={}",
+                    request.getUserId(), request.getBookId(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("페이지 표시 업데이트 중 서버 내부 오류가 발생했습니다.");
         }
     }
 
