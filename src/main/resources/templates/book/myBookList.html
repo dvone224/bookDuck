@@ -102,41 +102,41 @@
 </head>
 <body>
 <!-- 헤더 프래그먼트 포함 -->
-<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
+<!--<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>-->
 
-<div class="container">
-  <h2 class="page-title" th:text="${pageTitle ?: '내 서재'}">내 서재</h2>
+<!--<div class="container">-->
+<!--  <h2 class="page-title" th:text="${pageTitle ?: '내 서재'}">내 서재</h2>-->
 
-  <!-- 오류 메시지 표시 (컨트롤러에서 errorMsg 전달 시) -->
-  <div th:if="${errorMsg}" class="alert alert-danger" role="alert" th:text="${errorMsg}">
-    오류 메시지 영역
-  </div>
+<!--  &lt;!&ndash; 오류 메시지 표시 (컨트롤러에서 errorMsg 전달 시) &ndash;&gt;-->
+<!--  <div th:if="${errorMsg}" class="alert alert-danger" role="alert" th:text="${errorMsg}">-->
+<!--    오류 메시지 영역-->
+<!--  </div>-->
 
-  <!-- 책 목록이 없을 경우 메시지 표시 (컨트롤러에서 message 전달 시) -->
-  <div th:if="${message}" class="info-message" th:text="${message}">
-    책 없음 메시지 영역
-  </div>
+<!--  &lt;!&ndash; 책 목록이 없을 경우 메시지 표시 (컨트롤러에서 message 전달 시) &ndash;&gt;-->
+<!--  <div th:if="${message}" class="info-message" th:text="${message}">-->
+<!--    책 없음 메시지 영역-->
+<!--  </div>-->
 
-  <!-- 책 목록 표시 (myBooks 리스트가 비어있지 않을 경우) -->
-  <div class="book-list-container" th:if="${not #lists.isEmpty(myBooks)}">
-    <!-- th:each 를 사용하여 책 목록 반복 -->
-    <div class="book-item" th:each="book : ${myBooks}">
-      <!-- 책 표지 이미지 -->
-      <img th:src="${book.cover}" th:alt="${book.title}" src="/img/default_book_cover.png" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
-      <!-- 책 제목 (툴팁으로 전체 제목 보여주기) -->
-      <div class="book-item-title" th:title="${book.title}" th:text="${book.title}">책 제목</div>
-      <!-- 저자 -->
-      <div class="book-item-writer" th:text="${book.writer}">저자</div>
-      <!-- (선택적) 추가 액션 버튼 -->
-      <div class="book-actions">
-        <!-- 예시: 책 읽기 페이지로 이동 -->
-        <a th:href="@{/book/read/{id}(id=${book.id})}" class="read-button">읽기</a>
-        <!-- 예시: 책 상세 정보 페이지로 이동 (별도 구현 필요) -->
-        <!-- <a th:href="@{/book/detail/{id}(id=${book.id})}" class="detail-button">상세보기</a> -->
-      </div>
-    </div>
-  </div>
-</div>
+<!--  &lt;!&ndash; 책 목록 표시 (myBooks 리스트가 비어있지 않을 경우) &ndash;&gt;-->
+<!--  <div class="book-list-container" th:if="${not #lists.isEmpty(myBooks)}">-->
+<!--    &lt;!&ndash; th:each 를 사용하여 책 목록 반복 &ndash;&gt;-->
+<!--    <div class="book-item" th:each="book : ${myBooks}">-->
+<!--      &lt;!&ndash; 책 표지 이미지 &ndash;&gt;-->
+<!--      <img th:src="${book.cover}" th:alt="${book.title}" src="/img/default_book_cover.png" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">-->
+<!--      &lt;!&ndash; 책 제목 (툴팁으로 전체 제목 보여주기) &ndash;&gt;-->
+<!--      <div class="book-item-title" th:title="${book.title}" th:text="${book.title}">책 제목</div>-->
+<!--      &lt;!&ndash; 저자 &ndash;&gt;-->
+<!--      <div class="book-item-writer" th:text="${book.writer}">저자</div>-->
+<!--      &lt;!&ndash; (선택적) 추가 액션 버튼 &ndash;&gt;-->
+<!--      <div class="book-actions">-->
+<!--        &lt;!&ndash; 예시: 책 읽기 페이지로 이동 &ndash;&gt;-->
+<!--        <a th:href="@{/book/read/{id}(id=${book.id})}" class="read-button">읽기</a>-->
+<!--        &lt;!&ndash; 예시: 책 상세 정보 페이지로 이동 (별도 구현 필요) &ndash;&gt;-->
+<!--        &lt;!&ndash; <a th:href="@{/book/detail/{id}(id=${book.id})}" class="detail-button">상세보기</a> &ndash;&gt;-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
 
 <!-- 푸터 프래그먼트 포함 (필요시) -->
 <!-- <div th:replace="~{fragments/footer :: footer}"></div> -->

@@ -6,28 +6,11 @@
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck²::CREW 생성</title>
     <style>
-        /* --- 첫 번째 코드의 스타일 시작 (대부분 유지) --- */
-
-        /* 아이콘 임포트 및 폰트 정의 */
-        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'); /* Font Awesome 4.7 - 필요시 5+로 변경 */
-        @font-face { /* Cafe24Supermagic-Bold-v1.0 */
-            font-family: 'Cafe24Supermagic-Bold-v1.0';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
-            font-weight: 700; font-style: normal;
-        }
-        @font-face { /* GowunBatang-Regular */
-            font-family: 'GowunBatang-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
-            font-weight: normal; font-style: normal;
-        }
-        @font-face { /* GowunDodum-Regular */
-            font-family: 'GowunDodum-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
-            font-weight: normal; font-style: normal;
-        }
-        /* (다른 폰트 정의는 이전과 동일하게 유지) */
-
-        /* 컬러 파레트 및 변수 */
+        /* --- 첫 번째 코드의 스타일 시작 (변경 없음) --- */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+        @font-face { font-family: 'Cafe24Supermagic-Bold-v1.0'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2'); font-weight: 700; font-style: normal; }
+        @font-face { font-family: 'GowunBatang-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
+        @font-face { font-family: 'GowunDodum-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
         :root{
             --main-color-dark: #00479B; --main-color-middle: #83C7FF; --main-color-light: #E3F4FF;
             --assist-color-dark: #CE7000; --assist-color-middle: #FFB90B; --assist-color-light: #FFF7E6;
@@ -36,53 +19,19 @@
             --border-big: 20px; --border-middle: 10px; --border-circle: 50%;
             --font-size-0: 28px; --font-size-1: 23px; --font-size-2: 18px; --font-size-3: 13px; --font-size-4: 8px;
         }
-
-        /* Global 스타일 초기화 및 기본 설정 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'GowunBatang-Regular', sans-serif;
-            font-size: var(--font-size-2);
-            background: var(--main-color-light);
-            padding: 20px;
-            width: 100%;
-        }
-
-        /* 컨테이너 스타일 */
-        .container {
-            max-width: 600px; /* 최대 너비 추가 */
-            margin: 0 auto; /* 중앙 정렬 추가 */
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* 버튼 스타일 */
-        .btn_long{
-            width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer;
-            border: none; font-weight: bold; font-size: var(--font-size-2);
-            transition: background-color 0.2s; display: flex; justify-content: center;
-            align-items: center; max-width: 600px; font-family: GowunBatang-Regular;
-        }
+        body { font-family: 'GowunBatang-Regular', sans-serif; font-size: var(--font-size-2); background: var(--main-color-light); padding: 20px; width: 100%; }
+        .container { max-width: 600px; margin: 0 auto; padding: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .btn_long{ width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer; border: none; font-weight: bold; font-size: var(--font-size-2); transition: background-color 0.2s; display: flex; justify-content: center; align-items: center; max-width: 600px; font-family: GowunBatang-Regular; }
         .btn_long:disabled { background-color: var(--cancle-color-middle) !important; cursor: not-allowed; opacity: 0.7; }
         .btn_long:hover:not(:disabled) { filter: brightness(110%); }
-
-        /* 입력 필드 스타일 */
-        .input_long{
-            margin-bottom: 5px; width: 100%; height: 45px; border-radius: 45px;
-            box-sizing: border-box; text-align: center; padding: 8px 15px;
-            font-size: var(--font-size-2); border: 2px solid; max-width: 600px;
-            font-family: 'GowunBatang-Regular', sans-serif;
-        }
+        .input_long{ margin-bottom: 5px; width: 100%; height: 45px; border-radius: 45px; box-sizing: border-box; text-align: center; padding: 8px 15px; font-size: var(--font-size-2); border: 2px solid; max-width: 600px; font-family: 'GowunBatang-Regular', sans-serif; }
         .input_long::placeholder { color: var(--cancle-color-dark); font-size: var(--font-size-2); }
         .input_long:focus { outline: none; border-width: 3px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); font-family: 'GowunBatang-Regular', sans-serif; }
         .blue_line{ border-color: var(--main-color-middle); color: var(--main-color-dark); }
         .blue_line:focus{ border-color: var(--main-color-dark); }
         .yellow_line{ border-color: var(--assist-color-middle); color: var(--assist-color-dark); }
         .yellow_line:focus{ border-color: var(--assist-color-dark); }
-
-        /* 색상 클래스 */
         .blue{ background: var(--main-color-middle); }
         .yellow{ background: var(--assist-color-middle); }
         .dark_blue2{ color: var(--main-color-dark); }
@@ -90,50 +39,32 @@
         .dark_yellow1{ background: var(--assist-color-dark); }
         .white{ background: white; }
         .yellow_line_thin{ border: 1px solid var(--assist-color-middle); }
-
-        /* 프로필 이미지 섹션 */
         .profile_img_box{ width: 220px; height: 220px; position: relative; margin-bottom: 10px; }
         .crown{ color: var(--crown-color); position: absolute; top: 5px; left: 5px; transform: rotate(-30deg); z-index: 1; }
         .crown i{ font-size: 35px; }
         .profile_img{ width: 200px; height: 200px; background: var(--assist-color-light); border: 3px solid var(--assist-color-middle); border-radius: var(--border-big); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden; }
         .profile_img img{ width: 100%; height: 100%; display: block; object-fit: cover; }
         .nickname{ font-size: var(--font-size-0); font-weight: bold; margin-top: 10px; margin-bottom: 30px; color: var(--main-color-dark); }
-
-        /* 폼 관련 스타일 */
         .form_box{ width: 100%; max-width: 600px; }
         form{ width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .form-group{ width: 100%; padding: 0px; margin: 0px 0 5px 0; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
         label:empty { display: none; }
         .error { width: 100%; min-height: 1.2em; margin-bottom: 10px; text-align: center; }
         .error-message { color: red; font-size: var(--font-size-3); }
-
-        /* 검색 결과 스타일 */
-        #searchResults, #bookSearchResults {
-            position: absolute; top: 47px; left: 0; width: 100%; max-width: 600px;
-            border: 1px solid var(--assist-color-middle); max-height: 150px; overflow-y: auto;
-            background-color: white; list-style: none; padding: 0; margin: 0; z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; border-radius: 10px;
-            color: var(--assist-color-dark); font-size: 13px;
-        }
+        #searchResults, #bookSearchResults { position: absolute; top: 47px; left: 0; width: 100%; max-width: 600px; border: 1px solid var(--assist-color-middle); max-height: 150px; overflow-y: auto; background-color: white; list-style: none; padding: 0; margin: 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; border-radius: 10px; color: var(--assist-color-dark); font-size: 13px; }
         #searchResults li, #bookSearchResults li { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--cancle-color-light); display: flex; align-items: center; gap: 8px; }
         #searchResults li:last-child, #bookSearchResults li:last-child { border-bottom: none; }
         #searchResults li:hover, #bookSearchResults li:hover { background-color: var(--assist-color-light); }
         #searchResults li.no-results, #bookSearchResults li.no-results { cursor: default; color: var(--cancle-color-dark); background-color: white; }
         #searchResults li img, #bookSearchResults li img { width: 25px; height: 35px; border-radius: 3px; object-fit: cover; flex-shrink: 0; background-color: #eee; }
-
-        /* 선택된 항목 컨테이너 */
         .box{ width: 100%; height: auto; border-radius: 20px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 15px; margin-bottom: 15px; max-width: 600px; }
         .box.white { background: white; }
         .yellow_line_thin{ border: 1px solid var(--assist-color-middle); }
         .title{ display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 15px; font-weight: bold; font-size: 18px; }
         .underline{ width: 130%; height: 1px; margin-top: 5px; }
         .dark_yellow1 { background-color: var(--assist-color-dark); }
-
-        /* 선택된 항목 목록 컨테이너 */
         #selectedUsersContainer, #selectedBookContainer { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; padding: 10px 0; min-height: 40px; justify-content: center; }
         #selectedBookContainer { align-items: center; }
-
-        /* 선택된 항목 태그 스타일 */
         .selected-user-tag, .selected-book-tag { display: inline-flex; align-items: center; background-color: var(--cancle-color-light); padding: 5px 10px; border-radius: 20px; font-size: 13px; color: var(--cancle-color-dark); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .selected-user-tag img { width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; object-fit: cover; background-color: #eee; }
         .selected-user-tag.is-me { background-color: var(--main-color-middle); color: var(--main-color-dark); font-weight: bold; }
@@ -143,17 +74,14 @@
         .selected-user-tag .remove-user, .selected-book-tag .remove-book { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; cursor: pointer; font-weight: bold; color: white; border: none; background-color: var(--cancle-color-dark); border-radius: 50%; padding: 0; font-size: 10px; line-height: 1; margin-left: 4px; transition: background-color 0.2s; }
         .selected-user-tag .remove-user:hover { background-color: var(--main-color-dark); }
         .selected-book-tag .remove-book:hover { background-color: var(--assist-color-dark); }
-
-        /* 제출 버튼 영역 */
         .action-buttons { width: 100%; text-align: center; margin-top: 25px; }
-
     </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
 
-<!-- 로그인 사용자 정보 (Thymeleaf 인라인 스크립트에서 사용) -->
+<!-- 로그인 사용자 정보 -->
 <input type="hidden" id="loggedInUserId" th:value="${session.loginuser?.id}" />
 <input type="hidden" id="loggedInUserNickname" th:value="${session.loginuser?.nickName}" />
 <input type="hidden" id="loggedInUserImg" th:value="${session.loginuser?.img}" />
@@ -163,7 +91,6 @@
     <!-- 리더 프로필 이미지 -->
     <div class="profile_img_box">
         <div class="profile_img">
-            <!-- ★★★ 수정된 리더 프로필 이미지 ★★★ -->
             <img th:src="${(session.loginuser?.img != null and !session.loginuser.img.isEmpty()) ? '/image/getimg?fileName=' + #uris.escapePath(session.loginuser.img) : '/img/bookduck_login.png'}"
                  alt="Leader Profile Image"
                  onerror="this.onerror=null; this.src='/img/bookduck_login.png';">
@@ -223,8 +150,8 @@
             </div>
 
         </form>
-    </div>
-</div>
+    </div> <!-- /.form_box -->
+</div> <!-- /.container -->
 
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -249,7 +176,7 @@
 
     // --- 상태 변수 ---
     let selectedUsers = new Map();
-    let selectedBook = null;
+    let selectedBook = null; // { id: '...', title: '...', cover: '...' }
     const loggedInUserId = loggedInUserIdInput ? loggedInUserIdInput.value : null;
     const loggedInUserNickname = loggedInUserNicknameInput ? loggedInUserNicknameInput.value : '나';
     const loggedInUserImg = loggedInUserImgInput ? loggedInUserImgInput.value : null;
@@ -263,7 +190,7 @@
 
     // --- 백엔드 엔드포인트 ---
     const USER_SEARCH_URL = /*[[@{/user/search}]]*/ '/user/search';
-    const BOOK_SEARCH_URL = /*[[@{/book/search}]]*/ '/book/search';
+    const BOOK_SEARCH_URL = /*[[@{/book/search}]]*/ '/book/search'; // 이 API 응답에 cover 포함 가정
     const GROUP_NAME_CHECK_URL = /*[[@{/group/check-name}]]*/ '/group/check-name';
     const DEFAULT_PROFILE_IMG = /*[[@{/img/bookduck_login.png}]]*/ '/img/bookduck_login.png';
     const DEFAULT_BOOK_COVER = /*[[@{/img/default_book_cover.png}]]*/ '/img/default_book_cover.png';
@@ -274,7 +201,8 @@
     if(searchResults) searchResults.addEventListener('click', (event) => { const li = event.target.closest('li'); if (li && li.dataset.userId && !li.classList.contains('no-results')) { const userId = li.dataset.userId; const nick = li.dataset.userNickname; const img = li.dataset.userImg; if (userId === String(loggedInUserId)) return; if (selectedUsers.has(userId)) { showMemberError('이미 선택된 CREW'); searchInput.focus(); return; } const count = selectedUsers.size - (selectedUsers.has(String(loggedInUserId)) ? 1 : 0); if (count >= MAX_SELECTED_MEMBERS_EXCL_OWNER) { showMemberError(`리더 제외 최대 ${MAX_SELECTED_MEMBERS_EXCL_OWNER}명까지`); searchInput.value = ''; clearSearchResults(); return; } addSelectedUser(userId, nick, img); searchInput.value = ''; clearSearchResults(); searchInput.focus(); validateForm(); } });
     if(selectedUsersContainer) selectedUsersContainer.addEventListener('click', (event) => { if (event.target.classList.contains('remove-user') && event.target.dataset.userId !== String(loggedInUserId)) { removeSelectedUser(event.target.dataset.userId); validateForm(); } });
     if(bookSearchInput) bookSearchInput.addEventListener('input', () => { clearTimeout(bookSearchTimeout); const query = bookSearchInput.value.trim(); bookSearchResults.style.display = 'none'; clearBookError(); if (query.length > 0 && loggedInUserId) bookSearchTimeout = setTimeout(() => fetchBooks(query), 300); else clearBookSearchResults(); });
-    if(bookSearchResults) bookSearchResults.addEventListener('click', (event) => { const li = event.target.closest('li'); if (li && li.dataset.bookId && !li.classList.contains('no-results')) { addSelectedBook(li.dataset.bookId, li.dataset.bookTitle, li.dataset.bookCover); bookSearchInput.value = ''; clearBookSearchResults(); validateForm(); } }); // bookCover 추가
+    // ★★★ 책 검색 결과 클릭 시 cover 정보도 addSelectedBook에 전달 ★★★
+    if(bookSearchResults) bookSearchResults.addEventListener('click', (event) => { const li = event.target.closest('li'); if (li && li.dataset.bookId && !li.classList.contains('no-results')) { addSelectedBook(li.dataset.bookId, li.dataset.bookTitle, li.dataset.bookCover); bookSearchInput.value = ''; clearBookSearchResults(); validateForm(); } });
     if(selectedBookContainer) selectedBookContainer.addEventListener('click', (event) => { if (event.target.classList.contains('remove-book')) { removeSelectedBook(); validateForm(); bookSearchInput.focus(); } });
     if(createGroupForm) createGroupForm.addEventListener('submit', (event) => { if (!validateForm(true)) { event.preventDefault(); console.log("폼 최종 유효성 검사 실패"); } else { clearMemberError(); clearGroupNameError(); clearBookError(); submitButton.textContent = 'CREW 생성 중...'; submitButton.disabled = true; } });
     document.addEventListener('click', (event) => { if (searchInput && searchResults && !searchInput.contains(event.target) && !searchResults.contains(event.target)) clearSearchResults(); if (bookSearchInput && bookSearchResults && !bookSearchInput.contains(event.target) && !bookSearchResults.contains(event.target)) clearBookSearchResults(); });
@@ -284,7 +212,7 @@
     // 리더 태그 초기화 (이미지 포함)
     function initializeLoggedInUser() {
         if (loggedInUserId && loggedInUserNickname) {
-            selectedUsers.set(String(loggedInUserId), loggedInUserNickname);
+            selectedUsers.set(String(loggedInUserId), loggedInUserNickname); // 문자열 ID로 저장
             const tag = document.createElement('span');
             tag.classList.add('selected-user-tag', 'is-me'); tag.dataset.userId = loggedInUserId;
             const img = document.createElement('img');
@@ -323,7 +251,7 @@
         } catch (error) { console.error('Error fetching users:', error); displaySearchResults(null, '사용자 검색 오류'); }
     }
 
-    // ★★★ 사용자 검색 결과 표시 (이미지 포함) ★★★
+    // 사용자 검색 결과 표시 (이미지 포함)
     function displaySearchResults(users, errorMessage = null) {
         searchResults.innerHTML = '';
         if (errorMessage) { const li = document.createElement('li'); li.textContent = errorMessage; li.classList.add('no-results'); searchResults.appendChild(li); }
@@ -339,7 +267,7 @@
                 const nameSpan = document.createElement('span'); nameSpan.textContent = user.nickName;
                 li.appendChild(nameSpan);
                 li.dataset.userId = user.id; li.dataset.userNickname = user.nickName;
-                li.dataset.userImg = user.img || ''; // 이미지 경로 저장
+                li.dataset.userImg = user.img || '';
                 searchResults.appendChild(li);
                 hasResultsToShow = true;
             });
@@ -368,18 +296,17 @@
                 const li = document.createElement('li');
                 const img = document.createElement('img');
                 img.src = book.cover || DEFAULT_BOOK_COVER; // API 응답의 cover 필드 사용
-                img.alt = book.title; img.onerror = () => { img.src = DEFAULT_BOOK_COVER; };
+                img.alt = book.title || ''; img.onerror = () => { img.src = DEFAULT_BOOK_COVER; };
                 li.appendChild(img);
                 const titleSpan = document.createElement('span');
-                // 저자 정보는 옵션으로 표시하거나 툴팁으로
-                titleSpan.textContent = `${book.title}`;
-                // titleSpan.title = `${book.title} (${book.author || '저자미상'})`; // 툴팁 예시
+                titleSpan.textContent = `${book.title || '제목 없음'}`;
                 li.appendChild(titleSpan);
-                li.dataset.bookId = book.id; li.dataset.bookTitle = book.title;
+                li.dataset.bookId = book.id;
+                li.dataset.bookTitle = book.title || '';
                 li.dataset.bookCover = book.cover || ''; // 커버 경로 저장
                 bookSearchResults.appendChild(li);
             });
-        } else { const li = document.createElement('li'); li.textContent = '소유한 책이 없거나 검색 결과 없음'; li.classList.add('no-results'); bookSearchResults.appendChild(li); }
+        } else { const li = document.createElement('li'); li.textContent = '검색 결과가 없습니다.'; li.classList.add('no-results'); bookSearchResults.appendChild(li); }
         bookSearchResults.style.display = 'block';
     }
     function clearBookSearchResults() { bookSearchResults.innerHTML = ''; bookSearchResults.style.display = 'none'; }
@@ -394,7 +321,7 @@
         const removeBtn = document.createElement('button'); removeBtn.classList.add('remove-user'); removeBtn.type = 'button'; removeBtn.textContent = '×'; removeBtn.dataset.userId = userId; removeBtn.setAttribute('aria-label', `${userNickname} 제거`); tag.appendChild(removeBtn);
         selectedUsersContainer.appendChild(tag);
         const hiddenInput = document.createElement('input'); hiddenInput.type = 'hidden'; hiddenInput.name = 'memberIds'; hiddenInput.value = userId; hiddenInput.id = `hidden-user-${userId}`; hiddenMemberIdsContainer.appendChild(hiddenInput);
-        clearMemberError(); validateForm(); // 멤버 추가 후 유효성 검사
+        clearMemberError(); validateForm();
     }
     // 선택된 사용자 태그 제거
     function removeSelectedUser(userId) { if (userId === String(loggedInUserId) || !selectedUsers.has(userId)) return; selectedUsers.delete(userId); const tag = selectedUsersContainer.querySelector(`.selected-user-tag[data-user-id="${userId}"]`); if (tag) tag.remove(); const hidden = hiddenMemberIdsContainer.querySelector(`#hidden-user-${userId}`); if (hidden) hidden.remove(); clearMemberError(); validateForm(); }
@@ -404,11 +331,11 @@
         selectedBook = { id: bookId, title: bookTitle, cover: bookCover };
         selectedBookContainer.innerHTML = '';
         const tag = document.createElement('span'); tag.classList.add('selected-book-tag'); tag.dataset.bookId = bookId;
-        const img = document.createElement('img'); img.src = bookCover || DEFAULT_BOOK_COVER; img.alt = bookTitle; img.onerror = () => { img.src = DEFAULT_BOOK_COVER; }; tag.appendChild(img);
-        const titleSpan = document.createElement('span'); titleSpan.classList.add('book-title'); titleSpan.textContent = bookTitle; tag.appendChild(titleSpan);
-        const removeBtn = document.createElement('button'); removeBtn.classList.add('remove-book'); removeBtn.type = 'button'; removeBtn.textContent = '×'; removeBtn.setAttribute('aria-label', `${bookTitle} 제거`); tag.appendChild(removeBtn);
+        const img = document.createElement('img'); img.src = bookCover || DEFAULT_BOOK_COVER; img.alt = bookTitle || ''; img.onerror = () => { img.src = DEFAULT_BOOK_COVER; }; tag.appendChild(img);
+        const titleSpan = document.createElement('span'); titleSpan.classList.add('book-title'); titleSpan.textContent = bookTitle || '제목 없음'; tag.appendChild(titleSpan);
+        const removeBtn = document.createElement('button'); removeBtn.classList.add('remove-book'); removeBtn.type = 'button'; removeBtn.textContent = '×'; removeBtn.setAttribute('aria-label', `${bookTitle || '책'} 제거`); tag.appendChild(removeBtn);
         selectedBookContainer.appendChild(tag);
-        hiddenBookIdInput.value = bookId;
+        hiddenBookIdInput.value = bookId || '';
         clearBookError(); validateForm();
     }
     // 선택된 책 태그 제거

@@ -147,6 +147,18 @@ public class GroupController {
         log.info("Fetching group list view for logged-in userId: {}", userId);
         try {
             List<GroupListViewDto> myGroupViews = groupService.findMyGroupsForView(userId);
+
+            if (myGroupViews != null && !myGroupViews.isEmpty()) {
+                log.debug("Sorting group list for userId: {}", userId);
+                // Comparator를 사용하여 정렬:
+                // 1. 리더인 그룹(isCurrentUserLeader=true)이 먼저 오도록 (true가 false보다 작은 것으로 간주)
+                // 2. 그룹 ID(groupId)의 내림차순 (최신 그룹이 위로)
+                myGroupViews.sort(Comparator
+                        .<GroupListViewDto, Boolean>comparing(dto -> !dto.isCurrentUserLeader()) // 리더 여부 (true가 앞으로)
+                        .thenComparing(dto -> dto.getGroup().getId(), Comparator.reverseOrder())); // 그룹 ID 내림차순
+                log.debug("Group list sorted.");
+            }
+            
             model.addAttribute("myGroupViews", myGroupViews);
             if (myGroupViews.isEmpty()) model.addAttribute("noGroupsMessage", "속한 그룹이 없습니다.");
         } catch (Exception e) {
