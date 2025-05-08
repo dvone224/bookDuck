@@ -24,36 +24,24 @@
         border-radius: 20px;
         cursor: pointer;
     }
-    .back{
-        background: lightgray;
-    }
-    .icon_white{
-        color: white;
-    }
-    .icon_grey{
-        color: lightgray;
-    }
-    .icon_blue{
-        color: skyblue;
-    }
 </style>
 
 <header th:fragment="bodyHeader">
     <div class="header_two">
         <div class="header_left">
-            <div class="btn_haeder back" onclick="history.back()">
-                <i class="fa-solid fa-rotate-left icon_white"></i>
+            <div class="btn_circle gray" onclick="history.back()">
+                <i class="fa-solid fa-rotate-left btn_icon white2"></i>
             </div>
-            <div class="btn_haeder home" onclick="location.href='/home'">
-                <i class="fa-solid fa-house icon_grey"></i>
+            <div class="btn_circle" onclick="location.href='/home'">
+                <i class="fa-solid fa-house btn_icon_color gray2"></i>
             </div>
         </div>
         <div class="header_right">
-            <div class="btn_haeder cart" onclick="location.href='/member/members'">
-                <i class="fa-solid fa-cart-shopping icon_blue"></i>
+            <div class="btn_circle" onclick="location.href='/member/members'">
+                <i class="fa-solid fa-cart-shopping btn_icon_color blue2"></i>
             </div>
-            <div class="btn_haeder mine" onclick="location.href='/member/members'">
-                <i class="fa-solid fa-user icon_blue"></i>
+            <div class="btn_circle" onclick="location.href='/member/members'">
+                <i class="fa-solid fa-user btn_icon_color blue2"></i>
             </div>
         </div>
     </div>

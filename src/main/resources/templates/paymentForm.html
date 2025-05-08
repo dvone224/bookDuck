@@ -5,9 +5,10 @@
     <script src="https://js.tosspayments.com/v1/payment"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck² :: 결제하기</title>
     <style>
-        /* (스타일 코드는 이전과 동일하게 유지) */
+/*        !* (스타일 코드는 이전과 동일하게 유지) *!
         body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
         h2 { text-align: center; margin-bottom: 25px; color: #333; }
         .product-info-container { display: flex; align-items: flex-start; margin-bottom: 20px; padding: 20px; background-color: #fff; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -26,40 +27,663 @@
         form button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
         .message-box { margin-bottom: 15px; padding: 10px; border-radius: 4px; border: 1px solid; }
         .error-message { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
-        .button-group { margin-top: 20px; display: flex; justify-content: flex-start; }
+        .button-group { margin-top: 20px; display: flex; justify-content: flex-start; }*/
+
+
+
+
+/*아이콘 임포트*/
+/* Fontawesome 4.7 */
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+/*로고용 폰트: cafe24슈퍼매직*/
+@font-face {
+    font-family: 'Cafe24Supermagic-Bold-v1.0';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/*홈페이지 메인 폰트: 고운바탕*/
+@font-face {
+    font-family: 'GowunBatang-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*고운돋움*/
+@font-face {
+    font-family: 'GowunDodum-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*조선굴림*/
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*온글잎콘콘*/
+@font-face {
+    font-family: 'Ownglyph_corncorn-Rg';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*나눔손글씨펜*/
+@import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+/*font-family: 'NanumPen';*/
+
+/*학교안심꼬꼬마*/
+@font-face {
+    font-family: 'TTHakgyoansimKkokkomaR';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*심경하*/
+@font-face {
+    font-family: 'SimKyungha';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*다이어리*/
+@font-face {
+    font-family: 'EarlyFontDiary';
+    src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 컬러 파레트 */
+:root{
+    --main-color-dark: #00479B;
+    --main-color-middle: #83C7FF;
+    --main-color-light: #E3F4FF;
+    --assist-color-dark: #CE7000;
+    --assist-color-middle: #FFB90B;
+    --assist-color-light: #FFF7E6;
+    --cancle-color-dark: #9B9B9B;
+    --cancle-color-middle: #D3D3D3;
+    --cancle-color-light: #EAEAEA;
+    --crown-color: #ffa500;
+
+    /*사용법: var(--main-color-middle)*/
+    --border-big: 20px;/*큰거...뭐가잇지...*/
+    --border-middle: 10px;/*img*/
+    --border-circle: 50%;/*동그리버튼*/
+
+    /*폰트 사이즈 정의*/
+    --font-size-0: 28px;
+    --font-size-1: 23px;
+    --font-size-2: 18px;
+    --font-size-3: 13px;
+    --font-size-4: 8px;
+
+    /*쪽지 색상 지정*/
+    --memo1-color-dark: #00479B;
+    --memo1-color-middle: #83C7FF;
+    --memo1-color-light: #E3F4FF;
+    --memo1-color-back: #B0CAD6;
+
+    --memo2-color-dark: #CE7000;
+    --memo2-color-middle: #FFB90B;
+    --memo2-color-light: #FFF7E6;
+    --memo2-color-back: #EAD4AD;
+
+    --memo3-coler-dark: #841A1A;
+    --memo3-coler-middle: #FF9494;
+    --memo3-coler-light: #FFE9E9;
+    --memo3-coler-back: #D6B0B0;
+
+    --memo4-coler-dark: #325900;
+    --memo4-coler-middle: #97CE41;
+    --memo4-coler-light: #F6FFD9;
+    --memo4-coler-back: #CCD3AE;
+
+    --memo5-coler-dark: #A04800;
+    --memo5-coler-middle: #FF8B00;
+    --memo5-coler-light: #FFE3CA;
+    --memo5-coler-back: #C9A88D;
+
+    --memo6-coler-dark: #6A297A;
+    --memo6-coler-middle: #AF80CE;
+    --memo6-coler-light: #F5EEFF;
+    --memo6-coler-back: #CDC3DD;
+
+    --memo7-coler-dark: #1F1F77;
+    --memo7-coler-middle: #7A8CE5;
+    --memo7-coler-light: #E9ECFF;
+    --memo7-coler-back: #B2B8D3;
+
+    --memo8-coler-dark: #006466;
+    --memo8-coler-middle: #66C6DD;
+    --memo8-coler-light: #EBFFFF;
+    --memo8-coler-back: #B8D3D2;
+}
+
+/* Global 스타일 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Gowun Batang";
+    font-size: var(--font-size-2);
+}
+
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%; /* 가로를 화면에 맞게 설정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* 컨테이너 스타일 */
+.container {
+    /*border: 1px solid slateblue;*/
+    /*width: 100%;*/
+    width: 768px;
+    /*            max-width: 768px;*/
+    /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+header{
+    width: 768px;
+    /*            max-width: 768px;*/
+}
+
+/*버튼 기본 규격*/
+.btn_circle{
+    /*            border: 1px solid red;*/
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 5px;
+    /*            font-size: 20px;*/
+}
+
+.btn_circle .btn_icon{
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.btn_circle .btn_icon_color{
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.btn_circle_big{
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+}
+
+.btn_circle_big .btn_icon{
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+}
+
+.btn_long{
+    width: 100%;
+    height: 45px;
+    border-radius: 45px;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    max-width: 768px;
+}
+
+.btn_mini{
+    width: auto;
+    height: 25px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-size: var(--font-size-3);
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin-left: 5px;
+}
+
+.box{
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-big);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 768px;
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    font-weight: bold;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.dot{
+    width: 15px;
+    height: 15px;
+    border-radius: var(--border-circle);
+    display: flex;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.underline{
+    width: 130%;
+    height: 1px;
+}
+
+.line{
+    width: 100%;
+    height: 1px;
+}
+
+.blue{
+    background: var(--main-color-middle);
+}
+.blue2{
+    color: var(--main-color-middle);
+}
+.yellow{
+    background: var(--assist-color-middle);
+}
+.dark_blue1{
+    background: var(--main-color-dark);
+}
+.dark_yellow1{
+    background: var(--assist-color-dark);
+}
+.dark_blue2{
+    color: var(--main-color-dark);
+}
+.dark_yellow2{
+    color: var(--assist-color-dark);
+}
+.light_blue{
+    background: var(--main-color-light);
+}
+.light_yellow{
+    background: var(--assist-color-light);
+}
+.dark_gray1{
+    background: var(--cancle-color-dark);
+}
+.dark_gray2{
+    color: var(--cancle-color-dark);
+}
+.gray{
+    background: var(--cancle-color-middle);
+}
+.gray2{
+    color: var(--cancle-color-middle);
+}
+.light_gray{
+    background: var(--cancle-color-light);
+}
+.white{
+    background: white;
+}
+.white2{
+    color: white;
+}
+
+.blue_line_thin{
+    border: 1px solid var(--main-color-middle);
+}
+.yellow_line_thin{
+    border: 1px solid var(--assist-color-middle);
+}
+
+.input_long{
+    /*            margin-bottom: 10px;*/
+    width: 100%;
+    height: 45px;
+    border-radius: 45px;
+    box-sizing: border-box;
+    text-align: center;
+    max-width: 768px;
+}
+
+.blue_line{
+    border: 2px solid var(--main-color-middle);
+    color: var(--main-color-dark);
+}
+
+.blue_line:focus{
+    border: 4px solid var(--main-color-middle);
+    color: var(--main-color-dark);
+    outline: none;
+}
+
+.yellow_line{
+    border: 2px solid var(--assist-color-middle);
+    color: var(--assist-color-dark);
+}
+
+.yellow_line:focus{
+    border: 4px solid var(--assist-color-middle);
+    color: var(--assist-color-dark);
+    outline: none;
+}
+
+
+/*체크박스 CSS*/
+
+input[type="checkbox"]{
+    display: none;
+}
+input[type="checkbox"] + label{
+    margin-right: 5px;
+    display: inline-block;
+    background: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+}
+/*input[type="checkbox"] + label{
+    border:3px solid var(--main-color-middle);
+}*/
+/*input[type="checkbox"] + label{
+    border:3px solid var(--assist-color-middle);
+}*/
+input[type="checkbox"]:checked + label::after {
+    content: '✔';
+    font-size: 16px; /* 체크 아이콘 크기 조정 */
+    width: 22px; /* 내부 원 크기 */
+    height: 22px; /* 내부 원 크기 */
+    border: none; /* 중복 테두리 제거 */
+    color: white;
+    text-align: center;
+    line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+    position: absolute;
+    left: 50%; /* 중앙 정렬 */
+    top: 50%; /* 중앙 정렬 */
+    transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
+    border-radius: 50%; /* 내부 원형 유지 */
+}
+/*input[type="checkbox"]:checked + label::after{
+    background: var(--main-color-middle);
+}*/
+/*input[type="checkbox"]:checked + label::after{
+    background: var(--assist-color-middle);
+}*/
+
+/*대표 이미지들 설정*/
+.processImg{
+    width: 300px;
+    height: 300px;
+}
+.processImg img{
+    width: 100%;
+    height: 100%;
+}
+
+.error{
+    color: red;
+    margin: 5px;
+    text-align: center;
+    font-size: var(--font-size-2);
+}
+
+
+@media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+    .container {
+        width: 100%;
+    }
+    header{
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+    .container {
+        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+        font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+    }
+}
+
+/* 여기까지 메인 CSS */
+.test1{
+    border: 1px solid red;
+}
+.test2{
+    border: 1px solid blue;
+}
+/* test CSS */
+
+header{
+    width: 100%;
+}
+
+.header_two, .header_left, .header_right{
+    display: flex;
+}
+.header_two {
+    /*border: 1px solid black;*/
+    justify-content: space-between; /* 내부 요소를 양 끝으로 배치 */
+    align-items: center; /* 세로 정렬을 중앙으로 */
+    width: 100%;
+}
+.btn_haeder{
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.back{
+    background: lightgray;
+}
+.icon_white{
+    color: white;
+}
+.icon_grey{
+    color: lightgray;
+}
+.icon_blue{
+    color: skyblue;
+}
+
+/*헤더용 CSS*/
+
+/*개별시작*/
+.img_box{
+/*    border: 1px solid black;*/
+    border-radius: var(--border-middle);
+    width: 180px;
+    height: 250px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+
+}
+.img_box img{
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-big);
+    object-fit: cover;
+}
+
+.underline{
+    width: 500%;
+}
+
+.box{
+    padding: 30px;
+}
+
+.title{
+    margin-bottom: 10px;
+}
+
+.text{
+    width: 100%;
+}
+.button-group{
+    width: 100%;
+    display: flex;
+}
+
+.btn_left{
+    margin-right: 10px;
+}
+.box_none{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.box_none input{
+    font-weight: bold;
+    border: none;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
     </style>
 </head>
 <body>
+<div class="container">
 
-<h2>상품 정보 및 결제</h2>
+<header th:fragment="bodyHeader">
+    <div class="header_two">
+        <div class="header_left">
+            <div class="btn_circle gray" onclick="history.back()">
+                <i class="fa-solid fa-rotate-left btn_icon white2"></i>
+            </div>
+            <div class="btn_circle" onclick="location.href='/home'">
+                <i class="fa-solid fa-house btn_icon_color gray2"></i>
+            </div>
+        </div>
+        <div class="header_right">
+            <div class="btn_circle" onclick="location.href='/member/members'">
+                <i class="fa-solid fa-cart-shopping btn_icon_color blue2"></i>
+            </div>
+            <div class="btn_circle" onclick="location.href='/member/members'">
+                <i class="fa-solid fa-user btn_icon_color blue2"></i>
+            </div>
+        </div>
+    </div>
+</header>
 
-<div th:if="${paymentError}" class="message-box error-message" th:text="${paymentError}"></div>
-<div th:if="${errorMessage}" class="message-box error-message" th:text="${errorMessage}"></div>
+
+<div th:if="${paymentError}" class="message-box error-message error" th:text="${paymentError}"></div>
+<div th:if="${errorMessage}" class="message-box error-message error" th:text="${errorMessage}"></div>
 
 <div th:if="${session.loginuser == null}">
-    <p style="text-align: center; padding: 20px; background-color: #fff; border-radius: 8px;">
+    <p class="error" style="text-align: center; padding: 20px; background-color: #fff; border-radius: 8px;">
         결제하거나 장바구니에 담으려면 <a href="/login-form" style="color: #007bff; font-weight: bold;">로그인</a>이 필요합니다.
     </p>
 </div>
 
 <div th:if="${session.loginuser != null}">
-    <div class="product-info-container">
-        <img th:if="${bookCover}" th:src="${bookCover}" alt="상품 이미지" class="product-image" onerror="this.onerror=null; this.src='/img/default_book_cover.png';"/>
-        <img th:unless="${bookCover}" src="/img/default_book_cover.png" alt="상품 이미지 없음" class="product-image"/>
+    <div class="product-info-container box">
+        <div class="img_box">
+            <img th:if="${bookCover}" th:src="${bookCover}" alt="상품 이미지" class="product-image" onerror="this.onerror=null; this.src='/img/default_book_cover.png';"/>
+            <img th:unless="${bookCover}" src="/img/default_book_cover.png" alt="상품 이미지 없음" class="product-image"/>
+        </div>
 
         <div class="payment-details">
             <form id="payment-form">
-                <label for="product-name">상품명:</label>
-                <input type="text" id="product-name" readonly required th:value="${productName}">
-                <label for="amount">가격(원):</label>
-                <input type="number" id="amount" readonly required th:value="${amount}">
-                <label for="customer-name">구매자 이름:</label>
-                <input type="text" id="customer-name" required th:value="${session.loginuser.nickName}">
+                <div class="box_none">
+                    <label for="product-name"></label>
+                    <input type="text" id="product-name" readonly required th:value="${productName}">
+                </div>
+                <div class="box_none">
+                    <label for="amount"></label>
+                    <input type="number" id="amount" readonly required th:value="${amount}">
+                </div>
+<!--                <label for="customer-name">구매자 이름:</label>
+                <input type="text" id="customer-name" required th:value="${session.loginuser.nickName}">-->
                 <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
                 <input type="hidden" id="isbn" name="isbn" th:value="${isbn}" />
+
+                <div class="box light_blue book_info">
+                    <div class="title dark_blue2">책소개<div class="underline dark_blue1"></div> </div>
+                    <div class="text dark_blue2">
+                        정치인 이재명의 첫 자전적 에세이로 2017년에 출간된 《이재명은 합니다》의 개정판이다. 가난한 어린 시절 공장에서 일하며 장애를 입고 자살까지 시도했던 굴곡진 삶, 인권변호사가 되어 시민운동에 가담했던 일, 정책을 수행하며 겪은 위기의 순간들, 한국 정치에 대한 생각과 철학 등 자신만의 목소리로 고난과 고민, 극복의 시간들을 담담하게 풀어냈다.<br>
+                        <br>
+                        절망 끝에서도 희망을 버리지 않았고, 고난 앞에서도 용기를 잃지 않았던 이재명의 인생과 정치철학을 직접 그의 목소리로 들을 수 있다. “모일 때 두려움은 힘을 잃고, 함께할 때 진실은 용기를 낸다”는 그의 말처럼, 외롭게 분투했던 그의 인생이 국민 덕분에 희망으로 변화했음을 확인할 수 있을 것이다.
+                    </div>
+                </div>
+                <div class="box light_yellow book_list">
+                    <div class="title dark_yellow2">목차<div class="underline dark_yellow1"></div> </div>
+                    <div class="text dark_yellow2">
+                        프롤로그: 누구나 평등하고 행복한 세상을 꿈꾸며<br>
+                        <br>
+                        01 고난의 시간에서 배운 인생의 선물<br>
+                        희망은 ‘희망밖에 없는 자’의 편이다<br>
+                        속은 여리지만 겉은 강철처럼 단단하게<br>
+                        대학 친구와의 특별한 약속<br>
+                        바른말은 거짓말보다 강하다<br>
+                        민심의 따스함으로 배를 채운 시간들<br>
+                        <br>
+                        02 함께 웃을 수 있는 길을 향해<br>
+                        방을 옮깁시다, 가장 낮은 곳으로<br>
+                        사람 속에 길이 있다<br>
+                        진정한 보수의 가치를 되찾을 시간<br>
+                        골목길에서 사람의 마음을 만나다<br>
+                        내가 품은 다섯 번째 꿈<br>
+                        미소를 잃어버린 사람들을 위하여<br>
+                        <br>
+                        03 외롭고 힘든 싸움을 이겨낸 용기의 원동력<br>
+                        인생의 시련은 성장의 밑거름이 된다<br>
+                        함께 뜻을 모을 때 바꿀 수 있는 것들
+                    </div>
+                </div>
                 <div class="button-group">
-                    <button type="button" id="payment-button">결제하기</button>
-                    <button type="button" id="add-to-cart-button">장바구니 담기</button>
+                    <button class="btn_long blue btn_left" type="button" id="payment-button">결제하기</button>
+                    <button class="btn_long yellow" type="button" id="add-to-cart-button">장바구니 담기</button>
                 </div>
             </form>
         </div>
@@ -243,6 +867,6 @@
 
     /*]]>*/
 </script>
-
+</div>
 </body>
 </html>

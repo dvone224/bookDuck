@@ -2,11 +2,21 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+
         /*아이콘 임포트*/
         /* Fontawesome 4.7 */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+        /*로고용 폰트: cafe24슈퍼매직*/
+        @font-face {
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
 
         /*홈페이지 메인 폰트: 고운바탕*/
         @font-face {
@@ -15,8 +25,61 @@
             font-weight: normal;
             font-style: normal;
         }
+
+        /*고운돋움*/
+        @font-face {
+            font-family: 'GowunDodum-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*조선굴림*/
+        @font-face {
+            font-family: 'ChosunGu';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*온글잎콘콘*/
+        @font-face {
+            font-family: 'Ownglyph_corncorn-Rg';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*나눔손글씨펜*/
+        @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+        /*font-family: 'NanumPen';*/
+
+        /*학교안심꼬꼬마*/
+        @font-face {
+            font-family: 'TTHakgyoansimKkokkomaR';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*심경하*/
+        @font-face {
+            font-family: 'SimKyungha';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*다이어리*/
+        @font-face {
+            font-family: 'EarlyFontDiary';
+            src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* 컬러 파레트 */
-        :root {
+        :root{
             --main-color-dark: #00479B;
             --main-color-middle: #83C7FF;
             --main-color-light: #E3F4FF;
@@ -26,11 +89,12 @@
             --cancle-color-dark: #9B9B9B;
             --cancle-color-middle: #D3D3D3;
             --cancle-color-light: #EAEAEA;
+            --crown-color: #ffa500;
 
             /*사용법: var(--main-color-middle)*/
-            --border-big: 20px; /*큰거...뭐가잇지...*/
-            --border-middle: 10px; /*img*/
-            --border-circle: 50%; /*동그리버튼*/
+            --border-big: 20px;/*큰거...뭐가잇지...*/
+            --border-middle: 10px;/*img*/
+            --border-circle: 50%;/*동그리버튼*/
 
             /*폰트 사이즈 정의*/
             --font-size-0: 28px;
@@ -38,8 +102,48 @@
             --font-size-2: 18px;
             --font-size-3: 13px;
             --font-size-4: 8px;
-        }
 
+            /*쪽지 색상 지정*/
+            --memo1-color-dark: #00479B;
+            --memo1-color-middle: #83C7FF;
+            --memo1-color-light: #E3F4FF;
+            --memo1-color-back: #B0CAD6;
+
+            --memo2-color-dark: #CE7000;
+            --memo2-color-middle: #FFB90B;
+            --memo2-color-light: #FFF7E6;
+            --memo2-color-back: #EAD4AD;
+
+            --memo3-coler-dark: #841A1A;
+            --memo3-coler-middle: #FF9494;
+            --memo3-coler-light: #FFE9E9;
+            --memo3-coler-back: #D6B0B0;
+
+            --memo4-coler-dark: #325900;
+            --memo4-coler-middle: #97CE41;
+            --memo4-coler-light: #F6FFD9;
+            --memo4-coler-back: #CCD3AE;
+
+            --memo5-coler-dark: #A04800;
+            --memo5-coler-middle: #FF8B00;
+            --memo5-coler-light: #FFE3CA;
+            --memo5-coler-back: #C9A88D;
+
+            --memo6-coler-dark: #6A297A;
+            --memo6-coler-middle: #AF80CE;
+            --memo6-coler-light: #F5EEFF;
+            --memo6-coler-back: #CDC3DD;
+
+            --memo7-coler-dark: #1F1F77;
+            --memo7-coler-middle: #7A8CE5;
+            --memo7-coler-light: #E9ECFF;
+            --memo7-coler-back: #B2B8D3;
+
+            --memo8-coler-dark: #006466;
+            --memo8-coler-middle: #66C6DD;
+            --memo8-coler-light: #EBFFFF;
+            --memo8-coler-back: #B8D3D2;
+        }
 
         /* Global 스타일 초기화 */
         * {
@@ -55,17 +159,69 @@
             margin: 0;
             padding: 0;
             width: 100%; /* 가로를 화면에 맞게 설정 */
-        }
-
-        /* 컨테이너 스타일 */
-        .container {
-            border: 1px solid slateblue;
-            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
-            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+        }
+
+
+        /* 컨테이너 스타일 */
+        .container {
+            /*border: 1px solid slateblue;*/
+            /*width: 100%;*/
+            width: 768px;
+            /*            max-width: 768px;*/
+            /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        header{
+            width: 768px;
+            /*            max-width: 768px;*/
+        }
+
+        /*버튼 기본 규격*/
+        .btn_circle{
+            /*            border: 1px solid red;*/
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin: 10px;
+            /*            font-size: 20px;*/
+        }
+
+        .btn_circle .btn_icon{
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .btn_circle .btn_icon_color{
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+        }
+
+        .btn_circle_big{
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn_circle_big .btn_icon{
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
         }
 
         .btn_long{
@@ -76,13 +232,30 @@
             cursor: pointer;
             border: none;
             font-weight: bold;
-            max-width: 600px;
+            max-width: 768px;
+        }
+
+        .btn_mini{
+            width: auto;
+            height: 25px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-size: var(--font-size-3);
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-left: 5px;
         }
 
         .box{
             width: 100%;
             height: auto;
-            border-radius: var(--border-middle);
+            border-radius: var(--border-big);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -101,6 +274,10 @@
             font-weight: bold;
         }
 
+        .bold{
+            font-weight: bold;
+        }
+
         .dot{
             width: 15px;
             height: 15px;
@@ -115,23 +292,99 @@
             height: 1px;
         }
 
+        .line{
+            width: 100%;
+            height: 1px;
+        }
+
+        .blue{
+            background: var(--main-color-middle);
+        }
+        .blue2{
+            color: var(--main-color-middle);
+        }
         .yellow{
             background: var(--assist-color-middle);
+        }
+        .dark_blue1{
+            background: var(--main-color-dark);
         }
         .dark_yellow1{
             background: var(--assist-color-dark);
         }
+        .dark_blue2{
+            color: var(--main-color-dark);
+        }
         .dark_yellow2{
             color: var(--assist-color-dark);
+        }
+        .light_blue{
+            background: var(--main-color-light);
         }
         .light_yellow{
             background: var(--assist-color-light);
         }
+        .dark_gray1{
+            background: var(--cancle-color-dark);
+        }
+        .dark_gray2{
+            color: var(--cancle-color-dark);
+        }
         .gray{
             background: var(--cancle-color-middle);
         }
+        .light_gray{
+            background: var(--cancle-color-light);
+        }
+        .white{
+            background: white;
+        }
+        .white2{
+            color: white;
+        }
+
+        .blue_line_thin{
+            border: 1px solid var(--main-color-middle);
+        }
+        .yellow_line_thin{
+            border: 1px solid var(--assist-color-middle);
+        }
+
+        .input_long{
+            /*            margin-bottom: 10px;*/
+            width: 100%;
+            height: 45px;
+            border-radius: 45px;
+            box-sizing: border-box;
+            text-align: center;
+            max-width: 768px;
+        }
+
+        .blue_line{
+            border: 2px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+        }
+
+        .blue_line:focus{
+            border: 4px solid var(--main-color-middle);
+            color: var(--main-color-dark);
+            outline: none;
+        }
+
+        .yellow_line{
+            border: 2px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+        }
+
+        .yellow_line:focus{
+            border: 4px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            outline: none;
+        }
+
 
         /*체크박스 CSS*/
+
         input[type="checkbox"]{
             display: none;
         }
@@ -145,9 +398,13 @@
             cursor: pointer;
             position: relative;
         }
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--main-color-middle);
+        }*/
         input[type="checkbox"] + label{
             border:3px solid var(--assist-color-middle);
         }
+
         input[type="checkbox"]:checked + label::after {
             content: '✔';
             font-size: 16px; /* 체크 아이콘 크기 조정 */
@@ -163,8 +420,54 @@
             transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
             border-radius: 50%; /* 내부 원형 유지 */
         }
-        input[type="checkbox"]:checked + label::after {
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--main-color-middle);
+        }*/
+        input[type="checkbox"]:checked + label::after{
             background: var(--assist-color-middle);
+        }
+
+        /*대표 이미지들 설정*/
+        .processImg{
+            width: 300px;
+            height: 300px;
+        }
+        .processImg img{
+            width: 100%;
+            height: 100%;
+        }
+
+        .error{
+            color: red;
+            margin: 5px;
+            text-align: center;
+            font-size: var(--font-size-2);
+        }
+
+
+        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+            .container {
+                width: 100%;
+            }
+            header{
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+            .container {
+                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+            }
+        }
+
+        /* 여기까지 메인 CSS */
+
+        /*헤더용 CSS 여기까지*/
+
+        .box{
+            padding: 20px;
+            /*여기는 글씨가 많아서 좀 많이 두기...*/
         }
 
         /*이거 main에 넣어도 되겠다 일단 생각해보기*/
@@ -188,6 +491,16 @@
 </head>
 <body>
 <!--<div th:replace="~{fragments/secondHeader :: bodyHeader}" ></div>-->
+<header th:fragment="bodyHeader">
+    <div class="header_three">
+        <div class="btn_circle gray" onclick="history.back()">
+            <i class="fa-solid fa-rotate-left btn_icon white2"></i>
+        </div>
+    </div>
+</header>
+<!--나중에 대체할 헤더-->
+
+
     <div class="container">
         <!--<h2><span th:if="${session.loginuser != null}" th:text="${session.loginuser.nickName}">고객</span>님 서비스 종료 진행</h2>-->
         <div class="box light_yellow">

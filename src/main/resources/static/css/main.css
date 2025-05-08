@@ -328,6 +328,9 @@ header{
 .gray{
     background: var(--cancle-color-middle);
 }
+.gray2{
+    color: var(--cancle-color-middle);
+}
 .light_gray{
     background: var(--cancle-color-light);
 }
@@ -456,3 +459,10 @@ input[type="checkbox"]:checked + label::after {
 }
 
 /* 여기까지 메인 CSS */
+.test1{
+    border: 1px solid red;
+}
+.test2{
+    border: 1px solid blue;
+}
+/* test CSS */
