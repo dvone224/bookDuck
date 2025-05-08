@@ -9,6 +9,8 @@
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <style>
 
+
+
         /*아이콘 임포트*/
         /* Fontawesome 4.7 */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
@@ -29,8 +31,60 @@
             font-style: normal;
         }
 
+        /*고운돋움*/
+        @font-face {
+            font-family: 'GowunDodum-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*조선굴림*/
+        @font-face {
+            font-family: 'ChosunGu';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*온글잎콘콘*/
+        @font-face {
+            font-family: 'Ownglyph_corncorn-Rg';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*나눔손글씨펜*/
+        @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+        /*font-family: 'NanumPen';*/
+
+        /*학교안심꼬꼬마*/
+        @font-face {
+            font-family: 'TTHakgyoansimKkokkomaR';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*심경하*/
+        @font-face {
+            font-family: 'SimKyungha';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /*다이어리*/
+        @font-face {
+            font-family: 'EarlyFontDiary';
+            src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* 컬러 파레트 */
-        :root {
+        :root{
             --main-color-dark: #00479B;
             --main-color-middle: #83C7FF;
             --main-color-light: #E3F4FF;
@@ -40,11 +94,12 @@
             --cancle-color-dark: #9B9B9B;
             --cancle-color-middle: #D3D3D3;
             --cancle-color-light: #EAEAEA;
+            --crown-color: #ffa500;
 
             /*사용법: var(--main-color-middle)*/
-            --border-big: 20px; /*큰거...뭐가잇지...*/
-            --border-middle: 10px; /*img*/
-            --border-circle: 50%; /*동그리버튼*/
+            --border-big: 20px;/*큰거...뭐가잇지...*/
+            --border-middle: 10px;/*img*/
+            --border-circle: 50%;/*동그리버튼*/
 
             /*폰트 사이즈 정의*/
             --font-size-0: 28px;
@@ -52,8 +107,48 @@
             --font-size-2: 18px;
             --font-size-3: 13px;
             --font-size-4: 8px;
-        }
 
+            /*쪽지 색상 지정*/
+            --memo1-color-dark: #00479B;
+            --memo1-color-middle: #83C7FF;
+            --memo1-color-light: #E3F4FF;
+            --memo1-color-back: #B0CAD6;
+
+            --memo2-color-dark: #CE7000;
+            --memo2-color-middle: #FFB90B;
+            --memo2-color-light: #FFF7E6;
+            --memo2-color-back: #EAD4AD;
+
+            --memo3-coler-dark: #841A1A;
+            --memo3-coler-middle: #FF9494;
+            --memo3-coler-light: #FFE9E9;
+            --memo3-coler-back: #D6B0B0;
+
+            --memo4-coler-dark: #325900;
+            --memo4-coler-middle: #97CE41;
+            --memo4-coler-light: #F6FFD9;
+            --memo4-coler-back: #CCD3AE;
+
+            --memo5-coler-dark: #A04800;
+            --memo5-coler-middle: #FF8B00;
+            --memo5-coler-light: #FFE3CA;
+            --memo5-coler-back: #C9A88D;
+
+            --memo6-coler-dark: #6A297A;
+            --memo6-coler-middle: #AF80CE;
+            --memo6-coler-light: #F5EEFF;
+            --memo6-coler-back: #CDC3DD;
+
+            --memo7-coler-dark: #1F1F77;
+            --memo7-coler-middle: #7A8CE5;
+            --memo7-coler-light: #E9ECFF;
+            --memo7-coler-back: #B2B8D3;
+
+            --memo8-coler-dark: #006466;
+            --memo8-coler-middle: #66C6DD;
+            --memo8-coler-light: #EBFFFF;
+            --memo8-coler-back: #B8D3D2;
+        }
 
         /* Global 스타일 초기화 */
         * {
@@ -69,17 +164,69 @@
             margin: 0;
             padding: 0;
             width: 100%; /* 가로를 화면에 맞게 설정 */
-        }
-
-        /* 컨테이너 스타일 */
-        .container {
-            border: 1px solid slateblue;
-            max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
-            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+        }
+
+
+        /* 컨테이너 스타일 */
+        .container {
+            /*border: 1px solid slateblue;*/
+            /*width: 100%;*/
+            width: 768px;
+            /*            max-width: 768px;*/
+            /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        header{
+            width: 768px;
+            /*            max-width: 768px;*/
+        }
+
+        /*버튼 기본 규격*/
+        .btn_circle{
+            /*            border: 1px solid red;*/
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin: 10px;
+            /*            font-size: 20px;*/
+        }
+
+        .btn_circle .btn_icon{
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .btn_circle .btn_icon_color{
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+        }
+
+        .btn_circle_big{
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn_circle_big .btn_icon{
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
         }
 
         .btn_long{
@@ -90,7 +237,37 @@
             cursor: pointer;
             border: none;
             font-weight: bold;
-            max-width: 600px;
+            max-width: 768px;
+        }
+
+        .btn_mini{
+            width: auto;
+            height: 25px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-size: var(--font-size-3);
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-left: 5px;
+        }
+
+        .box{
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-big);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            max-width: 768px;
         }
 
         .title{
@@ -101,14 +278,35 @@
             margin: 10px;
             font-weight: bold;
         }
+
+        .bold{
+            font-weight: bold;
+        }
+
+        .dot{
+            width: 15px;
+            height: 15px;
+            border-radius: var(--border-circle);
+            display: flex;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+
         .underline{
             width: 130%;
             height: 1px;
         }
 
+        .line{
+            width: 100%;
+            height: 1px;
+        }
 
         .blue{
             background: var(--main-color-middle);
+        }
+        .blue2{
+            color: var(--main-color-middle);
         }
         .yellow{
             background: var(--assist-color-middle);
@@ -116,18 +314,55 @@
         .dark_blue1{
             background: var(--main-color-dark);
         }
+        .dark_yellow1{
+            background: var(--assist-color-dark);
+        }
         .dark_blue2{
             color: var(--main-color-dark);
         }
+        .dark_yellow2{
+            color: var(--assist-color-dark);
+        }
+        .light_blue{
+            background: var(--main-color-light);
+        }
+        .light_yellow{
+            background: var(--assist-color-light);
+        }
+        .dark_gray1{
+            background: var(--cancle-color-dark);
+        }
+        .dark_gray2{
+            color: var(--cancle-color-dark);
+        }
+        .gray{
+            background: var(--cancle-color-middle);
+        }
+        .light_gray{
+            background: var(--cancle-color-light);
+        }
+        .white{
+            background: white;
+        }
+        .white2{
+            color: white;
+        }
+
+        .blue_line_thin{
+            border: 1px solid var(--main-color-middle);
+        }
+        .yellow_line_thin{
+            border: 1px solid var(--assist-color-middle);
+        }
 
         .input_long{
-            margin-bottom: 10px;
+            /*            margin-bottom: 10px;*/
             width: 100%;
             height: 45px;
             border-radius: 45px;
             box-sizing: border-box;
             text-align: center;
-            max-width: 600px;
+            max-width: 768px;
         }
 
         .blue_line{
@@ -141,12 +376,115 @@
             outline: none;
         }
 
+        .yellow_line{
+            border: 2px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+        }
+
+        .yellow_line:focus{
+            border: 4px solid var(--assist-color-middle);
+            color: var(--assist-color-dark);
+            outline: none;
+        }
+
+
+        /*체크박스 CSS*/
+
+        input[type="checkbox"]{
+            display: none;
+        }
+        input[type="checkbox"] + label{
+            margin-right: 5px;
+            display: inline-block;
+            background: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+        }
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--main-color-middle);
+        }*/
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--assist-color-middle);
+        }*/
+        input[type="checkbox"]:checked + label::after {
+            content: '✔';
+            font-size: 16px; /* 체크 아이콘 크기 조정 */
+            width: 22px; /* 내부 원 크기 */
+            height: 22px; /* 내부 원 크기 */
+            border: none; /* 중복 테두리 제거 */
+            color: white;
+            text-align: center;
+            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+            position: absolute;
+            left: 50%; /* 중앙 정렬 */
+            top: 50%; /* 중앙 정렬 */
+            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
+            border-radius: 50%; /* 내부 원형 유지 */
+        }
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--main-color-middle);
+        }*/
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--assist-color-middle);
+        }*/
+
+        /*대표 이미지들 설정*/
+        .processImg{
+            width: 300px;
+            height: 300px;
+        }
+        .processImg img{
+            width: 100%;
+            height: 100%;
+        }
+
+        .error{
+            color: red;
+            margin: 5px;
+            text-align: center;
+            font-size: var(--font-size-2);
+        }
+
+
+        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+            .container {
+                width: 100%;
+            }
+            header{
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+            .container {
+                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+            }
+        }
+
+        /* 여기까지 메인 CSS */
+
+        .test1{
+            border: 1px solid red;
+        }
+        .test2{
+            border: 1px solid blue;
+        }
+        /* test CSS */
+
+        .box_none{
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
         .seperate{
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            max-width: 600px;
         }
         .seperate_one{
             width: 79%;
@@ -159,7 +497,7 @@
         }
         .text{
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
     </style>
@@ -172,14 +510,11 @@
         <label for="findemail"> 회원정보 찾기</label>
         <input type="email" id="findemail" name="mail" placeholder="가입한 이메일을 입력하세요" required autocomplete="off">
     </div>-->
-    <div class="box dark_blue2">
-        <div class="title">ID 또는 PASSWORD 찾기<div class="underline dark_blue1"></div> </div>
-        <div class="text">
-            가입할 때 사용한 E-mail을 입력하세요. <br>
-            해당 E-mail로 ID 또는 임시 PASSWORD를 발송합니다.
+    <div class="box_none dark_blue2">
+        <div class="text">가입할 때 사용한 E-mail을 입력하세요.<br>해당 주소로 ID 또는 임시 PASSWORD를 발송합니다.
         </div>
     </div>
-    <div class="box">
+    <div class="box_none">
             <label for="joinEmail"></label>
             <input type="text" class="input_long blue_line" id="joinEmail" name="email" placeholder="가입한 E-mail을 입력하세요" required autocomplete="off">
     </div>
@@ -195,9 +530,11 @@
         </div>
     </div>-->
 
-    <div class="seperate">
-        <div class="seperate_same"><button class="btn_long blue" onclick="sendidonly()">ID찾기</button></div>
-        <div class="seperate_same"><button class="btn_long yellow" onclick="sendwithpw()">임시 PASSWORD 발송</button></div>
+    <div class="box_none">
+        <div class="seperate">
+            <div class="seperate_same"><button class="btn_long blue" onclick="sendidonly()">ID찾기</button></div>
+            <div class="seperate_same"><button class="btn_long yellow" onclick="sendwithpw()">임시 PASSWORD 발송</button></div>
+        </div>
     </div>
 <!--    <input type="button" class="btn btn-findid" value="아이디찾기">
     <input type="button" class="btn btn-findinfo" value="비번찾기">-->

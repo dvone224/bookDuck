@@ -420,6 +420,51 @@
         }
         /* 헤더용 CSS들 */
 
+        /*드롭다운 메뉴 꾸미기*/
+        .sort-dropdown {
+            width: 100%; /* 필요시 조정 가능 */
+            position: relative;
+            font-size: var(--font-size-2);
+            color: var(--assist-color-dark);
+
+        }
+
+        .sort-dropdown select {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            font-size: var(--font-size-2);
+            font-weight: 500;
+            color: var(--assist-color-dark);
+            appearance: none; /* 기본 브라우저 스타일 제거 */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41 0L6 4.59 10.59 0 12 1.41 6 7.41 0 1.41z' fill='%23FFB90B'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px 8px;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sort-dropdown select:focus,
+        .sort-dropdown select:hover {
+            outline: none;
+        }
+
+        /*두번째 드롭다운*/
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+            margin-top: 5px;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
 
         .test1{
             border: 1px solid red;
@@ -515,19 +560,6 @@
 <div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
 
 <div class="container">
-    <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
-        <option value="">전체 카테고리</option>
-        <option value="1">소설/시/희곡</option>
-        <option value="55889">만화</option>
-        <option value="170">경제경영</option>
-        <option value="336">자기계발</option>
-        <option value="656">인문학</option>
-        <option value="798">사회과학</option>
-        <option value="74">과학</option>
-        <option value="987">컴퓨터/모바일</option>
-        <option value="1383">어린이</option>
-        <option value="1137">유아</option>
-    </select>
 
     <div class="seperate input_long yellow_line">
         <div class="seperate_one">
@@ -536,6 +568,21 @@
         <div class="seperate_two">
             <button class="btn_circle_mini yellow" id="searchButton" aria-label="검색"><i class="fas fa-search"></i></button>
         </div>
+    </div>
+    <div class="sort-dropdown yellow_line">
+        <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
+            <option value="">전체 카테고리</option>
+            <option value="1">소설/시/희곡</option>
+            <option value="55889">만화</option>
+            <option value="170">경제경영</option>
+            <option value="336">자기계발</option>
+            <option value="656">인문학</option>
+            <option value="798">사회과학</option>
+            <option value="74">과학</option>
+            <option value="987">컴퓨터/모바일</option>
+            <option value="1383">어린이</option>
+            <option value="1137">유아</option>
+        </select>
     </div>
 
     <div class="controller">
@@ -546,7 +593,6 @@
             <div class="dropdown-content">
                 <div data-sort="PublishTime">최신순</div>
                 <div data-sort="SalesPoint">판매량순</div>
-                <div data-sort="Title">가나다순</div>
             </div>
         </div>
     </div>
