@@ -35,12 +35,12 @@ public class BookCommentController {
             @RequestParam("selectedText") String selectedText,
             @RequestParam("chapterHref") String chapterHref,
             Model model,
-            HttpSession session) { // (선택) 여기서도 로그인 여부 확인 가능
+            HttpSession session) {
 
         log.info("Showing new comment form for bookId: {}, cfi: {}, chapterHref: {}", bookId, cfi, chapterHref);
 
-        // (선택) 폼을 보여주기 전에도 로그인 여부 확인
         loginUserInfo loginUser = (loginUserInfo) session.getAttribute("loginuser");
+
         if (loginUser == null) {
             log.warn("User not logged in. Redirecting to login page before showing comment form.");
             // RedirectAttributes는 GET 메소드에서 직접 사용하기 어려움.
@@ -85,7 +85,6 @@ public class BookCommentController {
 
         // 세션에서 "loginUser" 속성 가져오기
         loginUserInfo loginUser = (loginUserInfo) session.getAttribute("loginuser");
-
         log.info("Attempting to save comment. Form data: {}, Logged in user from session: {}",
                 commentForm, (loginUser != null ? loginUser.getId() : "null"));
 

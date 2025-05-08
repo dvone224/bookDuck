@@ -48,4 +48,11 @@ public class UserBook {
         this.summary = "";
     }
 
+    public void updateMark(String newMark) {
+        if (newMark != null) {
+            this.mark = newMark;
+        } else {
+            this.mark = null;
+        }
+    }
 }
