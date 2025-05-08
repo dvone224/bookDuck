@@ -1,34 +1,29 @@
 $("#imgUploadBtn").click(()=>{
     //파일데이터 추출
     var file=$("#userImg");
-    console.log(file[0]);//순수한 태그
-    console.dir(file[0].files[0]); //파일데이터
+    //console.log(file[0]);//순수한 태그
+    //console.dir(file[0].files[0]); //파일데이터
 
     //폼태그로 추가
     var formData = new FormData(); //폼객체
     formData.append("file",file[0].files[0]); //name, 값
 
     $.ajax({
-        url:"user/imgupload",
+        url:"image/upload",
         type:"post",
         data:formData, //보내는데이터 form
         contentType:false, //보내는데이터타입 false->"multipart/form-data"로 선언됩니다.
         processData:false, //폼데이터가 name=값&name=값 형식으로 자동변경되는 것을 막아줍니다.
-        success:(result)=>{
-            var res = result.split('/')[0];
-            var imgname = result.split('/')[1];
-            //var imgPath = "'"+img+"'";
-            console.log(res);
-            console.log(imgname);
-            if(res == "success"){
+        success: (result) => {
+            console.log(result); // Logs the S3 URL (e.g., https://aws-bookduck...)
+            if (result !== "fail") {
                 alert("업로드가 완료되었습니다.");
-                $('#uploadImg').attr("src", "/image/getimg?fileName="+imgname);
-                $('#img').attr("value",imgname);
+                $('#uploadImg').attr("src", result);
+                $('#img').attr("value", result);
             }
         },
-        error:(err)=>{
-            $('#imgUploadErr').innerHTML="이미지 업로드 오류"
-            //alert("업로드 에러발생");
+        error: (err) => {
+            $('#imgUploadErr').text("이미지 업로드 오류");
         }
 
     })
