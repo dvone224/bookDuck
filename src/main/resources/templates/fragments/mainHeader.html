@@ -92,32 +92,33 @@
     }
 
 </style>
-
-<header th:fragment="bodyHeader">
-<!--    <div class="menu" onclick="location.href='/member/members'"> 회원목록</div>
-    <div class="menu" onclick="location.href='/member'"> 회원추가 </div>
-    <div class="menu" onclick="location.href='/study'"> 공부 기록 등록</div>
-    <div class="menu" onclick="location.href='/study/records'"> 공부 기록 목록 </div>-->
+<header>
     <div class="header_one">
         <div class="header_one_top">
             <div class="heaer_left">
-                <div class="logo" onclick="location.href='/home'">
-                    BookDuck²
-                </div>
+                <a href="/home" class="logo">BookDuck²</a>
             </div>
             <div class="header_right">
-                <div class="btn_haeder cart" onclick="location.href='/member/members'">
-                    <i class="fa-solid fa-cart-shopping icon_blue"></i>
+                <div sec:authorize="isAuthenticated()" class="btn_circle cart-btn">
+                    <i class="fa-solid fa-cart-shopping blue2 btn_icon_color"></i>
                 </div>
-                <div class="btn_haeder mine" onclick="location.href='/member/members'">
-                    <i class="fa-solid fa-user icon_blue"></i>
+                <div sec:authorize="isAuthenticated()" class="btn_circle user-btn">
+                    <i class="fa-solid fa-user blue2 btn_icon_color"></i>
                 </div>
             </div>
         </div>
         <div class="header_one_bottom">
-            <div class="menu" onclick="location.href='/member/members'">다 읽었어요</div>
-            <div class="menu" onclick="location.href='/member/members'">명예의 전당</div>
-            <div class="menu" onclick="location.href='/member/members'">북덕이 서점</div>
+            <div class="box_none">
+                <a href="/home" class="menu this_page">명예의 전당</a>
+                <a href="/shop/shopList" class="menu">북덕이 서점</a>
+            </div>
+            <div class="box_none">
+                <div class="box_none2"><div class="point_menu"></div></div>
+                <div class="box_none2"></div>
+            </div>
+            <div class="box_none">
+                <div class="line gray"></div>
+            </div>
         </div>
     </div>
 </header>
