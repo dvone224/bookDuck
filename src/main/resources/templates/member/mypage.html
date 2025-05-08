@@ -18,23 +18,167 @@
         .box_side { width: 100%; text-align: right; padding-top: 5px; }
         .book_one_title { font-size: 0.9em; margin-top: 5px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* --- 모달 스타일 (책 모달용으로 유지) --- */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); }
-        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; position: relative; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); animation-name: animatetop; animation-duration: 0.4s; }
-        @keyframes animatetop { from {top:-300px; opacity:0} to {top:0; opacity:1} }
-        .close-button { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close-button:hover, .close-button:focus { color: black; text-decoration: none; }
-        .modal-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        .modal-list { max-height: 400px; overflow-y: auto; padding-right: 10px; }
-        .modal-list .modal-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-        .modal-list .modal-item:last-child { border-bottom: none; }
-        .modal-item img { width: 50px; height: 70px; object-fit: cover; margin-right: 15px; border-radius: 3px; background-color: #f0f0f0; }
-        .modal-item-info { flex-grow: 1; }
-        .modal-item-title { font-weight: bold; margin-bottom: 5px; }
-        .modal-item-sub { font-size: 0.9em; color: #555; }
-        .modal-item-action a { margin-left: 10px; color: #3498db; text-decoration: none; font-size: 0.9em; white-space: nowrap; }
-        .loader { border: 5px solid #f3f3f3; border-radius: 50%; border-top: 5px solid #3498db; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* --- 모달 스타일 (home.html 스타일과 통합) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .modal-content {
+            background-color: var(--main-color-light);
+            margin: 10% auto;
+            padding: 20px;
+            border: 2px solid var(--main-color-middle);
+            width: 80%;
+            max-width: 768px;
+            border-radius: var(--border-middle);
+            position: relative;
+            font-family: 'GowunBatang-Regular';
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+        }
+        @keyframes animatetop {
+            from { top: -300px; opacity: 0 }
+            to { top: 0; opacity: 1 }
+        }
+        .close-button {
+            width: 35px;
+            height: 35px;
+            border-radius: var(--border-circle);
+            background: var(--assist-color-middle);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: var(--font-size-2);
+        }
+        .close-button:hover {
+            background: var(--assist-color-dark);
+        }
+        .modal-title {
+            font-size: var(--font-size-1);
+            font-weight: bold;
+            color: var(--main-color-dark);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--main-color-middle);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .modal-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: var(--border-middle);
+            border: 1px solid var(--main-color-middle);
+        }
+        .modal-item:last-child {
+            margin-bottom: 0;
+        }
+        .modal-item img {
+            width: 60px;
+            height: 85px;
+            object-fit: cover;
+            margin-right: 15px;
+            border-radius: var(--border-middle);
+            background-color: var(--main-color-light);
+        }
+        .modal-item-info {
+            flex-grow: 1;
+        }
+        .modal-item-title {
+            font-size: var(--font-size-2);
+            font-weight: bold;
+            color: var(--main-color-dark);
+            margin-bottom: 5px;
+        }
+        .modal-item-sub {
+            font-size: var(--font-size-3);
+            color: var(--cancle-color-dark);
+        }
+        .loader {
+            border: 5px solid var(--main-color-light);
+            border-top: 5px solid var(--main-color-middle);
+            border-radius: var(--border-circle);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* --- 그룹 모달 책 목록 스타일 (list.html 기반, mypage.html 스타일 적용) --- */
+        .modal-book-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 0;
+        }
+        .modal-book-item {
+            background-color: white;
+            border: 1px solid var(--main-color-middle);
+            border-radius: var(--border-middle);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: calc(25% - 12px); /* 4개씩 배치 */
+            box-sizing: border-box;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+            min-height: 150px;
+        }
+        .modal-book-item:hover {
+            transform: translateY(-2px);
+        }
+        .modal-book-item img {
+            width: 60px;
+            height: 85px;
+            object-fit: cover;
+            border-radius: var(--border-middle);
+            margin-bottom: 8px;
+            background-color: var(--main-color-light);
+        }
+        .modal-book-item span {
+            font-size: var(--font-size-3);
+            color: var(--main-color-dark);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 2.4em;
+            line-height: 1.2em;
+        }
+        .modal-loading, .modal-no-books {
+            text-align: center;
+            color: var(--cancle-color-dark);
+            margin-top: 20px;
+            font-size: var(--font-size-2);
+            padding: 20px 0;
+        }
     </style>
     <title> BookDuck²::My Page </title>
 </head>
@@ -45,7 +189,9 @@
     <!-- 프로필 정보 -->
     <div class="profile_img_box">
         <div class="profile_img">
-            <img src="/img/bookduck_login.png" alt="Profile Image">
+            <img th:src="${(loginuser != null and loginuser.img != null and !loginuser.img.isEmpty()) ? '/image/getimg?fileName=' + #uris.escapePath(loginuser.img) : '/img/bookduck_login.png'}"
+                 alt="Profile Image" id="userProfileImage"
+                 onerror="this.onerror=null; this.src='/img/bookduck_login.png';">
         </div>
         <div class="btn_circle yellow fix" onclick="location.href='/userupdate'">
             <i class="fa-solid fa-pen icon_white"></i>
@@ -59,7 +205,7 @@
         <div class="box_temp">
             <!-- 그룹 목록 미리보기 (엔티티 포함 DTO 기준 접근) -->
             <div class="crew_list" th:if="${not #lists.isEmpty(myGroupsPreview)}">
-                <div class="crew_one" th:each="groupView : ${myGroupsPreview}">
+                <div class="crew_one" th:each="groupView : ${myGroupsPreview}" th:data-group-id="${groupView.group.id}">
                     <div class="crew_book_img">
                         <!-- 그룹 대표 이미지 (Lazy 로딩 주의!) -->
                         <img th:src="${(groupView.group != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null) ? groupView.group.books[0].book.cover : '/img/default_crew_icon.png'}"
@@ -75,7 +221,7 @@
                 <p>가입한 그룹이 없습니다.</p>
             </div>
 
-            <!-- ★★★ 그룹 더보기 버튼: 페이지 이동 ★★★ -->
+            <!-- 그룹 더보기 버튼: 페이지 이동 -->
             <div class="box_side" th:if="${hasMoreGroups}">
                 <button class="more btn_mini blue" onclick="location.href='/group/list'">더보기</button>
             </div>
@@ -99,7 +245,7 @@
                 <p>내 서재에 등록된 책이 없습니다.</p>
             </div>
 
-            <!-- ★★★ 책 더보기 버튼: 모달 호출 ★★★ -->
+            <!-- 책 더보기 버튼: 모달 호출 -->
             <div class="box_side" th:if="${hasMoreBooks}">
                 <button class="more btn_mini yellow" onclick="openModal('book')">더보기</button>
             </div>
@@ -110,7 +256,7 @@
     <button class="logout btn_long yellow" onclick="location.href='/logout'">LOGOUT</button>
 </div>
 
-<!-- ======================= 모달 창 구조 (책 모달만 필요) ======================= -->
+<!-- ======================= 모달 창 구조 ======================= -->
 
 <!-- 책 목록 모달 -->
 <div id="bookModal" class="modal">
@@ -124,22 +270,42 @@
     </div>
 </div>
 
-<!-- ======================= JavaScript (책 모달용) ======================= -->
+<!-- 그룹 책 목록 모달 -->
+<div id="groupModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('groupModal')">×</span>
+        <h3 class="modal-title" id="groupModalTitle">그룹 도서 목록</h3>
+        <div id="groupListContainer" class="modal-list">
+            <!-- 책 목록이 여기에 동적으로 삽입됩니다 -->
+            <div class="loader" style="display: none;"></div> <!-- 로딩 스피너 -->
+        </div>
+    </div>
+</div>
+
+<!-- ======================= JavaScript ======================= -->
 <script>
-    // 모달 열기 함수 (책 전용)
-    function openModal(type) {
-        if (type !== 'book') {
-            console.error('Only book modal is supported now.');
+    // 모달 열기 함수 (책 및 그룹 공용)
+    function openModal(type, groupId, groupName) {
+        let modalId, listContainerId, apiUrl, title;
+
+        if (type === 'book') {
+            modalId = 'bookModal';
+            listContainerId = 'bookListContainer';
+            apiUrl = '/api/my-books';
+            title = '내 서재';
+        } else if (type === 'group') {
+            modalId = 'groupModal';
+            listContainerId = 'groupListContainer';
+            apiUrl = `/group/api/group/${groupId}/books`;
+            title = `${groupName || '그룹'} 도서 목록`;
+        } else {
+            console.error('Unsupported modal type:', type);
             return;
         }
 
-        const modalId = 'bookModal';
-        const listContainerId = 'bookListContainer';
-        const apiUrl = '/api/my-books'; // 책 API 경로
-        const title = '내 서재';
-
         const modal = document.getElementById(modalId);
         const listContainer = document.getElementById(listContainerId);
+        const modalTitle = modal.querySelector('.modal-title');
         let loader = listContainer.querySelector('.loader');
         if (!loader) {
             loader = document.createElement('div');
@@ -153,6 +319,7 @@
             }
         });
         loader.style.display = 'block';
+        modalTitle.textContent = title;
         modal.style.display = 'block';
 
         fetch(apiUrl)
@@ -166,40 +333,21 @@
                 loader.style.display = 'none';
 
                 if (!data || data.length === 0) {
-                    listContainer.innerHTML = '<p style="text-align: center; color: #777; padding: 20px 0;">내 서재가 비어있습니다.</p>';
+                    listContainer.innerHTML = '<div class="modal-no-books">등록된 도서가 없습니다.</div>';
                     return;
                 }
 
-                let listHtml = '';
-                data.forEach(book => {
-                    listHtml += `
-                         <div class="modal-item">
-                             <img src="${book.cover}" alt="${book.title}" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
-                             <div class="modal-item-info">
-                                 <div class="modal-item-title">${book.title}</div>
-                                 <div class="modal-item-sub">${book.writer}</div>
-                             </div>
-                             <a href="/book/read/${book.id}" class="modal-item-action">읽기</a>
-                         </div>
-                     `;
-                });
-
-                Array.from(listContainer.children).forEach(child => {
-                    if (!child.classList.contains('loader')) {
-                        listContainer.removeChild(child);
-                    }
-                });
-                listContainer.insertAdjacentHTML('beforeend', listHtml);
+                renderModalBookList(data, listContainer);
             })
             .catch(error => {
-                console.error('Error fetching book data:', error);
+                console.error(`Error fetching ${type} data:`, error);
                 loader.style.display = 'none';
                 Array.from(listContainer.children).forEach(child => {
                     if (!child.classList.contains('loader')) {
                         listContainer.removeChild(child);
                     }
                 });
-                listContainer.insertAdjacentHTML('beforeend', `<p style="text-align: center; color: red; padding: 20px 0;">${error.message || '오류가 발생했습니다.'}</p>`);
+                listContainer.innerHTML = `<div class="modal-no-books">${error.message || '오류가 발생했습니다.'}</div>`;
             });
     }
 
@@ -209,29 +357,81 @@
         if (modal) {
             modal.style.display = 'none';
             const listContainer = modal.querySelector('.modal-list');
-            if(listContainer) {
+            if (listContainer) {
                 Array.from(listContainer.children).forEach(child => {
                     if (!child.classList.contains('loader')) {
                         listContainer.removeChild(child);
                     }
                 });
                 const loader = listContainer.querySelector('.loader');
-                if(loader) loader.style.display = 'none';
+                if (loader) loader.style.display = 'none';
             }
         }
     }
 
-    // 모달 외부 클릭 시 닫기 (책 모달만 해당)
+    // 모달 외부 클릭 시 닫기
     window.onclick = function(event) {
         const bookModal = document.getElementById('bookModal');
-        if (event.target == bookModal) {
+        const groupModal = document.getElementById('groupModal');
+        if (event.target === bookModal) {
             closeModal('bookModal');
+        } else if (event.target === groupModal) {
+            closeModal('groupModal');
         }
     }
-</script>
 
-</body>
-</html>
+    // 그룹 책 목록 렌더링 함수 (list.html 기반)
+    function renderModalBookList(books, listContainer) {
+        if (!listContainer) return;
+
+        if (!books || books.length === 0) {
+            listContainer.innerHTML = '<div class="modal-no-books">등록된 그룹 도서가 없습니다.</div>';
+            return;
+        }
+
+        const ul = document.createElement('ul');
+        ul.className = 'modal-book-list';
+
+        books.forEach(book => {
+            const li = document.createElement('li');
+            li.className = 'modal-book-item';
+
+            const img = document.createElement('img');
+            img.src = book.cover ? book.cover : '/img/default_book_cover.png';
+            img.alt = book.title || '책 표지';
+
+            const span = document.createElement('span');
+            span.textContent = book.title || '제목 없음';
+            span.title = book.title || '';
+
+            li.appendChild(img);
+            li.appendChild(span);
+            ul.appendChild(li);
+        });
+
+        Array.from(listContainer.children).forEach(child => {
+            if (!child.classList.contains('loader')) {
+                listContainer.removeChild(child);
+            }
+        });
+        listContainer.appendChild(ul);
+    }
+
+    // 그룹 클릭 이벤트 리스너
+    const crewList = document.querySelector('.crew_list');
+    if (crewList) {
+        crewList.addEventListener('click', function(event) {
+            const crewItem = event.target.closest('.crew_one');
+            if (!crewItem) return;
+
+            const groupId = crewItem.dataset.groupId;
+            const groupName = crewItem.querySelector('.crew_name')?.textContent || '그룹';
+            if (groupId) {
+                openModal('group', groupId, groupName);
+            }
+        });
+    }
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
 <script>
@@ -251,6 +451,6 @@
     } else {
         $('#useroriginimg').attr("src", "/img/bookduck_login.png"); // 기본 이미지 설정
     }
-
-
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c66c908c7eb0bd',t:'MTc0NjY4MDc0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c69c4798f67bcf',t:'MTc0NjY4MjcwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

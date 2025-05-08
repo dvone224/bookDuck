@@ -39,6 +39,7 @@ public class BoardService {
      * @param groupId 그룹 ID
      * @return 공개된 책 ID의 Set
      */
+
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Set<Long> getPublicBookIdsForGroup(Long groupId) {
         log.debug("Fetching public book IDs for group ID: {}", groupId);
@@ -56,6 +57,7 @@ public class BoardService {
      * @throws IllegalArgumentException 그룹, 책을 찾을 수 없거나 할 때
      * @throws AccessDeniedException 사용자가 리더 권한이 없을 때
      */
+
     @Transactional // 데이터 변경 트랜잭션
     public boolean toggleBookPrivacy(Long groupId, Long bookId, Long currentUserId) throws AccessDeniedException {
         log.info("User {} attempting to toggle privacy for book {} in group {}", currentUserId, bookId, groupId);
