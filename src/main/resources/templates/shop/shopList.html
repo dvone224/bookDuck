@@ -6,6 +6,11 @@
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck²::북덕이 eBook 서점</title>
     <style>
+
+
+
+        /*아이콘 임포트*/
+        /* Fontawesome 4.7 */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
         @font-face {
             font-family: 'Cafe24Supermagic-Bold-v1.0';
@@ -118,29 +123,56 @@
         body {
             margin: 0;
             padding: 0;
-            width: 100%;
+            width: 100%; /* 가로를 화면에 맞게 설정 */
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
+
+
+        /* 컨테이너 스타일 */
         .container {
-            width: 100%;
-            max-width: 768px;
-            padding: 10px;
+            /*border: 1px solid slateblue;*/
+            /*width: 100%;*/
+            width: 768px;
+            /*            max-width: 768px;*/
+            /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
+        header{
+            width: 768px;
+            /*            max-width: 768px;*/
+        }
+
+        /*버튼 기본 규격*/
         .btn_circle{
+            /*            border: 1px solid red;*/
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             margin: 10px;
+            /*            font-size: 20px;*/
+        }
+
+        .btn_circle .btn_icon{
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .btn_circle .btn_icon_color{
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
         }
         .btn_circle_big{
             width: 55px;
@@ -149,6 +181,13 @@
             color: white;
             cursor: pointer;
         }
+
+        .btn_circle_big .btn_icon{
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+        }
+
         .btn_long{
             width: 100%;
             height: 45px;
@@ -174,16 +213,6 @@
             align-items: center;
             padding: 10px;
             margin-left: 5px;
-        }
-        .btn_icon{
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-        }
-        .btn_icon_color{
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
         }
         .box{
             width: 100%;
@@ -223,12 +252,12 @@
         .line{
             width: 100%;
             height: 1px;
-            background-color: var(--cancle-color-middle);
-            margin-top: 10px;
-            margin-bottom: 10px;
         }
         .blue{
             background: var(--main-color-middle);
+        }
+        .blue2{
+            color: var(--main-color-middle);
         }
         .yellow{
             background: var(--assist-color-middle);
@@ -260,12 +289,19 @@
         .gray{
             background: var(--cancle-color-middle);
         }
+        .gray2{
+            color: var(--cancle-color-middle);
+        }
         .light_gray{
             background: var(--cancle-color-light);
         }
         .white{
             background: white;
         }
+        .white2{
+            color: white;
+        }
+
         .blue_line_thin{
             border: 1px solid var(--main-color-middle);
         }
@@ -273,7 +309,7 @@
             border: 1px solid var(--assist-color-middle);
         }
         .input_long{
-            margin-bottom: 10px;
+            /*            margin-bottom: 10px;*/
             width: 100%;
             height: 45px;
             border-radius: 45px;
@@ -312,6 +348,12 @@
             cursor: pointer;
             position: relative;
         }
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--main-color-middle);
+        }*/
+        /*input[type="checkbox"] + label{
+            border:3px solid var(--assist-color-middle);
+        }*/
         input[type="checkbox"]:checked + label::after {
             content: '✔';
             font-size: 16px;
@@ -327,6 +369,14 @@
             transform: translate(-50%, -50%);
             border-radius: 50%;
         }
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--main-color-middle);
+        }*/
+        /*input[type="checkbox"]:checked + label::after{
+            background: var(--assist-color-middle);
+        }*/
+
+        /*대표 이미지들 설정*/
         .processImg{
             width: 300px;
             height: 300px;
@@ -335,18 +385,130 @@
             width: 100%;
             height: 100%;
         }
-        @media screen and (max-width: 768px) {
+
+        .error{
+            color: red;
+            margin: 5px;
+            text-align: center;
+            font-size: var(--font-size-2);
+        }
+
+
+        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
             .container {
-                padding: 5px;
+                width: 100%;
+            }
+            header{
+                width: 100%;
             }
         }
         @media screen and (max-width: 480px) {
             .container {
-                font-size: 14px;
+                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
             }
         }
-        .sort-dropdown {
+
+        /* 여기까지 메인 CSS */
+        .test1{
+            border: 1px solid red;
+        }
+        .test2{
+            border: 1px solid blue;
+        }
+        /* test CSS */
+
+        /*헤더 메뉴*/
+
+        .header_one {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px; }
+
+        .header_one_top, .header_right{
+            display: flex;
+        }
+
+        .header_one_top {
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
+            padding: 10px 0;
+        }
+
+        .logo{
+            width: 150px;
+            height: 40px;
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            font-size: var(--font-size-0);
+            color: var(--main-color-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+
+        .header_one_bottom{
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box_none{
+            display: flex;
+            width: 100%;
+        } /*!* 메뉴 레이아웃 *!*/
+
+        .box_none2{
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .point_menu{
+            height: 2px;
+            width: 30%;
+            background: var(--main-color-dark);
+        }
+        /*!* 두께 증가 *!*/
+        .menu{
+            height: auto; /*!* 내용에 맞게 *!*/
+            padding: 10px 0; /*!* 상하 패딩 *!*/
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center; /*!* 중앙 정렬 *!*/
+            color: var(--cancle-color-dark);
+            transition: color 0.3s, font-weight 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: var(--font-size-2);
+        }
+
+        .menu:hover {
+            color: var(--main-color-dark);
+        }
+
+        .this_page {
+            /*border: 1px solid red;*/
+            width: 100px;
+            color: var(--main-color-dark);
+            font-weight: bold;
+        }
+
+
+
+
+
+
+        /*드롭다운 메뉴 꾸미기*/
+        .sort-dropdown {
+            width: 100%; /* 필요시 조정 가능 */
+            height: 40px;
+            border-radius: 10px;
+            margin-bottom: 0;
             position: relative;
             font-size: var(--font-size-2);
             color: var(--assist-color-dark);
@@ -437,13 +599,14 @@
         }
         .input_none_long {
             border: none;
-            text-align: left;
-            padding-left: 15px;
-            width: 100%;
+            text-align: left; /* 검색어는 보통 왼쪽 정렬 */
+            padding-left: 15px; /* 내부 여백 */
+            width: 95%;
             height: 100%;
             font-family: 'GowunBatang-Regular';
             color: var(--assist-color-dark);
-            font-size: var(--font-size-2);
+            font-size: var(--font-size-2); /* main.css와 일치 */
+            text-align: center;
         }
         .input_none_long:focus {
             outline: none;
@@ -459,7 +622,7 @@
         }
         .book_cnt {
             color: var(--main-color-dark);
-            font-size: var(--font-size-3);
+            font-size: var(--font-size-2); /* 글꼴 크기 조정 */
         }
         .controller_list {
             display: flex;
@@ -468,13 +631,20 @@
         #sortSelect {
             padding: 5px 8px;
             border-radius: 5px;
-            border: 1px solid var(--assist-color-middle);
-            font-size: var(--font-size-3);
+/*            border: 1px solid var(--assist-color-middle);*/
+            border: none;
+            font-size: var(--font-size-2);
             color: var(--assist-color-dark);
             background-color: white;
             cursor: pointer;
         }
-        .box_none {
+
+        #sortSelect :focus{
+            border: none;
+        }
+
+
+        .box_none { /* 검색 결과 컨테이너를 감싸는 역할 */
             width: 100%;
             max-width: 768px;
         }
@@ -504,6 +674,7 @@
             border-radius: calc(var(--border-middle) - 5px);
         }
         .book-info {
+            width: 100%;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -515,16 +686,17 @@
             margin-bottom: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            white-space: nowrap; /* 한 줄로 표시 */
+            max-width: 80%;            /* 부모 너비 넘지 않게 */
+            display: block;             /* inline 요소를 block으로 변환 (안 하면 width 적용 안 됨) */
         }
         .book-info p {
             font-size: var(--font-size-3);
-            color: var(--cancle-color-dark);
             margin-bottom: 3px;
             line-height: 1.4;
         }
-        .book-info p strong {
-            color: var(--assist-color-dark);
+        .book-info p strong { /* 가격 등 강조 텍스트 */
+            font-weight: bold;
         }
         .status-message {
             text-align: center;
@@ -589,75 +761,16 @@
             border: none;
             background-color: transparent;
         }
-        .header_one {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
+
+        input{
+            transform: translate(4%);
         }
-        .header_one_top, .header_right{
-            display: flex;
-        }
-        .header_one_top {
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 10px 0;
-        }
-        .logo{
-            width: 150px;
-            height: 40px;
-            font-family: 'Cafe24Supermagic-Bold-v1.0';
-            font-size: var(--font-size-0);
-            color: var(--main-color-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .header_one_bottom{
-            display: flex;
-            flex-direction: column;
-        }
-        .box_none{
-            display: flex;
-            width: 100%;
-        }
-        .box_none2{
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .point_menu{
-            height: 2px;
-            width: 30%;
-            background: var(--main-color-dark);
-        }
-        .menu{
-            height: auto;
-            padding: 10px 0;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--cancle-color-dark);
-            transition: color 0.3s, font-weight 0.3s;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: var(--font-size-2);
-        }
-        .menu:hover {
-            color: var(--main-color-dark);
-        }
-        .this_page {
-            width: 100px;
-            color: var(--main-color-dark);
-            font-weight: bold;
-        }
+
     </style>
 </head>
 <body>
+<!--<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>-->
+
 <header>
     <div class="header_one">
         <div class="header_one_top">
@@ -665,10 +778,10 @@
                 <a href="/home" class="logo">BookDuck²</a>
             </div>
             <div class="header_right">
-                <div class="btn_circle cart-btn">
+                <div sec:authorize="isAuthenticated()" class="btn_circle cart-btn">
                     <i class="fa-solid fa-cart-shopping blue2 btn_icon_color"></i>
                 </div>
-                <div class="btn_circle user-btn">
+                <div sec:authorize="isAuthenticated()" class="btn_circle user-btn">
                     <i class="fa-solid fa-user blue2 btn_icon_color"></i>
                 </div>
             </div>
@@ -689,21 +802,8 @@
     </div>
 </header>
 
-<div class="container">
-    <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
-        <option value="">전체 카테고리</option>
-        <option value="1">소설/시/희곡</option>
-        <option value="55889">만화</option>
-        <option value="170">경제경영</option>
-        <option value="336">자기계발</option>
-        <option value="656">인문학</option>
-        <option value="798">사회과학</option>
-        <option value="74">과학</option>
-        <option value="987">컴퓨터/모바일</option>
-        <option value="1383">어린이</option>
-        <option value="1137">유아</option>
-    </select>
 
+<div class="container">
     <div class="seperate input_long yellow_line">
         <div class="seperate_one">
             <input class="input_none_long" type="text" id="searchQuery" placeholder="원하는 eBook을 찾아볼까요?" aria-label="eBook 검색">
@@ -712,7 +812,22 @@
             <button class="btn_circle_mini yellow" id="searchButton" aria-label="검색"><i class="fas fa-search"></i></button>
         </div>
     </div>
-
+    <div class="sort-dropdown">
+        <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
+            <option value="">전체 카테고리</option>
+            <option value="1">소설/시/희곡</option>
+            <option value="55889">만화</option>
+            <option value="170">경제경영</option>
+            <option value="336">자기계발</option>
+            <option value="656">인문학</option>
+            <option value="798">사회과학</option>
+            <option value="74">과학</option>
+            <option value="987">컴퓨터/모바일</option>
+            <option value="1383">어린이</option>
+            <option value="1137">유아</option>
+        </select>
+    </div>
+    <div class="line yellow"></div>
     <div class="controller">
         <div class="book_cnt">0건</div>
         <div class="controller_list">
@@ -725,8 +840,9 @@
     </div>
 
     <div class="box_none">
-        <div class="line"></div>
-        <div id="results"></div>
+        <div id="results">
+            <!-- 검색 결과가 여기에 동적으로 삽입됩니다. -->
+        </div>
     </div>
 
     <div id="paginationContainer"></div>
@@ -913,14 +1029,15 @@
                 const publisher = book.publisher || '출판사 정보 없음';
                 const price = book.priceStandard;
                 const coverHtml = `<img src="${coverUrl}" alt="${title} 표지" loading="lazy" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">`;
-                const priceHtml = (typeof price === 'number' && price > 0) ? `<p><strong>가격:</strong> ${price.toLocaleString()}원</p>` : '<p>가격 정보 없음</p>';
+                const priceHtml = (typeof price === 'number' && price > 0) ? `<p><strong>${price.toLocaleString()}원</strong></p>` : '<p>가격 정보 없음</p>';
+
                 bookElement.innerHTML = `
                     ${coverHtml}
                     <div class="book-info">
                         <h3>${title}</h3>
-                        <p><strong>저자:</strong> ${author}</p>
-                        <p><strong>출판사:</strong> ${publisher}</p>
-                        ${priceHtml}
+                        <p>${author}</p>
+                        <p>${publisher}</p>
+                        <h2><strong>${priceHtml}</strong></h2>
                     </div>
                 `;
                 resultsContainer.appendChild(bookElement);
