@@ -2,11 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <!-- 기존 head 내용 유지 (header 프래그먼트는 주석 처리 또는 실제 경로로) -->
-    <!-- <head th:replace="~{fragments/header :: header}"> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
-    <title>BookDuck² :: 명예의 전당</title> <!-- 페이지 타이틀 명확히 -->
+    <title>BookDuck² :: 명예의 전당</title>
     <style>
 
 
@@ -176,7 +175,7 @@
             /*border: 1px solid slateblue;*/
             /*width: 100%;*/
             width: 768px;
-/*            max-width: 768px;*/
+            /*            max-width: 768px;*/
             /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
             padding: 15px;
             display: flex;
@@ -186,12 +185,12 @@
         }
         header{
             width: 768px;
-/*            max-width: 768px;*/
+            /*            max-width: 768px;*/
         }
 
         /*버튼 기본 규격*/
         .btn_circle{
-/*            border: 1px solid red;*/
+            /*            border: 1px solid red;*/
             width: 45px;
             height: 45px;
             border-radius: 50%;
@@ -200,7 +199,7 @@
             align-items: center;
             cursor: pointer;
             margin: 10px;
-/*            font-size: 20px;*/
+            /*            font-size: 20px;*/
         }
 
         .btn_circle .btn_icon{
@@ -356,7 +355,7 @@
         }
 
         .input_long{
-/*            margin-bottom: 10px;*/
+            /*            margin-bottom: 10px;*/
             width: 100%;
             height: 45px;
             border-radius: 45px;
@@ -468,7 +467,7 @@
         /* 여기까지 메인 CSS */
 
 
-       .header_one {
+        .header_one {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 15px; }
@@ -562,7 +561,7 @@
         }
 
         .search-area-board{
-/*            border: 1px solid blue;*/
+            /*            border: 1px solid blue;*/
             width: 100%;
             position: relative;
             margin-bottom: 10px;
@@ -655,7 +654,7 @@
         }
 
         .board-item {
-/*            border: 1px solid red;*/
+            /*            border: 1px solid red;*/
             border-radius: var(--border-middle);
             display: flex;
             flex-direction: column;
@@ -691,12 +690,12 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-/*            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;*/
+            /*            line-height: 1.3;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        text-overflow: ellipsis;*/
         }
 
         .box_groupname{
@@ -710,10 +709,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-/*            padding: 3px 8px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 4px;*/
+            /*            padding: 3px 8px;
+                        border-radius: 10px;
+                        display: inline-block;
+                        margin-top: 4px;*/
         }
 
         .crew_text{
@@ -721,13 +720,13 @@
             font-size: var(--font-size-3);
         }
 
-/*        .board-item-date {
-            font-size: 0.8em;
-            color: #777;
-            text-align: right;
-            margin-top: auto;
-            padding-top: 10px;
-        }*/
+        /*        .board-item-date {
+                    font-size: 0.8em;
+                    color: #777;
+                    text-align: right;
+                    margin-top: auto;
+                    padding-top: 10px;
+                }*/
         .no-boards-message {
             text-align: center;
             padding: 40px;
@@ -750,26 +749,21 @@
     <div class="header_one">
         <div class="header_one_top">
             <div class="heaer_left">
-                <a href="/home" class="logo">BookDuck²</a> <!-- 로고에 링크 추가 -->
+                <a href="/home" class="logo">BookDuck²</a>
             </div>
             <div class="header_right">
-                <!-- 로그인 상태에 따라 다른 버튼 표시 (Thymeleaf sec 네임스페이스 사용 예시) -->
-                <div sec:authorize="isAuthenticated()" class="btn_circle" onclick="location.href='/cart/cartList'"> <!-- 장바구니 경로 확인 -->
+                <div sec:authorize="isAuthenticated()" class="btn_circle cart-btn">
                     <i class="fa-solid fa-cart-shopping blue2 btn_icon_color"></i>
                 </div>
-                <div sec:authorize="isAuthenticated()" class="btn_circle" onclick="location.href='/userinfo'"> <!-- 마이페이지 경로 확인 -->
+                <div sec:authorize="isAuthenticated()" class="btn_circle user-btn">
                     <i class="fa-solid fa-user blue2 btn_icon_color"></i>
                 </div>
-<!--                <div sec:authorize="isAnonymous()" class="btn_circle login" onclick="location.href='/login-form'">
-                    <i class="fa-solid fa-right-to-bracket"></i> &lt;!&ndash; 로그인 아이콘 &ndash;&gt;
-                </div>-->
             </div>
         </div>
-
         <div class="header_one_bottom">
             <div class="box_none">
                 <a href="/home" class="menu this_page">명예의 전당</a>
-                <a href="/shop/shopList" class="menu">북덕이 서점</a> <!-- 실제 서점 경로로 수정 -->
+                <a href="/shop/shopList" class="menu">북덕이 서점</a>
             </div>
             <div class="box_none">
                 <div class="box_none2"><div class="point_menu"></div></div>
@@ -783,26 +777,20 @@
 </header>
 
 <div class="container">
-    <!-- "모임 생성하기" 버튼은 그대로 유지 -->
-    <div class="box btn_box blue" onclick="location.href='/group/addGroup'"> <!-- 색상 및 디자인은 맞게 조절 -->
+    <div class="box btn_box blue" onclick="location.href='/group/addGroup'">
         모임 생성하기
     </div>
-
-    <!-- 컨트롤 영역: 검색, 필터, 정렬 -->
     <div class="box_none">
         <div class="search-area-board">
             <input class="input_long yellow_line" type="text" id="boardSearchQueryInput" placeholder="책 제목으로 게시글 검색" th:value="${currentQuery}" aria-label="게시글 검색">
             <button class="btn_circle_mini yellow" type="button" id="boardSearchButton" aria-label="검색"><i class="fas fa-search white2"></i></button>
         </div>
     </div>
-
     <div class="controls-container">
-
         <div class="filter-button">
             <button class="btn_book" type="button" id="filterAllBoardsBtn" th:classappend="${!currentFilterMyBooks} ? 'active'" >모든 책 보기</button>
             <button class="btn_book" type="button" id="filterMyOwnedBooksBtn" th:classappend="${currentFilterMyBooks} ? 'active'" th:disabled="${loginuser == null}">내가 구매한 책만 보기</button>
         </div>
-
         <div class="sort-dropdown">
             <select id="boardSortOptions">
                 <option value="createdAt_DESC" th:selected="${currentSortBy == 'createdAt' and currentSortDir == 'DESC'}">최신순</option>
@@ -810,37 +798,34 @@
             </select>
         </div>
     </div>
-
-    <!-- 게시글 목록 -->
     <div class="board-list" th:if="${not #lists.isEmpty(boards)}">
-        <div class="board-item" th:each="boardDto : ${boards}">
+        <div class="board-item" th:each="boardDto : ${boards}" th:data-board-id="${boardDto.boardId}">
             <div class="board-item-header">
                 <img th:src="${boardDto.bookCover ?: '/img/default_book_cover.png'}"
                      th:alt="${boardDto.bookTitle}" class="board-item-cover"
                      onerror="this.onerror=null; this.src='/img/default_book_cover.png';"/>
                 <div class="board-item-info">
                     <div class="box_groupname">
-                    <div class="board-item-group-name" th:text="${boardDto.groupName}">그룹 이름</div><span class="crew_text">CREW</span>
+                        <div class="board-item-group-name" th:text="${boardDto.groupName}">그룹 이름</div><span class="crew_text">CREW</span>
                     </div>
                     <div class="board-item-book-title" th:title="${boardDto.bookTitle}" th:text="${boardDto.bookTitle}">책 제목</div>
                 </div>
             </div>
-<!--            <div class="board-item-date" th:if="${boardDto.createdAt}"
-                 th:text="${#temporals.format(boardDto.createdAt, 'yyyy-MM-dd HH:mm')}">작성일시</div>-->
         </div>
     </div>
     <div th:if="${#lists.isEmpty(boards)}" class="no-boards-message">
         <p>표시할 게시글이 없습니다.</p>
     </div>
-    <!-- 페이지네이션은 현재 구현에서 제외 (페이지 리로드 방식이므로 서버에서 페이지네이션 데이터 필요) -->
-
-</div><!-- /.container -->
+</div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // 현재 필터, 정렬, 검색 상태 (Thymeleaf에서 전달받음)
+    // 로그인 상태를 서버로부터 받아옴
+    const isLoggedIn = /*[[${isLoggedIn}]]*/ false;
+
+    // 현재 필터, 정렬, 검색 상태
     let currentBoardQuery = /*[[${currentQuery}]]*/ '';
     let currentBoardFilterMyBooks = /*[[${currentFilterMyBooks}]]*/ false;
     let currentBoardSortBy = /*[[${currentSortBy}]]*/ 'createdAt';
@@ -852,39 +837,31 @@
     const filterAllBoardsBtn = document.getElementById('filterAllBoardsBtn');
     const filterMyOwnedBooksBtn = document.getElementById('filterMyOwnedBooksBtn');
     const boardSortOptionsSelect = document.getElementById('boardSortOptions');
+    const cartButton = document.querySelector('.cart-btn');
+    const userButton = document.querySelector('.user-btn');
+    const boardList = document.querySelector('.board-list');
 
     // 필터, 정렬, 검색 조건 변경 시 페이지 리로드 함수
     function applyBoardSearchAndFilters() {
-        const url = new URL(window.location.pathname, window.location.origin); // 현재 페이지의 기본 경로
-
-        // 1. 검색어
+        const url = new URL(window.location.pathname, window.location.origin);
         const queryValue = boardSearchQueryInput.value.trim();
         if (queryValue) {
             url.searchParams.set('query', queryValue);
         } else {
-            url.searchParams.delete('query'); // 검색어 없으면 파라미터에서 제거
+            url.searchParams.delete('query');
         }
-
-        // 2. "내가 구매한 책만 보기" 필터
-        // 현재 활성화된 버튼 기준으로 filterMyBooks 값을 결정
-        // (또는 클릭 이벤트에서 직접 값을 받아와서 currentBoardFilterMyBooks를 업데이트하고 사용)
         url.searchParams.set('filterMyBooks', String(currentBoardFilterMyBooks));
-
-
-        // 3. 정렬
         const sortValue = boardSortOptionsSelect.value;
         const parts = sortValue.split('_');
         url.searchParams.set('sortBy', parts[0]);
         url.searchParams.set('sortDir', parts[1]);
-
         console.log("Applying board filters and sort. URL:", url.toString());
-        window.location.href = url.toString(); // 페이지 새로고침
+        window.location.href = url.toString();
     }
 
-    // --- 이벤트 리스너 설정 ---
+    // 이벤트 리스너 설정
     if (boardSearchButton) {
         boardSearchButton.addEventListener('click', () => {
-            // 검색 버튼 클릭 시, 현재 필터/정렬 상태는 유지하고 검색어만 업데이트
             applyBoardSearchAndFilters();
         });
     }
@@ -900,37 +877,82 @@
 
     if (filterAllBoardsBtn) {
         filterAllBoardsBtn.addEventListener('click', () => {
-            currentBoardFilterMyBooks = false; // 상태 변경
+            currentBoardFilterMyBooks = false;
             applyBoardSearchAndFilters();
         });
     }
 
-    if (filterMyOwnedBooksBtn && !filterMyOwnedBooksBtn.disabled) { // 버튼이 존재하고 비활성화되지 않았을 때만
+    if (filterMyOwnedBooksBtn && !filterMyOwnedBooksBtn.disabled) {
         filterMyOwnedBooksBtn.addEventListener('click', () => {
-            currentBoardFilterMyBooks = true; // 상태 변경
+            currentBoardFilterMyBooks = true;
             applyBoardSearchAndFilters();
         });
     }
 
     if (boardSortOptionsSelect) {
         boardSortOptionsSelect.addEventListener('change', () => {
-            applyBoardSearchAndFilters(); // 정렬 변경 시 현재 검색어/필터 유지
+            applyBoardSearchAndFilters();
         });
     }
 
-    // 페이지 로드 시 UI 상태 반영 (Thymeleaf가 대부분 처리)
+    // 장바구니 버튼 클릭 이벤트
+    if (cartButton) {
+        cartButton.addEventListener('click', function() {
+            if (isLoggedIn) {
+                window.location.href = '/cart/cartList';
+            } else {
+                alert('로그인 먼저 해주세요');
+                window.location.href = '/login-form';
+            }
+        });
+    }
+
+    // 마이페이지 버튼 클릭 이벤트
+    if (userButton) {
+        userButton.addEventListener('click', function() {
+            if (isLoggedIn) {
+                window.location.href = '/userinfo';
+            } else {
+                alert('로그인 먼저 해주세요');
+                window.location.href = '/login-form';
+            }
+        });
+    }
+
+    // 책 요소 클릭 이벤트
+    if (boardList) {
+        boardList.addEventListener('click', function(event) {
+            const clickedItem = event.target.closest('.board-item');
+            if (clickedItem) {
+                const boardId = clickedItem.dataset.boardId;
+                console.log("Board ID clicked:", boardId);
+                if (isLoggedIn) {
+                    if (boardId && /^\d+$/.test(boardId)) {
+                        window.location.href = `/board/${encodeURIComponent(boardId)}`;
+                    } else {
+                        alert('게시글 정보가 올바르지 않습니다.');
+                        console.error("Invalid or missing board ID:", boardId);
+                    }
+                } else {
+                    alert('로그인 먼저 해주세요');
+                    window.location.href = '/login-form';
+                }
+            }
+        });
+    }
+
+    // 페이지 로드 시 UI 상태 반영
     document.addEventListener('DOMContentLoaded', function() {
-        // JavaScript 변수에 초기값 설정 (이미 Thymeleaf 인라인으로 처리됨)
         console.log("Board list page initialized with state:", {
             query: currentBoardQuery,
             filterMyBooks: currentBoardFilterMyBooks,
             sortBy: currentBoardSortBy,
             sortDir: currentBoardSortDir
         });
-        // 필요하다면 여기서 JavaScript로 추가적인 UI 초기화
     });
 
     /*]]>*/
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca3c31ad1144df',t:'MTc0NjcyMDcwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
