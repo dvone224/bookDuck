@@ -364,7 +364,7 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            margin: 10px;
+            border: none;
             /*            font-size: 20px;*/
         }
 
@@ -426,10 +426,10 @@
             width: 100%;
             height: auto;
             border-radius: var(--border-big);
-            display: flex;
+/*            display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
+            align-items: center;*/
             padding: 10px;
             margin-bottom: 10px;
             max-width: 768px;
@@ -571,9 +571,9 @@
             cursor: pointer;
             position: relative;
         }
-        /*input[type="checkbox"] + label{
+        input[type="checkbox"] + label{
             border:3px solid var(--main-color-middle);
-        }*/
+        }
         /*input[type="checkbox"] + label{
             border:3px solid var(--assist-color-middle);
         }*/
@@ -592,9 +592,9 @@
             transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
             border-radius: 50%; /* 내부 원형 유지 */
         }
-        /*input[type="checkbox"]:checked + label::after{
+        input[type="checkbox"]:checked + label::after{
             background: var(--main-color-middle);
-        }*/
+        }
         /*input[type="checkbox"]:checked + label::after{
             background: var(--assist-color-middle);
         }*/
@@ -678,7 +678,37 @@
             flex: 1;
         }
 
+        .box_full{
+            width: 100%;
+        }
 
+        .sum_box{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--main-color-dark);
+            font-weight: bold;
+        }
+        .sum_text{
+        }
+        .sum_cnt{
+        }
+        .empty-cart-message{
+            width: 100%;
+        }
+        table{
+            width: 100%;
+            text-align: center;
+
+        }
+
+
+        .img_box{
+            width: 100px;
+            height: 130px;
+            background: #5a6268;
+            border-radius: var(--border-middle);
+        }
 
 
     </style>
@@ -687,32 +717,38 @@
 <!-- 헤더 프래그먼트 (Thymeleaf 사용 시) -->
 <div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
 
+<div class="container">
 <div class="page-title">
     <!-- 세션 정보가 있을 때와 없을 때 분기 처리 -->
-    <span th:if="${session.loginuser}" th:text="${session.loginuser.nickName} + '님의 장바구니'">사용자 장바구니</span>
-    <span th:unless="${session.loginuser}">장바구니</span>
+<!--    <span th:if="${session.loginuser}" th:text="${session.loginuser.nickName} + '님의 장바구니'">사용자 장바구니</span>
+    <span th:unless="${session.loginuser}">장바구니</span>-->
 </div>
 
 <!-- 서버에서 전달된 오류 메시지 표시 -->
-<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+<div th:if="${errorMessage}" class="error-message error" th:text="${errorMessage}"></div>
 
 <!-- 장바구니 비었을 때 메시지 -->
 <div id="empty-cart-msg-container" th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="empty-cart-message">
     <p>장바구니가 비어 있습니다.</p>
     <!-- 쇼핑 페이지 경로를 실제 프로젝트에 맞게 수정하세요 -->
-    <a href="/shop/shopList">쇼핑 계속하기</a>
+    <button class="btn_long blue" href="/shop/shopList">쇼핑 계속하기</button>
 </div>
 
 <!-- 장바구니 내용 (아이템이 있을 때만 표시) -->
-<div id="cart-content-container" th:unless="${cartItems == null or #lists.isEmpty(cartItems)}">
-    <table id="cart-table">
+<div class="box_full" id="cart-content-container" th:unless="${cartItems == null or #lists.isEmpty(cartItems)}">
+    <table id="cart-table" style="width: 100%; table-layout: fixed;">
         <thead>
-        <tr>
-            <th class="checkbox-col"><input type="checkbox" id="select-all-items" title="전체 선택/해제"></th>
-            <th class="image-col">상품 이미지</th>
+        <tr style="height: 50px">
+            <th class="checkbox-col" style="width: 50px;">
+                <input type="checkbox" id="select-all-items" title="전체 선택/해제">
+                <label for="select-all-items"></label>
+            </th>
+
+
+            <th class="image-col" style="width: 100px;">상품 이미지</th>
             <th>상품명</th>
-            <th class="price-col">가격</th>
-            <th class="action-col">삭제</th>
+            <th class="price-col" style="width: 20%;">가격</th>
+            <th class="action-col" style="width: 45px;"></th>
         </tr>
         </thead>
         <tbody>
@@ -721,15 +757,18 @@
             th:data-bookid="${item.bookId}"
             th:data-price="${item.book?.price ?: 0}"
             th:data-title="${item.book?.title ?: '상품명 없음'}"
-            class="cart-item-row">
+            class="cart-item-row" style="height: 140px">
             <td class="checkbox-col">
                 <!-- 개별 상품 선택 체크박스 -->
-                <input type="checkbox" class="item-checkbox" name="selectedItems" th:value="${item.bookId}">
+                <input type="checkbox" class="item-checkbox" name="selectedItems" id="select_item" th:value="${item.bookId}">
+                <label for="select_item"></label>
             </td>
             <td class="image-col">
                 <!-- 책 표지 이미지 (기본 이미지 및 오류 처리 포함) -->
+                <div class="img_box">
                 <img th:if="${item.book?.cover}" th:src="@{${item.book.cover}}" alt="Book Cover" onerror="this.onerror=null; this.src='/img/default_book_cover.png';"/>
                 <span th:unless="${item.book?.cover}">이미지 없음</span>
+                </div>
             </td>
             <td>
                 <!-- 책 제목 (링크 포함) -->
@@ -742,23 +781,25 @@
                 <!-- 책 가격 -->
                 <span class="item-price" th:if="${item.book}" th:text="${#numbers.formatInteger(item.book.price, 0, 'COMMA')} + '원'">0원</span>
             </td>
-            <td class="action-col">
+            <td class="action-col ">
                 <!-- 삭제 버튼 -->
-                <button type="button" class="remove-button"
+                <button type="button" class="remove-button btn_circle gray"
                         th:data-userid="${item.userId}"
-                        th:data-bookid="${item.bookId}">삭제</button>
+                        th:data-bookid="${item.bookId}"><i class="fa-solid fa-trash btn_icon white2"></i></button>
             </td>
         </tr>
         </tbody>
     </table>
 
     <!-- 결제 요약 -->
-    <div class="cart-summary">
-        <h3>선택 상품 금액: <span id="selected-total-amount-display">0원</span></h3>
-        <button type="button" id="checkout-button" disabled>선택 상품 결제하기</button>
+    <div class="box light_blue cart-summary">
+        <div class="box sum_box">
+            <div class="sum_text">합계</div><div class="sum_cnt" id="selected-total-amount-display">0원</div>
+        </div>
+        <button class="btn_long blue" type="button" id="checkout-button" disabled>선택 상품 결제하기</button>
     </div>
 </div>
-
+</div>
 <script th:inline="javascript">
     /*<![CDATA[*/
 

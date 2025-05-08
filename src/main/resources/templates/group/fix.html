@@ -941,23 +941,24 @@ form{
 }
 
 .group-book-item{
+    border: 1px solid red;
     width: 170px;
     height: 220px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
 .box_img_btn{
     width: 170px;
-    height: 200px;
+    height: 240px;
     position: relative;
 }
 
 .select_book_img_box{
+    border: 1px solid blue;
     width: 150px;
-    height: 180px;
+    height: 190px;
     border-radius: var(--border-middle);
     position: absolute;
     top: 50%;
@@ -1101,8 +1102,7 @@ input{
                             </div>
                             <!-- 공개/비공개 토글 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
                             <!-- publicBookIds Set이 null이 아니고, book.id가 null이 아닐 때만 contains 체크 -->
-                            <button class="btn_borad btn_circle" type="button"
-                                    class="toggle-privacy-btn"
+                            <button class="btn_borad btn_circle toggle-privacy-btn" type="button"
                                     th:classappend="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)} ? 'is-public' : 'is-private'"
                                     th:data-is-public="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)}">
                                     <!--th:text="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id) ? '비공개로 전환' : '공개로 전환'}"-->
