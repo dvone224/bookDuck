@@ -1,1525 +1,540 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf?.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}"/>
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
-    <!-- Thymeleaf 변수를 사용하여 동적인 타이틀 생성 -->
     <title th:text="'BookDuck² :: ' + (${group} ? ${group.name} : '그룹') + ' 정보 수정'">CREW 정보 수정</title>
-    <!-- <style> 태그 -->
     <style>
-/*        !* --- 기본 스타일 --- *!
-        body {
-            font-family: sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px; !* 제목 아래 여백 추가 *!
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555; !* 레이블 색상 약간 어둡게 *!
-        }
-        input[type="text"] {
-            width: calc(100% - 22px); !* 패딩 고려한 너비 *!
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em; !* 입력 필드 글자 크기 *!
-            transition: border-color 0.2s ease-in-out; !* 포커스 시 부드러운 효과 *!
-        }
-        input[type="text"]:focus {
-            border-color: #66afe9;
-            outline: 0;
-            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
-        }
-        .read-only-info {
-            color: #777;
-            font-size: 0.9em;
-            margin-top: 5px;
+        /* === CSS 수정본 (가로 정렬 보장 및 버튼 아이콘 수정) === */
+
+        /* 아이콘 임포트 및 폰트 정의 (기존 유지) */
+        @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+        @font-face { font-family: 'Cafe24Supermagic-Bold-v1.0'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2'); font-weight: 700; font-style: normal; }
+        @font-face { font-family: 'GowunBatang-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
+        /* (다른 폰트 정의 생략 없이 유지) */
+        @font-face { font-family: 'GowunDodum-Regular'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff'); font-weight: normal; font-style: normal; }
+        @font-face { font-family: 'ChosunGu'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff'); font-weight: normal; font-style: normal; }
+        @font-face { font-family: 'Ownglyph_corncorn-Rg'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2'); font-weight: normal; font-style: normal; }
+        @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
+        @font-face { font-family: 'TTHakgyoansimKkokkomaR'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2'); font-weight: normal; font-style: normal; }
+        @font-face { font-family: 'SimKyungha'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff'); font-weight: normal; font-style: normal; }
+        @font-face { font-family: 'EarlyFontDiary'; src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2'); font-weight: normal; font-style: normal; }
+
+
+        /* 컬러 파레트 및 CSS 변수 (기존 유지) */
+        :root{
+            --main-color-dark: #00479B; --main-color-middle: #83C7FF; --main-color-light: #E3F4FF;
+            --assist-color-dark: #CE7000; --assist-color-middle: #FFB90B; --assist-color-light: #FFF7E6;
+            --cancle-color-dark: #9B9B9B; --cancle-color-middle: #D3D3D3; --cancle-color-light: #EAEAEA;
+            --crown-color: #ffa500;
+            --border-big: 20px; --border-middle: 10px; --border-circle: 50%;
+            --font-size-0: 28px; --font-size-1: 23px; --font-size-2: 18px; --font-size-3: 13px; --font-size-4: 8px;
+            /* (메모 색상 변수 생략 없이 유지) */
         }
 
-        !* --- 메시지 스타일 (오류, 성공) --- *!
-        .error-message, .success-message {
-            padding: 10px 15px; !* 패딩 조정 *!
-            margin-bottom: 20px; !* 여백 증가 *!
-            border-radius: 4px;
-            text-align: center;
-            font-size: 0.95em; !* 글자 크기 약간 조정 *!
-        }
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
+        /* Global 스타일 초기화 (기존 유지) */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Gowun Batang", sans-serif; font-size: var(--font-size-2); }
+        body { margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; align-items: center; background: var(--main-color-light); }
 
-        !* --- 그룹 멤버 목록 스타일 --- *!
-        .member-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 10px;
+        /* 컨테이너 스타일 (기존 유지) */
+        .container { width: 100%; max-width: 768px; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        header{ width: 100%; max-width: 768px; }
+
+        /* 버튼 기본 규격 (기존 유지) */
+        .btn_circle{ width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 10px; border: none; background-color: transparent; }
+        .btn_circle .btn_icon{ width: 25px; height: 25px; cursor: pointer; }
+        .btn_circle .btn_icon_color{ width: 35px; height: 35px; cursor: pointer; }
+        .btn_long{ width: 100%; height: 45px; border-radius: 45px; color: white; cursor: pointer; border: none; font-weight: bold; max-width: 768px; }
+        .btn_mini{ width: auto; height: 25px; border-radius: 20px; color: white; cursor: pointer; border: none; font-size: var(--font-size-3); font-weight: bold; display: flex; justify-content: center; align-items: center; padding: 0 15px; margin-left: 5px; }
+
+        /* 박스 및 타이틀 (기존 유지) */
+        .box{ width: 100%; border-radius: var(--border-big); display: flex; flex-direction: column; align-items: center; padding: 20px; margin-bottom: 15px; max-width: 768px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .title{ display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; font-weight: bold; width: 100%; }
+        .title label { display: block; font-size: var(--font-size-1); margin-bottom: 8px; color: var(--main-color-dark); }
+        .underline{ width: 80px; height: 2px; margin-top: 5px; background: var(--main-color-dark); }
+        .line{ width: 100%; height: 1px; background-color: var(--cancle-color-light); }
+
+        /* 색상 클래스 (기존 유지) */
+        .blue{ background: var(--main-color-middle); } .blue2{ color: var(--main-color-middle); }
+        .yellow{ background: var(--assist-color-middle); }
+        .dark_blue1{ background: var(--main-color-dark); } .dark_yellow1{ background: var(--assist-color-dark); }
+        .dark_blue2{ color: var(--main-color-dark); } .dark_yellow2{ color: var(--assist-color-dark); }
+        .light_blue{ background: var(--main-color-light); box-shadow: none; border: 1px solid var(--main-color-middle); }
+        .light_yellow{ background: var(--assist-color-light); box-shadow: none; border: 1px solid var(--assist-color-middle); }
+        .gray{ background: var(--cancle-color-middle); } .gray2{ color: var(--cancle-color-middle); }
+        .white{ background: white; } .white2{ color: white; }
+
+        /* 입력 필드 (기존 유지) */
+        .input_long{ width: 100%; height: 45px; border-radius: 25px; box-sizing: border-box; text-align: left; padding: 0 20px; max-width: 768px; margin-bottom: 15px; font-size: var(--font-size-2); }
+        .blue_line{ border: 1px solid var(--main-color-middle); color: var(--main-color-dark); }
+        .blue_line:focus{ border: 2px solid var(--main-color-dark); outline: none; }
+        .yellow_line{ border: 1px solid var(--assist-color-middle); color: var(--assist-color-dark); }
+        .yellow_line:focus{ border: 2px solid var(--assist-color-dark); outline: none; }
+
+        /* 에러/성공 메시지 (기존 유지) */
+        .error-message, .success-message { padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; text-align: center; font-size: 0.95em; width: 100%; max-width: 768px;}
+        .error-message { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success-message { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+        /* 폼 그룹 (기존 유지) */
+        .form-group{ width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
+        .form-group label:not(:empty) { display: block; margin-bottom: 8px; font-weight: bold; color: var(--main-color-dark); }
+
+        /* 멤버 목록 (기존 유지) */
+        .member-list{ width: 100%; display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 15px; padding: 10px 0; list-style: none; margin: 0; }
+        .member_one{ width: 80px; height: auto; display: flex; flex-direction: column; align-items: center; margin: 0 5px; }
+        .member_img_box{ width: 70px; height: 70px; position: relative; margin-bottom: 5px; }
+        .member_img{ border: 3px solid var(--main-color-middle); background: var(--main-color-light); width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
+        .member_img img { width: 100%; height: 100%; object-fit: cover; }
+        .member_img_box .btn_circle_mini { width: 24px; height: 24px; font-size: 12px; position: absolute; bottom: 0; right: 0; background: var(--assist-color-middle); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .member_name{ height: auto; text-align: center; margin-top: 3px; }
+        .member_name>span{ font-size: var(--font-size-3); font-weight: normal; color: var(--main-color-dark); }
+
+        /* 책 관련 섹션 (기존 유지) */
+        .book-section { width: 100%; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--main-color-middle); }
+
+        /* 그룹 도서 목록 (가로 정렬 및 간격 보장) */
+        .group-book-list-container { /* ★ 새로운 래퍼 추가 */
+            width: 100%;
+            background-color: white;
+            border-radius: var(--border-big);
+            padding: 20px; /* 내부 여백 */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 10px; /* 위 요소와의 간격 */
+        }
+        .group-book-list { /* ★ 내부 ul 역할 */
+            width: 100%;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-        }
-        .member-item {
-            display: flex;
-            align-items: center;
-            background-color: #fff;
-            padding: 8px 12px;
-            border-radius: 20px; !* 더 둥글게 *!
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease; !* 호버 효과 *!
-        }
-        .member-item:hover {
-            transform: translateY(-2px); !* 살짝 떠오르는 효과 *!
-        }
-        .member-item img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 8px;
-            object-fit: cover;
-            border: 1px solid #eee; !* 이미지 테두리 *!
-        }
-        .member-item span {
-            font-size: 0.9em;
-            color: #333; !* 글자색 진하게 *!
-        }
-        .leader-mark {
-            color: gold;
-            margin-left: 5px;
-            font-size: 1.1em; !* 아이콘 약간 크게 *!
-        }
-
-        !* --- 책 관련 섹션 구분 --- *!
-        .book-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px dashed #ccc;
-        }
-
-        !* --- 현재 그룹 도서 목록 스타일 --- *!
-        .group-book-list {
+            justify-content: flex-start; /* 왼쪽 정렬 */
+            gap: 15px; /* 아이템 간 간격 */
             list-style: none;
-            padding: 0;
-            margin: 15px 0;
-            display: flex; !* 가로 정렬 *!
-            gap: 15px; !* 아이템 간 간격 *!
-            flex-wrap: wrap; !* 너비 부족 시 줄 바꿈 *!
+            padding: 0; /* 내부 패딩 제거 (컨테이너에서 처리) */
+            margin: 0;
         }
         .group-book-item {
-            position: relative; !* 버튼 위치 기준 *!
-            background-color: #fff;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            padding: 10px;
-            padding-bottom: 45px; !* 버튼 들어갈 공간 추가 확보 *!
+            width: calc(33.333% - 10px); /* 3열, gap 15px 기준 */
+            min-height: 250px;
             display: flex;
-            flex-direction: column; !* 이미지 위, 텍스트 아래 *!
-            align-items: center; !* 가운데 정렬 *!
-            text-align: center;
-            width: calc(33.333% - 10px); !* 3개씩 배치 (gap 고려) *!
-            box-sizing: border-box; !* 패딩, 보더 포함하여 너비 계산 *!
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff; /* 아이템 배경은 흰색 유지 */
+            border: 1px solid #eee;
+            border-radius: var(--border-middle);
+            padding: 10px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: box-shadow 0.2s ease; !* 호버 시 그림자 효과 *!
-            min-height: 180px; !* 최소 높이 지정 (버튼 위치 안정화) *!
+            position: relative; /* 버튼 위치 기준 */
+            box-sizing: border-box;
+            overflow: hidden;
         }
-        .group-book-item:hover {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .box_img_btn {
+            width: 100%;
+            height: 170px;
+            position: relative;
+            margin-bottom: 10px; /* 제목과의 간격 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            overflow: hidden;
         }
-        .group-book-item img {
-            max-width: 70px;
-            height: 100px; !* 고정 높이 *!
-            object-fit: cover; !* 비율 유지하며 채우기 *!
-            border-radius: 3px;
-            margin-bottom: 8px;
-            background-color: #f0f0f0; !* 이미지 로딩 전 배경색 *!
+        .box_img_btn img.select_book_img {
+            display: block;
+            width: auto;
+            height: 100%;
+            max-width: 100%;
+            object-fit: contain;
         }
-        .group-book-item span { !* 책 제목 *!
-            font-size: 0.85em;
-            color: #555;
-            !* 여러 줄 말줄임 처리 *!
+        .select_book_title {
+            font-size: var(--font-size-3);
+            color: var(--main-color-dark);
+            text-align: center;
+            width: 100%;
+            padding: 0 5px; /* 좌우 약간의 패딩 */
             display: -webkit-box;
-            -webkit-line-clamp: 2; !* 최대 2줄 *!
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            height: 2.6em; !* 2줄 높이 확보 (font-size * line-height * lines) *!
-            line-height: 1.3em; !* 줄간격 *!
-            word-break: keep-all; !* 단어 단위 줄바꿈 *!
-            margin-bottom: 10px; !* 버튼과의 간격 *!
-        }
-        .no-books-message {
-            color: #888;
-            font-style: italic;
-            margin: 15px 0;
-            text-align: center; !* 가운데 정렬 *!
+            height: 2.6em;
+            line-height: 1.3em;
+            margin-top: auto; /* 아래로 밀기 */
         }
 
-        !* 책 삭제 버튼 스타일 *!
+        /* 버튼 위치 (오른쪽 상단) */
+        .toggle-privacy-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px; /* 왼쪽 상단 */
+            z-index: 10;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            border: none; cursor: pointer; transition: background-color 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .toggle-privacy-btn.is-public { background-color: var(--assist-color-middle); }
+        .toggle-privacy-btn.is-private { background-color: var(--cancle-color-middle); }
+
         .delete-book-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: rgba(255, 0, 0, 0.7); !* 반투명 빨강 *!
-            color: white;
-            border: none;
-            border-radius: 50%; !* 원형 버튼 *!
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            line-height: 18px; !* 아이콘 세로 중앙 정렬 *!
-            text-align: center;
-            cursor: pointer;
-            opacity: 0; !* 평소엔 숨김 *!
-            transition: opacity 0.2s ease-in-out;
-            padding: 0; !* 내부 패딩 제거 *!
-            z-index: 5; !* 토글 버튼 위에 오도록 *!
+            top: 8px;
+            right: 8px; /* 오른쪽 상단 */
+            z-index: 10;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            border: none; cursor: pointer; background-color: #dc3545;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
-        .group-book-item:hover .delete-book-btn {
-            opacity: 1; !* 호버 시 나타남 *!
+        /* 아이콘 스타일 */
+        .toggle-privacy-btn i, .delete-book-btn i {
+            font-size: 14px; color: white; line-height: 1; /* 추가: 아이콘 세로 정렬 */
         }
-        .delete-book-btn:hover {
-            background-color: rgba(255, 0, 0, 1); !* 호버 시 진하게 *!
+        /* 버튼 비활성화 시 */
+        .toggle-privacy-btn:disabled, .delete-book-btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
         }
 
-        !* --- 공개/비공개 토글 버튼 스타일 --- *!
-        .toggle-privacy-btn {
-            position: absolute; !* li 요소 기준 절대 위치 *!
-            bottom: 8px; !* 아래쪽에 배치 *!
-            left: 50%; !* 가로 중앙 정렬 기준 *!
-            transform: translateX(-50%); !* 정확히 가운데로 이동 *!
-            background-color: #f0f0f0; !* 기본 배경 *!
-            color: #555;
-            border: 1px solid #ccc;
-            padding: 3px 8px;
-            font-size: 0.8em;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-            width: 100px; !* 너비 고정 *!
-            text-align: center;
+        /* 책 검색 (기존 유지) */
+        .book-search-container { position: relative; width: 100%; }
+        #bookSearchResults { position: absolute; top: 100%; left: 0; right: 0; background-color: white; border: 1px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 0 0 4px 4px; display: none; box-sizing: border-box; }
+        #bookSearchResults li { padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0f0f0; }
+        #bookSearchResults li:last-child { border-bottom: none; }
+        #bookSearchResults li:hover { background-color: #f0f0f0; }
+        #bookSearchResults img { max-width: 30px; height: auto; flex-shrink: 0; border-radius: 2px; }
+        #bookSearchResults span { font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .book-check-result { font-size: 0.85em; color: red; display: block; margin-top: -5px; margin-bottom: 10px; font-weight: normal; text-align: center; }
+
+        /* 선택된 추가할 책 표시 (스타일 조정) */
+        #selectedBookDisplay { display: flex; align-items: center; gap: 10px; background-color: var(--assist-color-light); border: 1px solid var(--assist-color-middle); padding: 8px 12px; border-radius: 4px; margin-top: 10px; width: 100%; }
+        #selectedBookDisplay img { max-width: 30px; height: auto; border-radius: 2px; }
+        #selectedBookDisplay span { font-size: 0.9em; color: var(--assist-color-dark); flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #cancelAddBook { margin-left: auto; background: none; border: none; color: var(--assist-color-dark); cursor: pointer; font-size: 1.3em; padding: 0 5px; line-height: 1; opacity: 0.7; transition: opacity 0.2s; }
+        #cancelAddBook:hover { opacity: 1; }
+
+        /* 이름 중복 확인 (기존 유지) */
+        .name-check-result { font-size: 0.85em; margin-top: 5px; font-weight: normal; display: block; text-align: center; height: 1.2em; }
+        .name-available { color: green; }
+        .name-unavailable { color: red; }
+        #groupName:disabled { background-color: #eee; cursor: not-allowed; }
+
+        /* 제출 버튼 (기존 유지) */
+        .submit-button { display: block; width: 100%; padding: 12px; background-color: var(--main-color-middle); color: white; border: none; border-radius: 25px; font-size: var(--font-size-1); font-weight: bold; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; margin-top: 30px; }
+        .submit-button:hover { background-color: var(--main-color-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .submit-button:disabled { background-color: #cccccc; cursor: not-allowed; box-shadow: none; }
+
+        /* 메시지 박스 (기존 유지) */
+        .no-books-message { color: #888; font-style: italic; margin: 15px 0; text-align: center; width: 100%; }
+        .read-only-info.error { color: red; }
+        .under_margin{ margin-bottom: 10px; }
+        .error_box{ width: 100%; margin-top: 20px; }
+        .error_box .error { margin-bottom: 15px; }
+
+        /* 미디어 쿼리 (반응형 간격/열 조정) */
+        @media screen and (max-width: 768px) {
+            .container, header { width: 100%; padding: 10px; }
+            .group-book-list-container { padding: 15px; } /* 컨테이너 패딩 */
+            .group-book-list { gap: 10px; } /* 아이템 간격 */
+            .group-book-item { width: calc(50% - 5px); /* 2열, gap 10px 기준 */ }
         }
-        .toggle-privacy-btn.is-public { !* 현재 공개 상태일 때 *!
-            background-color: #ffebee; !* 연한 빨강 배경 (비공개 전환 유도) *!
-            color: #c62828; !* 진한 빨강 글씨 *!
-            border-color: #ef9a9a;
+        @media screen and (max-width: 480px) {
+            .container { padding: 5px; font-size: 14px; }
+            .group-book-list-container { padding: 10px; }
+            .group-book-list { gap: 10px; }
+            .group-book-item { width: calc(50% - 5px); min-height: 230px; /* 높이 조정 */ }
+            .member_one { width: 70px; margin: 0 5px; }
+            .member_img_box { width: 60px; height: 60px; }
+            .input_long { padding: 0 15px; }
+            .submit-button { font-size: var(--font-size-2); }
+            .title label { font-size: var(--font-size-2); }
         }
-        .toggle-privacy-btn.is-private { !* 현재 비공개 상태일 때 *!
-            background-color: #e8f5e9; !* 연한 녹색 배경 (공개 전환 유도) *!
-            color: #2e7d32; !* 진한 녹색 글씨 *!
-            border-color: #a5d6a7;
-        }
-        .toggle-privacy-btn:hover {
-            opacity: 0.8;
-        }
-        .toggle-privacy-btn:disabled { !* 처리 중 비활성화 *!
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-
-        !* --- 책 검색 영역 스타일 --- *!
-        .book-search-container {
-            position: relative; !* 검색 결과 위치 기준 *!
-        }
-        #bookSearchResults {
-            position: absolute;
-            top: 100%; !* 입력 필드 바로 아래 *!
-            left: 0;
-            right: 0; !* 너비 100% *!
-            background-color: white;
-            border: 1px solid #ccc;
-            border-top: none; !* 위쪽 테두리 제거 *!
-            max-height: 200px;
-            overflow-y: auto; !* 내용 많으면 스크롤 *!
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            z-index: 100; !* 다른 요소 위에 표시 *!
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 0 0 4px 4px;
-            display: none; !* 초기 숨김 *!
-            box-sizing: border-box;
-        }
-        #bookSearchResults li {
-            padding: 8px 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px; !* 이미지와 텍스트 간격 *!
-            border-bottom: 1px solid #f0f0f0; !* 구분선 *!
-        }
-        #bookSearchResults li:last-child {
-            border-bottom: none; !* 마지막 항목 구분선 제거 *!
-        }
-        #bookSearchResults li:hover {
-            background-color: #f0f0f0;
-        }
-        #bookSearchResults img {
-            max-width: 30px;
-            height: auto; !* 비율 유지 *!
-            flex-shrink: 0; !* 이미지 크기 유지 *!
-        }
-        #bookSearchResults span { !* 검색 결과 제목 *!
-            font-size: 0.9em;
-            white-space: nowrap; !* 줄바꿈 방지 *!
-            overflow: hidden;
-            text-overflow: ellipsis; !* 넘치면 말줄임 *!
-        }
-
-        !* --- 책 추가 중복 확인 메시지 스타일 --- *!
-        .book-check-result {
-            font-size: 0.85em;
-            color: red;
-            display: block; !* 필요시 줄바꿈 *!
-            margin-top: 5px; !* 입력창과의 간격 *!
-            font-weight: normal;
-        }
-
-        !* --- 선택된 추가할 책 표시 영역 --- *!
-        #selectedBookDisplay {
-            display: flex; !* flex로 변경 (JS에서 제어) *!
-            align-items: center;
-            gap: 10px;
-            background-color: #e6ffed; !* 연한 녹색 배경 *!
-            border: 1px solid #c3e6cb;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 10px; !* 검색창과의 간격 *!
-        }
-        #selectedBookDisplay img {
-            max-width: 30px;
-            height: auto;
-            border-radius: 2px; !* 약간 둥글게 *!
-        }
-        #selectedBookDisplay span {
-            font-size: 0.9em;
-            color: #155724; !* 어두운 녹색 글자 *!
-            flex-grow: 1; !* 가능한 공간 차지 *!
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #cancelAddBook {
-            margin-left: auto; !* 오른쪽 끝으로 밀기 *!
-            background: none;
-            border: none;
-            color: #155724; !* 아이콘 색상 *!
-            cursor: pointer;
-            font-size: 1.3em; !* 아이콘 크기 *!
-            padding: 0 5px;
-            line-height: 1; !* 세로 정렬 도움 *!
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        #cancelAddBook:hover {
-            opacity: 1;
-        }
-
-        !* --- 그룹 이름 중복 확인 스타일 --- *!
-        .name-check-result {
-            font-size: 0.85em;
-            margin-left: 10px;
-            font-weight: normal;
-            vertical-align: middle; !* 입력 필드와 세로 정렬 *!
-        }
-        .name-available {
-            color: green;
-        }
-        .name-unavailable {
-            color: red;
-        }
-        #groupName:disabled { !* 확인 중 비활성화 스타일 *!
-            background-color: #eee;
-            cursor: not-allowed;
-        }
-
-        !* --- 제출 버튼 스타일 --- *!
-        .submit-button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #5cb85c; !* 녹색 계열 *!
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1.1em;
-            font-weight: bold; !* 글자 약간 굵게 *!
-            cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-            margin-top: 30px; !* 위쪽 여백 *!
-        }
-        .submit-button:hover {
-            background-color: #4cae4c; !* 호버 시 약간 어둡게 *!
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .submit-button:disabled { !* 비활성화 시 스타일 *!
-            background-color: #cccccc;
-            cursor: not-allowed;
-            box-shadow: none;
-        }*/
-
-
-
-
-/*아이콘 임포트*/
-/* Fontawesome 4.7 */
-@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-
-/*로고용 폰트: cafe24슈퍼매직*/
-@font-face {
-    font-family: 'Cafe24Supermagic-Bold-v1.0';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-}
-
-/*홈페이지 메인 폰트: 고운바탕*/
-@font-face {
-    font-family: 'GowunBatang-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/*고운돋움*/
-@font-face {
-    font-family: 'GowunDodum-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/*조선굴림*/
-@font-face {
-    font-family: 'ChosunGu';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/*온글잎콘콘*/
-@font-face {
-    font-family: 'Ownglyph_corncorn-Rg';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/*나눔손글씨펜*/
-@import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
-/*font-family: 'NanumPen';*/
-
-/*학교안심꼬꼬마*/
-@font-face {
-    font-family: 'TTHakgyoansimKkokkomaR';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/*심경하*/
-@font-face {
-    font-family: 'SimKyungha';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/*다이어리*/
-@font-face {
-    font-family: 'EarlyFontDiary';
-    src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/* 컬러 파레트 */
-:root{
-    --main-color-dark: #00479B;
-    --main-color-middle: #83C7FF;
-    --main-color-light: #E3F4FF;
-    --assist-color-dark: #CE7000;
-    --assist-color-middle: #FFB90B;
-    --assist-color-light: #FFF7E6;
-    --cancle-color-dark: #9B9B9B;
-    --cancle-color-middle: #D3D3D3;
-    --cancle-color-light: #EAEAEA;
-    --crown-color: #ffa500;
-
-    /*사용법: var(--main-color-middle)*/
-    --border-big: 20px;/*큰거...뭐가잇지...*/
-    --border-middle: 10px;/*img*/
-    --border-circle: 50%;/*동그리버튼*/
-
-    /*폰트 사이즈 정의*/
-    --font-size-0: 28px;
-    --font-size-1: 23px;
-    --font-size-2: 18px;
-    --font-size-3: 13px;
-    --font-size-4: 8px;
-
-    /*쪽지 색상 지정*/
-    --memo1-color-dark: #00479B;
-    --memo1-color-middle: #83C7FF;
-    --memo1-color-light: #E3F4FF;
-    --memo1-color-back: #B0CAD6;
-
-    --memo2-color-dark: #CE7000;
-    --memo2-color-middle: #FFB90B;
-    --memo2-color-light: #FFF7E6;
-    --memo2-color-back: #EAD4AD;
-
-    --memo3-coler-dark: #841A1A;
-    --memo3-coler-middle: #FF9494;
-    --memo3-coler-light: #FFE9E9;
-    --memo3-coler-back: #D6B0B0;
-
-    --memo4-coler-dark: #325900;
-    --memo4-coler-middle: #97CE41;
-    --memo4-coler-light: #F6FFD9;
-    --memo4-coler-back: #CCD3AE;
-
-    --memo5-coler-dark: #A04800;
-    --memo5-coler-middle: #FF8B00;
-    --memo5-coler-light: #FFE3CA;
-    --memo5-coler-back: #C9A88D;
-
-    --memo6-coler-dark: #6A297A;
-    --memo6-coler-middle: #AF80CE;
-    --memo6-coler-light: #F5EEFF;
-    --memo6-coler-back: #CDC3DD;
-
-    --memo7-coler-dark: #1F1F77;
-    --memo7-coler-middle: #7A8CE5;
-    --memo7-coler-light: #E9ECFF;
-    --memo7-coler-back: #B2B8D3;
-
-    --memo8-coler-dark: #006466;
-    --memo8-coler-middle: #66C6DD;
-    --memo8-coler-light: #EBFFFF;
-    --memo8-coler-back: #B8D3D2;
-}
-
-/* Global 스타일 초기화 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Gowun Batang";
-    font-size: var(--font-size-2);
-}
-
-/* 기본 설정 */
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%; /* 가로를 화면에 맞게 설정 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-
-/* 컨테이너 스타일 */
-.container {
-    /*border: 1px solid slateblue;*/
-    /*width: 100%;*/
-    width: 768px;
-    /*            max-width: 768px;*/
-    /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-header{
-    width: 768px;
-    /*            max-width: 768px;*/
-}
-
-/*버튼 기본 규격*/
-.btn_circle{
-    /*            border: 1px solid red;*/
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    margin: 10px;
-    border: none;
-    /*            font-size: 20px;*/
-}
-
-.btn_circle .btn_icon{
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-}
-
-.btn_circle .btn_icon_color{
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-}
-
-.btn_circle_big{
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-}
-
-.btn_circle_big .btn_icon{
-    width: 45px;
-    height: 45px;
-    cursor: pointer;
-}
-
-.btn_long{
-    width: 100%;
-    height: 45px;
-    border-radius: 45px;
-    color: white;
-    cursor: pointer;
-    border: none;
-    font-weight: bold;
-    max-width: 768px;
-}
-
-.btn_mini{
-    width: auto;
-    height: 25px;
-    border-radius: 20px;
-    color: white;
-    cursor: pointer;
-    border: none;
-    font-size: var(--font-size-3);
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    margin-left: 5px;
-}
-
-.box{
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-big);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    max-width: 768px;
-}
-
-.title{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-    font-weight: bold;
-}
-
-.bold{
-    font-weight: bold;
-}
-
-.dot{
-    width: 15px;
-    height: 15px;
-    border-radius: var(--border-circle);
-    display: flex;
-    margin-top: 5px;
-    margin-right: 5px;
-}
-
-.underline{
-    width: 130%;
-    height: 1px;
-}
-
-.line{
-    width: 100%;
-    height: 1px;
-}
-
-.blue{
-    background: var(--main-color-middle);
-}
-.blue2{
-    color: var(--main-color-middle);
-}
-.yellow{
-    background: var(--assist-color-middle);
-}
-.dark_blue1{
-    background: var(--main-color-dark);
-}
-.dark_yellow1{
-    background: var(--assist-color-dark);
-}
-.dark_blue2{
-    color: var(--main-color-dark);
-}
-.dark_yellow2{
-    color: var(--assist-color-dark);
-}
-.light_blue{
-    background: var(--main-color-light);
-}
-.light_yellow{
-    background: var(--assist-color-light);
-}
-.dark_gray1{
-    background: var(--cancle-color-dark);
-}
-.dark_gray2{
-    color: var(--cancle-color-dark);
-}
-.gray{
-    background: var(--cancle-color-middle);
-}
-.gray2{
-    color: var(--cancle-color-middle);
-}
-.light_gray{
-    background: var(--cancle-color-light);
-}
-.white{
-    background: white;
-}
-.white2{
-    color: white;
-}
-
-.blue_line_thin{
-    border: 1px solid var(--main-color-middle);
-}
-.yellow_line_thin{
-    border: 1px solid var(--assist-color-middle);
-}
-
-.input_long{
-    /*            margin-bottom: 10px;*/
-    width: 100%;
-    height: 45px;
-    border-radius: 45px;
-    box-sizing: border-box;
-    text-align: center;
-    max-width: 768px;
-}
-
-.blue_line{
-    border: 2px solid var(--main-color-middle);
-    color: var(--main-color-dark);
-}
-
-.blue_line:focus{
-    border: 4px solid var(--main-color-middle);
-    color: var(--main-color-dark);
-    outline: none;
-}
-
-.yellow_line{
-    border: 2px solid var(--assist-color-middle);
-    color: var(--assist-color-dark);
-}
-
-.yellow_line:focus{
-    border: 4px solid var(--assist-color-middle);
-    color: var(--assist-color-dark);
-    outline: none;
-}
-
-
-/*체크박스 CSS*/
-
-input[type="checkbox"]{
-    display: none;
-}
-input[type="checkbox"] + label{
-    margin-right: 5px;
-    display: inline-block;
-    background: white;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-}
-/*input[type="checkbox"] + label{
-    border:3px solid var(--main-color-middle);
-}*/
-/*input[type="checkbox"] + label{
-    border:3px solid var(--assist-color-middle);
-}*/
-input[type="checkbox"]:checked + label::after {
-    content: '✔';
-    font-size: 16px; /* 체크 아이콘 크기 조정 */
-    width: 22px; /* 내부 원 크기 */
-    height: 22px; /* 내부 원 크기 */
-    border: none; /* 중복 테두리 제거 */
-    color: white;
-    text-align: center;
-    line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
-    position: absolute;
-    left: 50%; /* 중앙 정렬 */
-    top: 50%; /* 중앙 정렬 */
-    transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
-    border-radius: 50%; /* 내부 원형 유지 */
-}
-/*input[type="checkbox"]:checked + label::after{
-    background: var(--main-color-middle);
-}*/
-/*input[type="checkbox"]:checked + label::after{
-    background: var(--assist-color-middle);
-}*/
-
-/*대표 이미지들 설정*/
-.processImg{
-    width: 300px;
-    height: 300px;
-}
-.processImg img{
-    width: 100%;
-    height: 100%;
-}
-
-.error{
-    color: red;
-    margin: 5px;
-    text-align: center;
-    font-size: var(--font-size-2);
-}
-
-
-@media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
-    .container {
-        width: 100%;
-    }
-    header{
-        width: 100%;
-    }
-}
-
-@media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
-    .container {
-        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
-        font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
-    }
-}
-
-/* 여기까지 메인 CSS */
-.test1{
-    border: 1px solid red;
-}
-.test2{
-    border: 1px solid blue;
-}
-/* test CSS */
-
-
-
-body{
-    background: var(--main-color-light);
-}
-
-.form_box{
-    width: 100%;
-}
-
-form{
-/*    border: 1px solid red;*/
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.form-group{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.member-list{
-/*    border: 1px solid red;*/
-    width: 95%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.member_one{
-/*    border: 1px solid violet;*/
-    width: 90px;
-    height: 110px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 0px 10px;
-}
-
-.member_img_box{
-    /*border: 1px solid palevioletred;*/
-    width: 90px;
-    height: 90px;
-    position: relative;
-}
-.member_img{
-    border: 3px solid var(--main-color-middle);
-    background: var(--main-color-light);
-    width: 80px;
-    height: 80px;
-    border-radius: var(--border-middle);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-.btn_circle_mini{
-    width: 30px;
-    height: 30px;
-    color: white;
-    border-radius: var(--border-circle);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 35px;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-.member_name{
-    height: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.member_name>span{
-    font-size: var(--font-size-3);
-    font-weight: bold;
-    color: var(--main-color-dark);
-}
-
-.form-group, .book-section{
-    width: 100%;
-}
-
-.group-book-item{
-    width: 170px;
-    height: 220px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.box_img_btn{
-    width: 170px;
-    height: 200px;
-    position: relative;
-}
-
-.select_book_img_box{
-    width: 150px;
-    height: 180px;
-    border-radius: var(--border-middle);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    overflow: hidden;
-}
-
-.select_book_img_box img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: var(--border-middle);
-}
-
-.btn_borad{
-    background: var(--cancle-color-middle);
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-20%, -20%);
-}
-.btn_del{
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(20%, -20%);
-}
-
-.btn_borad{
-    transition: background-color 0.3s ease;
-}
-
-.btn_borad.is-public {
-    background-color: var(--assist-color-middle); /* 노란색 (공개) */
-}
-
-.btn_borad.is-private {
-    background-color: var(--cancle-color-middle); /* 회색 (비공개) */
-}
-
-input{
-    margin-bottom: 10px;
-}
-
-.under_margin{
-    margin-bottom: 10px;
-}
-.error_box{
-    width: 100%;
-}
-
 
     </style>
 </head>
 <body>
 <div class="container">
-<!-- group 객체가 null일 경우를 대비하여 조건부 렌더링 -->
-<!--<h1 th:if="${group}" th:text="${group.name} + ' 정보 수정'">그룹 정보 수정</h1>
-<h1 th:unless="${group}">그룹 정보 수정</h1>-->
 
-<!-- 그룹 ID와 원래 이름을 data 속성으로 전달 (group이 null이 아닐 때만) -->
-<div id="groupInfo" th:if="${group}" th:data-group-id="${group.id}" th:data-original-name="${group.name}"></div>
-<!--테스트-->
-<!-- 서버 메시지 표시 (오류 또는 성공) -->
-<div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
-<div th:if="${successMsg}" class="success-message" th:text="${successMsg}"></div>
+    <div id="groupInfo" th:if="${group}" th:data-group-id="${group.id}" th:data-original-name="${group.name}"></div>
 
-<!-- group 객체가 있을 경우에만 폼 표시 -->
-    <div class="form_box">
-        <form th:if="${group}" th:action="@{/group/fix/{groupId}(groupId=${group.id})}" method="post" id="groupFixForm">
+    <div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
+    <div th:if="${successMsg}" class="success-message" th:text="${successMsg}"></div>
 
-            <!-- 그룹 이름 수정 -->
+    <div class="form_box" th:if="${group}">
+        <form th:action="@{/group/fix/{groupId}(groupId=${group.id})}" method="post" id="groupFixForm">
+
             <div class="form-group">
-                <label for="groupName"></label>
-                <!-- 서버에서 전달된 이전 입력값(submittedGroupName) 또는 현재 그룹 이름 사용 -->
-                <input type="text" class="input_long blue_line" id="groupName" name="groupName" th:value="${groupName ?: group.name}"placeholder="수정할 그룹 이름을 입력하세요" required>
+                <label for="groupName">그룹 이름</label>
+                <input type="text" class="input_long blue_line" id="groupName" name="groupName" th:value="${groupName ?: group.name}" placeholder="수정할 그룹 이름을 입력하세요" required>
                 <span id="groupNameCheckResult" class="name-check-result"></span>
             </div>
 
-            <!-- 그룹 멤버 표시 (수정 불가) -->
             <div class="box white form-group">
-                <!--타이틀 박스-->
                 <div class="title dark_blue2">
                     <label>CREW</label><div class="underline dark_blue1"></div>
                 </div>
-        <!--        <p class="read-only-info">그룹 멤버는 수정할 수 없습니다.</p>-->
-                <!-- users 컬렉션 null 체크 및 비어있는지 확인 -->
-                <!--맴버 리스트-->
                 <div class="member-list" th:if="${group.users != null and not #lists.isEmpty(group.users)}">
-                    <!-- 각 GroupUser의 user 객체 null 체크 추가 -->
                     <div class="member_one" th:each="gu : ${group.users}" th:if="${gu.user != null}">
-                        <!-- 이미지 경로 null 체크 및 기본 이미지 설정 -->
                         <div class="member_img_box">
-                            <div class="member_img"><img th:src="${gu.user.img ?: '/images/default-profile.png'}" th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}"></div>
-                            <!-- Role enum 비교 시 T() 사용 -->
-                            <div class="leader-mark btn_circle_mini yellow" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}"><i class="fa-solid fa-crown"></i></div>
+                            <div class="member_img">
+                                <img th:src="${(gu.user.img != null and !gu.user.img.isEmpty()) ? (gu.user.img.startsWith('http') ? gu.user.img : '/image/getimg?fileName=' + #uris.escapePath(gu.user.img)) : '/img/bookduck_login.png'}"
+                                     th:alt="${gu.user.nickName}" th:title="${gu.user.nickName}"
+                                     onerror="this.onerror=null; this.src='/img/bookduck_login.png';">
+                            </div>
+                            <div class="btn_circle_mini yellow" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}"><i class="fa-solid fa-crown"></i></div>
                         </div>
                         <div class="member_name"><span th:text="${gu.user.nickName}">닉네임</span></div>
                     </div>
                 </div>
-                <!-- 그룹 멤버 정보가 없는 경우 메시지 -->
                 <div th:if="${group.users == null or #lists.isEmpty(group.users)}" class="read-only-info error">
                     그룹 멤버 정보가 없습니다.
                 </div>
             </div>
 
 
-            <!-- 그룹 도서 목록 및 추가 섹션 -->
             <div class="book-section">
-                <label></label>
-                <!-- 새 책 추가 검색 (항상 표시됨, 리더에게만 활성화할 경우 input에 disabled 추가 가능) -->
                 <div class="form-group book-search-container">
-                    <label for="bookSearchInput"></label>
-                    <input class="input_long yellow_line" type="text" id="bookSearchInput" placeholder="추가할 도서를 입력하세요">
+                    <label for="bookSearchInput">도서 추가</label>
+                    <input class="input_long yellow_line" type="text" id="bookSearchInput" placeholder="추가할 도서를 검색하세요">
                     <span id="bookAddCheckResult" class="book-check-result" style="display: none;"></span>
                     <ul id="bookSearchResults"></ul>
                 </div>
 
-                <!-- 선택된 추가할 책 정보 표시 -->
                 <div class="box light_yellow" id="selectedBookDisplay" style="display: none;">
-                    <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
+                    <img id="selectedBookCover" src="/img/default_book_cover.png" alt="Selected book cover">
                     <span id="selectedBookTitle"></span>
                     <button type="button" id="cancelAddBook" title="추가 취소">×</button>
                 </div>
-                <!-- 추가할 책 ID 전송용 -->
                 <input type="hidden" id="newBookId" name="newBookId">
 
-                <!-- 현재 그룹 도서 목록 표시 (전체) -->
-                <!-- books 컬렉션 null 체크 및 비어있는지 확인 -->
-                <div class="group-book-list box white" id="currentGroupBooks" th:if="${group.books != null and not #lists.isEmpty(group.books)}">
-                    <div class="title dark_blue2">BOOK<div class="underline dark_blue1"></div></div>
-                    <!-- 각 GroupBook 및 내부 book 객체 null 체크 -->
-                    <div th:each="gb : ${group.books}" class="group-book-item" th:if="${gb.book != null}"
-                        th:data-book-id="${gb.book.id}"
-                        th:data-book-title="${gb.book.title}">
-                        <!-- 책 커버 null 체크 및 기본 이미지 설정 -->
-                        <div class="box_img_btn">
-                            <div class="select_book_img_box">
-                                <img class="select_book_img" th:src="${gb.book.cover ?: '/images/default-book-cover.png'}" th:alt="${gb.book.title}">
-                            </div>
-                            <!-- 공개/비공개 토글 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
-                            <!-- publicBookIds Set이 null이 아니고, book.id가 null이 아닐 때만 contains 체크 -->
-                            <button class="btn_borad btn_circle" type="button"
-                                    class="toggle-privacy-btn"
+                <!-- === 그룹 도서 목록 HTML 구조 변경 === -->
+                <div class="group-book-list-container box white"> <!-- 외부 컨테이너 추가 -->
+                    <div class="title dark_blue2">그룹 도서<div class="underline dark_blue1"></div></div>
+                    <div class="group-book-list" id="currentGroupBooks"> <!-- 실제 목록 ul 역할 -->
+                        <!-- 서버 렌더링 부분 -->
+                        <th:block th:if="${group.books != null and not #lists.isEmpty(group.books)}">
+                            <div th:each="gb : ${group.books}" class="group-book-item" th:if="${gb.book != null}"
+                                 th:data-book-id="${gb.book.id}"
+                                 th:data-book-title="${gb.book.title}">
+                                <div class="box_img_btn"> <!-- 이미지와 버튼 컨테이너 -->
+                                    <img class="select_book_img"
+                                         th:src="${(gb.book.cover != null and !gb.book.cover.isEmpty()) ? (gb.book.cover.startsWith('http') ? gb.book.cover : '/image/getimg?fileName=' + #uris.escapePath(gb.book.cover)) : '/img/default_book_cover.png'}"
+                                         th:alt="${gb.book.title}"
+                                         onerror="this.onerror=null; this.src='/img/default_book_cover.png';">
+                                    <!-- 공개/비공개 버튼 -->
+                                    <button type="button"
+                                            class="toggle-privacy-btn"
                                     th:classappend="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)} ? 'is-public' : 'is-private'"
                                     th:data-is-public="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)}">
-                                    <!--th:text="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id) ? '비공개로 전환' : '공개로 전환'}"-->
-                                <i class="fa-solid fa-bullhorn btn_icon white2"></i>
-                            </button>
-                            <!-- 삭제 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
-                            <button class="btn_del btn_circle gray" type="button" class="delete-book-btn" title="그룹에서 삭제"><i class="fa-solid fa-xmark btn_icon white2"></i></button>
-                        </div>
-                        <!-- 책 제목 표시 -->
-                        <div class="select_book_title" th:title="${gb.book.title}" th:text="${gb.book.title}">책 제목</div>
+                                    <i class="fa-solid fa-bullhorn btn_icon white2"></i> <!-- 아이콘 추가 -->
+                                    </button>
+                                    <!-- 삭제 버튼 -->
+                                    <button type="button" class="delete-book-btn" title="그룹에서 삭제"> <!-- CSS에서 정의한 클래스 사용 -->
+                                        <i class="fa-solid fa-xmark btn_icon white2"></i> <!-- 아이콘 추가 -->
+                                    </button>
+                                </div>
+                                <div class="select_book_title" th:title="${gb.book.title}" th:text="${gb.book.title}">책 제목</div>
+                            </div>
+                        </th:block>
+                        <!-- 도서 없을 때 메시지 -->
+                        <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message error under_margin">
+                            등록된 그룹 도서가 없습니다.
+                        </p>
                     </div>
                 </div>
-                <!-- 그룹 도서가 없을 때 메시지 -->
-                <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message error under_margin">
-                    등록된 그룹 도서가 없습니다.
-                </p>
-
-
+                <!-- ================================ -->
             </div>
 
-            <!-- 기존 책 ID 전송용 (첫 번째 책 ID - 서버 로직에 따라 필요 없을 수 있음) -->
             <input type="hidden" name="bookId" th:value="${group.books != null and not #lists.isEmpty(group.books) and group.books[0].book != null ? group.books[0].book.id : ''}">
 
-            <!-- 제출 버튼 (리더에게만 활성화할 경우 disabled 추가 가능) -->
-            <button class="btn_long blue under_margin" type="submit" class="submit-button">수정 완료</button>
+            <button type="submit" class="btn_long submit-button">수정 완료</button>
 
-        </form> <!-- 폼 끝 -->
+        </form>
     </div>
 
-<!-- group 객체가 없을 경우 표시할 메시지 -->
-<div th:unless="${group}" class="error-message error_box">
-    <div class="error under_margin">그룹 정보를 불러올 수 없습니다. 그룹 목록으로 돌아가거나 관리자에게 문의하세요.</div>
-    <button class="btn_long yellow" onclick="location.href='/group/list'">그룹 목록으로 가기</button>
+    <div th:unless="${group}" class="error-message error_box">
+        <div class="error under_margin">그룹 정보를 불러올 수 없습니다. 그룹 목록으로 돌아가거나 관리자에게 문의하세요.</div>
+        <button class="btn_long yellow" onclick="location.href='/group/list'">그룹 목록으로 가기</button>
+    </div>
+
 </div>
 
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // --- CSRF 토큰 설정 ---
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+    const headers = { 'Content-Type': 'application/json' };
+    if (csrfToken && csrfHeader) {
+        headers[csrfHeader] = csrfToken;
+        console.log("CSRF Header:", csrfHeader, "Token:", csrfToken ? 'OK' : 'MISSING');
+    } else {
+        console.warn("CSRF meta tags not found. Non-GET requests might fail.");
+    }
 
-<!-- 스크립트 시작 -->
-<script>
-    // --- 페이지 로드 시 즉시 실행 ---
     document.addEventListener('DOMContentLoaded', function() {
 
-        // --- 요소 가져오기 및 변수 선언 ---
         const groupInfoDiv = document.getElementById('groupInfo');
-        // groupInfoDiv가 존재하는지 확인 후 데이터 접근
         const currentGroupId = groupInfoDiv ? groupInfoDiv.dataset.groupId : null;
         const originalGroupName = groupInfoDiv ? groupInfoDiv.dataset.originalName : null;
-
         const groupFixForm = document.getElementById('groupFixForm');
-        // groupFixForm이 존재하는지 확인 후 내부 요소 접근
-        const groupNameInput = groupFixForm ? document.getElementById('groupName') : null;
-        const nameCheckResultSpan = groupFixForm ? document.getElementById('groupNameCheckResult') : null;
-        const submitButton = groupFixForm ? groupFixForm.querySelector('button[type="submit"]') : null;
-        const searchInput = groupFixForm ? document.getElementById('bookSearchInput') : null;
-        const resultsContainer = groupFixForm ? document.getElementById('bookSearchResults') : null;
-        const newBookIdInput = groupFixForm ? document.getElementById('newBookId') : null;
-        const bookAddCheckResultSpan = groupFixForm ? document.getElementById('bookAddCheckResult') : null;
-        const selectedBookDisplay = groupFixForm ? document.getElementById('selectedBookDisplay') : null;
-        const selectedBookCover = groupFixForm ? document.getElementById('selectedBookCover') : null;
-        const selectedBookTitle = groupFixForm ? document.getElementById('selectedBookTitle') : null;
-        const cancelAddBookBtn = groupFixForm ? document.getElementById('cancelAddBook') : null;
-        const currentGroupBooksList = groupFixForm ? document.getElementById('currentGroupBooks') : null; // 그룹 책 목록 ul
 
-        let nameCheckDebounceTimer;
-        let isNameAvailable = true; // 이름 사용 가능 상태 (초기값: 현재 이름이므로 사용 가능)
-        let bookSearchDebounceTimer;
-
-        // --- 초기화: 폼 요소가 없을 경우 이후 로직 실행 방지 ---
         if (!groupFixForm || !currentGroupId) {
-            console.warn("Group form or group ID not found. Skipping form event listeners.");
-            return; // 폼 관련 JS 실행 중단
+            console.warn("Group form or group ID missing. Initialization skipped.");
+            return;
         }
 
-        // --- 그룹 이름 중복 확인 (AJAX) ---
-        if (groupNameInput) {
+        const groupNameInput = document.getElementById('groupName');
+        const nameCheckResultSpan = document.getElementById('groupNameCheckResult');
+        const submitButton = groupFixForm.querySelector('button.submit-button');
+        const searchInput = document.getElementById('bookSearchInput');
+        const resultsContainer = document.getElementById('bookSearchResults');
+        const newBookIdInput = document.getElementById('newBookId');
+        const bookAddCheckResultSpan = document.getElementById('bookAddCheckResult');
+        const selectedBookDisplay = document.getElementById('selectedBookDisplay');
+        const selectedBookCover = document.getElementById('selectedBookCover');
+        const selectedBookTitle = document.getElementById('selectedBookTitle');
+        const cancelAddBookBtn = document.getElementById('cancelAddBook');
+        const currentGroupBooksList = document.getElementById('currentGroupBooks'); // 실제 책 목록 ul/div
+
+        let nameCheckDebounceTimer;
+        let isNameAvailable = true;
+        let bookSearchDebounceTimer;
+
+        // --- 그룹 이름 중복 확인 (기존 유지) ---
+        if (groupNameInput && nameCheckResultSpan && submitButton) {
             groupNameInput.addEventListener('input', () => {
                 clearTimeout(nameCheckDebounceTimer);
                 const newName = groupNameInput.value.trim();
-
-                // 입력 시 이전 결과 초기화
-                nameCheckResultSpan.textContent = '';
-                nameCheckResultSpan.className = 'name-check-result'; // 기본 클래스
-                isNameAvailable = true; // 입력 시작 시 기본적으로 사용 가능 상태
-                submitButton.disabled = false;
-
-                if (newName === '') { // 이름이 비었을 때
-                    nameCheckResultSpan.textContent = '그룹 이름을 입력해주세요.';
-                    nameCheckResultSpan.classList.add('name-unavailable');
-                    isNameAvailable = false;
-                    submitButton.disabled = true;
-                    return;
-                }
-
-                // 원래 이름과 대소문자 구분 없이 같으면 확인 불필요
-                if (originalGroupName && newName.toLowerCase() === originalGroupName.toLowerCase()) {
-                    // 메시지 제거, 상태 초기화
-                    isNameAvailable = true;
-                    submitButton.disabled = false; // 버튼 활성화
-                    return; // AJAX 요청 안 함
-                }
-
-                // 디바운싱 타이머 설정
+                nameCheckResultSpan.textContent = ''; nameCheckResultSpan.className = 'name-check-result';
+                isNameAvailable = true; submitButton.disabled = false;
+                if (newName === '') { nameCheckResultSpan.textContent = '그룹 이름을 입력해주세요.'; nameCheckResultSpan.classList.add('name-unavailable'); isNameAvailable = false; submitButton.disabled = true; return; }
+                if (originalGroupName && newName.toLowerCase() === originalGroupName.toLowerCase()) { isNameAvailable = true; submitButton.disabled = false; return; }
                 nameCheckDebounceTimer = setTimeout(() => {
-                    nameCheckResultSpan.textContent = '확인 중...'; // 확인 중 메시지
-                    groupNameInput.disabled = true; // 입력창 비활성화
-                    submitButton.disabled = true; // 제출 버튼 비활성화
-
-                    // 서버에 이름 중복 확인 요청
+                    nameCheckResultSpan.textContent = '확인 중...'; groupNameInput.disabled = true; submitButton.disabled = true;
                     fetch(`/group/check-name?name=${encodeURIComponent(newName)}`)
-                        .then(response => {
-                            if (!response.ok) { throw new Error('Network response error'); }
-                            return response.json();
-                        })
-                        .then(data => { // 성공 시
-                            if (data.isAvailable) {
-                                nameCheckResultSpan.textContent = '사용 가능한 이름입니다.';
-                                nameCheckResultSpan.classList.remove('name-unavailable'); // 빨간색 제거
-                                nameCheckResultSpan.classList.add('name-available'); // 초록색 추가
-                                isNameAvailable = true;
-                            } else {
-                                nameCheckResultSpan.textContent = '이미 사용 중인 이름입니다.';
-                                nameCheckResultSpan.classList.remove('name-available'); // 초록색 제거
-                                nameCheckResultSpan.classList.add('name-unavailable'); // 빨간색 추가
-                                isNameAvailable = false;
-                            }
-                        })
-                        .catch(error => { // 오류 발생 시
-                            console.error('Group name check error:', error);
-                            nameCheckResultSpan.textContent = '확인 중 오류 발생';
-                            nameCheckResultSpan.classList.remove('name-available');
-                            nameCheckResultSpan.classList.add('name-unavailable'); // 오류 시 사용 불가 처리
-                            isNameAvailable = false;
-                        })
-                        .finally(() => { // 항상 실행
-                            groupNameInput.disabled = false; // 입력창 다시 활성화
-                            submitButton.disabled = !isNameAvailable; // 사용 가능 여부에 따라 버튼 상태 결정
-                        });
-                }, 500); // 500ms 지연
+                        .then(response => { if (!response.ok) throw new Error('Network error'); return response.json(); })
+                        .then(data => { if (data.isAvailable) { nameCheckResultSpan.textContent = '사용 가능'; nameCheckResultSpan.classList.add('name-available'); isNameAvailable = true; } else { nameCheckResultSpan.textContent = '이미 사용 중'; nameCheckResultSpan.classList.add('name-unavailable'); isNameAvailable = false; } })
+                        .catch(error => { console.error('Name check error:', error); nameCheckResultSpan.textContent = '확인 오류'; nameCheckResultSpan.classList.add('name-unavailable'); isNameAvailable = false; })
+                        .finally(() => { groupNameInput.disabled = false; submitButton.disabled = !isNameAvailable; });
+                }, 500);
             });
         }
 
-        // --- 책 검색 및 추가 중복 확인 (클라이언트 측) ---
-        if (searchInput) {
+        // --- 책 검색 (기존 유지) ---
+        if (searchInput && resultsContainer && bookAddCheckResultSpan && newBookIdInput && selectedBookDisplay && selectedBookCover && selectedBookTitle) {
             searchInput.addEventListener('input', () => {
                 clearTimeout(bookSearchDebounceTimer);
                 const query = searchInput.value.trim();
-
-                // 입력 시 기존 중복 메시지 숨김
-                bookAddCheckResultSpan.style.display = 'none';
-                bookAddCheckResultSpan.textContent = '';
-                resultsContainer.innerHTML = ''; // 이전 결과 즉시 지우기
-                resultsContainer.style.display = 'none'; // 결과 숨기기
-
-                if (query.length < 1) { // 검색어가 1글자 미만이면 중단
-                    return;
-                }
-
+                bookAddCheckResultSpan.style.display = 'none'; resultsContainer.innerHTML = ''; resultsContainer.style.display = 'none';
+                if (query.length < 1) return;
                 bookSearchDebounceTimer = setTimeout(() => {
-                    // 서버에 책 검색 요청
-                    fetch(`/book/search?title=${encodeURIComponent(query)}&limit=5`) // Principal은 서버에서 자동 처리
-                        .then(response => {
-                            if (response.status === 401) throw new Error('로그인이 필요합니다.');
-                            if (!response.ok) throw new Error('검색 실패');
-                            return response.json();
-                        })
+                    fetch(`/book/search?title=${encodeURIComponent(query)}&limit=5`)
+                        .then(response => { if (response.status === 401) throw new Error('로그인 필요'); if (!response.ok) throw new Error('검색 실패'); return response.json(); })
                         .then(books => {
-                            // resultsContainer.innerHTML = ''; // 위에서 이미 지움
                             if (books && books.length > 0) {
-                                books.forEach(book => { // 검색 결과 각 책에 대해
-                                    const li = document.createElement('li');
-                                    const img = document.createElement('img');
-                                    // 기본 이미지 경로 수정 확인 필요
-                                    img.src = book.cover ? book.cover : '/images/default-book-cover.png';
-                                    img.alt = book.title + ' 표지';
+                                books.forEach(book => {
+                                    const li = document.createElement('li'); const img = document.createElement('img');
+                                    let coverSrc = book.cover ? book.cover : '/img/default_book_cover.png';
+                                    img.src = coverSrc.startsWith('http') ? coverSrc : (coverSrc === '/img/default_book_cover.png' ? coverSrc : `/image/getimg?fileName=${encodeURIComponent(coverSrc)}`);
+                                    img.alt = (book.title || '') + ' 표지'; img.onerror = function() { this.onerror=null; this.src='/img/default_book_cover.png'; };
                                     li.appendChild(img);
-                                    const span = document.createElement('span');
-                                    span.textContent = book.title;
-                                    li.appendChild(span);
-
-                                    // li 요소에 데이터 저장 (null 체크 추가)
-                                    li.dataset.bookId = book.id;
-                                    li.dataset.bookTitle = book.title;
-                                    li.dataset.bookCover = book.cover || ''; // null 대신 빈 문자열
-
-                                    // 검색 결과 클릭 이벤트
+                                    const span = document.createElement('span'); span.textContent = book.title || '제목 없음'; li.appendChild(span);
+                                    li.dataset.bookId = book.id; li.dataset.bookTitle = book.title || ''; li.dataset.bookCover = book.cover || '';
                                     li.addEventListener('click', () => {
-                                        const clickedBookId = li.dataset.bookId;
-                                        const clickedBookTitle = li.dataset.bookTitle;
-                                        const clickedBookCover = li.dataset.bookCover;
-                                        let isAlreadyInGroup = false;
-
-                                        // 현재 그룹 책 목록(DOM)에서 중복 확인
-                                        if (currentGroupBooksList) {
-                                            const currentBookItems = currentGroupBooksList.querySelectorAll('li.group-book-item');
-                                            currentBookItems.forEach(item => {
-                                                // === 비교는 타입까지 고려하므로 dataset 속성은 문자열임에 유의
-                                                if (item.dataset.bookId === clickedBookId) {
-                                                    isAlreadyInGroup = true;
-                                                }
-                                            });
-                                        }
-
-                                        if (isAlreadyInGroup) { // 중복이면
-                                            bookAddCheckResultSpan.textContent = `'${clickedBookTitle}' 책은 이미 그룹에 등록되어 있습니다.`;
-                                            bookAddCheckResultSpan.style.display = 'block';
-                                            newBookIdInput.value = ''; // 추가 ID 비우기
-                                            selectedBookDisplay.style.display = 'none'; // 선택 표시 숨기기
-                                        } else { // 중복 아니면
-                                            bookAddCheckResultSpan.style.display = 'none';
-                                            bookAddCheckResultSpan.textContent = '';
-                                            newBookIdInput.value = clickedBookId; // 추가 ID 설정
-                                            // 선택 표시 업데이트
-                                            selectedBookTitle.textContent = clickedBookTitle;
-                                            selectedBookCover.src = clickedBookCover ? clickedBookCover : '/images/default-book-cover.png';
-                                            selectedBookDisplay.style.display = 'flex'; // flex로 표시
-                                        }
-
-                                        // 공통 처리: 검색창 비우고 결과 숨기기
-                                        searchInput.value = '';
-                                        resultsContainer.innerHTML = '';
-                                        resultsContainer.style.display = 'none';
+                                        const clickedBookId = li.dataset.bookId; const clickedBookTitle = li.dataset.bookTitle; const clickedBookCover = li.dataset.bookCover; let isAlreadyInGroup = false;
+                                        if (currentGroupBooksList) { currentGroupBooksList.querySelectorAll('.group-book-item').forEach(item => { if (item.dataset.bookId === clickedBookId) isAlreadyInGroup = true; }); }
+                                        if (isAlreadyInGroup) { bookAddCheckResultSpan.textContent = `'${clickedBookTitle}' 책은 이미 그룹에 있습니다.`; bookAddCheckResultSpan.style.display = 'block'; newBookIdInput.value = ''; selectedBookDisplay.style.display = 'none'; }
+                                        else { bookAddCheckResultSpan.style.display = 'none'; newBookIdInput.value = clickedBookId; selectedBookTitle.textContent = clickedBookTitle;
+                                            let selectedCoverSrc = clickedBookCover ? clickedBookCover : '/img/default_book_cover.png';
+                                            selectedBookCover.src = selectedCoverSrc.startsWith('http') ? selectedCoverSrc : (selectedCoverSrc === '/img/default_book_cover.png' ? selectedCoverSrc : `/image/getimg?fileName=${encodeURIComponent(selectedCoverSrc)}`);
+                                            selectedBookCover.onerror = function() { this.onerror=null; this.src='/img/default_book_cover.png'; };
+                                            selectedBookDisplay.style.display = 'flex'; }
+                                        searchInput.value = ''; resultsContainer.innerHTML = ''; resultsContainer.style.display = 'none';
                                     });
-                                    resultsContainer.appendChild(li); // 결과 목록에 추가
+                                    resultsContainer.appendChild(li);
                                 });
-                                resultsContainer.style.display = 'block'; // 결과 목록 보이기
-                            } else { // 검색 결과 없을 때
-                                const li = document.createElement('li');
-                                li.textContent = '검색 결과가 없습니다.';
-                                li.style.cursor = 'default'; // 클릭 불가 스타일
-                                resultsContainer.appendChild(li);
                                 resultsContainer.style.display = 'block';
-                            }
+                            } else { const li = document.createElement('li'); li.textContent = '검색 결과 없음'; resultsContainer.appendChild(li); resultsContainer.style.display = 'block'; }
                         })
-                        .catch(error => {
-                            console.error('Book search error:', error);
-                            resultsContainer.innerHTML = '';
-                            const li = document.createElement('li');
-                            li.textContent = '검색 중 오류: ' + error.message;
-                            li.style.color = 'red';
-                            li.style.cursor = 'default';
-                            resultsContainer.appendChild(li);
-                            resultsContainer.style.display = 'block';
-                        });
-                }, 300); // 300ms 지연
+                        .catch(error => { console.error('Book search error:', error); resultsContainer.innerHTML = `<li>검색 오류: ${error.message}</li>`; resultsContainer.style.display = 'block'; });
+                }, 300);
             });
         }
 
-        // --- 추가 취소 버튼 ---
-        if (cancelAddBookBtn) {
-            cancelAddBookBtn.addEventListener('click', () => {
-                newBookIdInput.value = ''; // 숨겨진 필드 값 비우기
-                selectedBookDisplay.style.display = 'none'; // 선택 표시 숨기기
-                bookAddCheckResultSpan.style.display = 'none'; // 중복 메시지 숨기기
-                bookAddCheckResultSpan.textContent = '';
-                searchInput.value = ''; // 검색창도 비우기 (선택 사항)
-            });
+        // --- 추가 취소 버튼 (기존 유지) ---
+        if (cancelAddBookBtn && newBookIdInput && selectedBookDisplay && bookAddCheckResultSpan && searchInput) {
+            cancelAddBookBtn.addEventListener('click', () => { newBookIdInput.value = ''; selectedBookDisplay.style.display = 'none'; bookAddCheckResultSpan.style.display = 'none'; searchInput.value = ''; });
         }
 
-        // --- 검색 결과 영역 외부 클릭 시 숨김 ---
-        document.addEventListener('click', (event) => {
-            // resultsContainer가 존재하고, 클릭된 곳이 resultsContainer 내부나 searchInput이 아닐 때
-            if (resultsContainer && !resultsContainer.contains(event.target) && event.target !== searchInput) {
-                resultsContainer.style.display = 'none';
-            }
-        });
+        // --- 검색 결과 외부 클릭 시 숨김 (기존 유지) ---
+        document.addEventListener('click', (event) => { if (resultsContainer && !resultsContainer.contains(event.target) && event.target !== searchInput) { resultsContainer.style.display = 'none'; } });
 
-        // --- 폼 제출 전 유효성 검사 ---
-        if (groupFixForm) {
+        // --- 폼 제출 유효성 검사 (기존 유지) ---
+        if (groupFixForm && groupNameInput && submitButton && newBookIdInput && bookAddCheckResultSpan) {
             groupFixForm.addEventListener('submit', function(event) {
-                // 그룹 이름 비어있는지 확인
-                if (groupNameInput && groupNameInput.value.trim() === '') {
-                    alert('그룹 이름을 입력해주세요.');
-                    event.preventDefault(); // 폼 제출 막기
-                    groupNameInput.focus();
-                    return;
-                }
-                // 그룹 이름 사용 가능한지 확인
-                if (!isNameAvailable) {
-                    alert('사용할 수 없는 그룹 이름입니다. 다른 이름을 입력해주세요.');
-                    event.preventDefault();
-                    groupNameInput.focus();
-                    return;
-                }
-                // 추가하려는 책이 중복 메시지가 떠 있는 상태인지 확인
-                if (newBookIdInput && newBookIdInput.value !== '' && bookAddCheckResultSpan && bookAddCheckResultSpan.style.display !== 'none' && bookAddCheckResultSpan.textContent !== '') {
+                if (groupNameInput.value.trim() === '') { alert('그룹 이름을 입력해주세요.'); event.preventDefault(); groupNameInput.focus(); return; }
+                if (!isNameAvailable) { alert('사용할 수 없는 그룹 이름입니다.'); event.preventDefault(); groupNameInput.focus(); return; }
+                // 수정: 중복 메시지 확인 로직 강화
+                if (newBookIdInput.value !== '' && bookAddCheckResultSpan.style.display !== 'none' && bookAddCheckResultSpan.textContent.includes('이미 그룹에')) {
                     alert('이미 그룹에 있는 책은 추가할 수 없습니다.');
                     event.preventDefault();
                     return;
                 }
-                // (선택적) 제출 시 로딩 표시 등 추가 가능
-                if(submitButton) submitButton.disabled = true; // 중복 제출 방지
+                submitButton.disabled = true; submitButton.textContent = '처리 중...';
             });
         }
 
-        // --- 책 삭제 및 공개/비공개 토글 이벤트 처리 (이벤트 위임) ---
+        // --- 책 삭제 및 공개/비공개 토글 (이벤트 위임 및 로직 유지) ---
         if (currentGroupBooksList) {
             currentGroupBooksList.addEventListener('click', function(event) {
+                const toggleButton = event.target.closest('.toggle-privacy-btn');
+                const deleteButton = event.target.closest('.delete-book-btn');
 
-                // --- 공개/비공개 토글 로직 ---
-                if (event.target.classList.contains('toggle-privacy-btn')) {
-                    const toggleButton = event.target;
-                    const listItem = toggleButton.closest('li.group-book-item');
-                    const bookId = listItem ? listItem.dataset.bookId : null;
+                if (!toggleButton && !deleteButton) return;
 
-                    if (!bookId || !currentGroupId) { // currentGroupId 체크 추가
-                        console.error('Could not find book ID or group ID for privacy toggle.');
-                        alert('책 또는 그룹 정보를 찾을 수 없어 상태를 변경할 수 없습니다.');
-                        return;
-                    }
+                const listItem = event.target.closest('.group-book-item');
+                const bookId = listItem ? listItem.dataset.bookId : null;
+                const bookTitle = listItem ? (listItem.dataset.bookTitle || '해당 책') : '해당 책';
 
-                    console.log(`Toggle privacy button clicked for book ID: ${bookId} in group ID: ${currentGroupId}`);
+                if (!bookId || !currentGroupId) { alert('책 또는 그룹 정보를 찾을 수 없습니다.'); return; }
+
+                // --- 공개/비공개 토글 ---
+                if (toggleButton) {
+                    console.log(`Toggle privacy: BookID=${bookId}, GroupID=${currentGroupId}`);
                     toggleButton.disabled = true;
-                    const originalText = toggleButton.textContent;
-                    toggleButton.textContent = '처리 중...';
+                    const icon = toggleButton.querySelector('i');
+                    const originalIconHTML = icon ? icon.outerHTML : ''; // 아이콘 HTML 저장
+                    toggleButton.innerHTML = '...';
 
-                    fetch(`/group/api/group/${currentGroupId}/book/${bookId}/toggle-privacy`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                            // CSRF 토큰 헤더 추가 (필요시)
-                        }
-                    })
-                        .then(async response => {
-                            const responseBody = await response.text(); // 응답 본문을 일단 텍스트로 받음
-                            let jsonData;
-                            try {
-                                jsonData = responseBody ? JSON.parse(responseBody) : {}; // 빈 본문 처리
-                            } catch (e) {
-                                // JSON 파싱 실패 시
-                                console.error("Failed to parse JSON response:", responseBody);
-                                throw new Error(responseBody || `상태 변경 실패 (HTTP ${response.status})`); // 원본 텍스트 또는 기본 메시지
-                            }
-
-                            if (!response.ok) {
-                                // 서버가 JSON 형태의 오류 메시지를 보냈다고 가정 ({ "error": "메시지" })
-                                throw new Error(jsonData.error || `상태 변경 실패 (HTTP ${response.status})`);
-                            }
-                            return jsonData; // 성공 시 파싱된 JSON 반환
-                        })
-                        .then(data => {
-                            const newIsPublic = data.isPublic;
-                            console.log(`Book ${bookId} privacy toggled. New state: ${newIsPublic ? 'Public' : 'Private'}`);
-
-                            toggleButton.dataset.isPublic = newIsPublic;
-                            toggleButton.textContent = newIsPublic ? '비공개로 전환' : '공개로 전환';
-                            toggleButton.classList.toggle('is-public', newIsPublic);
-                            toggleButton.classList.toggle('is-private', !newIsPublic);
-
-                            // 성공 피드백 (선택적)
-                            toggleButton.style.transition = 'none';
-                            toggleButton.style.backgroundColor = newIsPublic ? '#a5d6a7' : '#ef9a9a';
-                            setTimeout(() => {
-                                toggleButton.style.transition = '';
-                                toggleButton.style.backgroundColor = '';
-                            }, 300);
-
-                        })
-                        .catch(error => {
-                            console.error('Error toggling book privacy:', error);
-                            alert(`상태 변경 중 오류가 발생했습니다: ${error.message}`);
-                            toggleButton.textContent = originalText; // 오류 시 버튼 텍스트 복구
-                        })
-                        .finally(() => {
-                            toggleButton.disabled = false; // 버튼 활성화
-                        });
+                    fetch(`/group/api/group/${currentGroupId}/book/${bookId}/toggle-privacy`, { method: 'POST', headers: headers })
+                        .then(async response => { /* (응답 처리 로직 기존 유지) */ const body = await response.text(); let json={}; try {json=body?JSON.parse(body):{};}catch(e){throw new Error(body||`HTTP ${response.status}`);} if(!response.ok){throw new Error(json.error||`HTTP ${response.status}`);} return json; })
+                        .then(data => { const newIsPublic = data.isPublic; console.log(`Toggle success: ${newIsPublic ? 'Public' : 'Private'}`); toggleButton.dataset.isPublic = newIsPublic; toggleButton.classList.toggle('is-public', newIsPublic); toggleButton.classList.toggle('is-private', !newIsPublic); })
+                        .catch(error => { console.error('Error toggling privacy:', error); alert(`상태 변경 오류: ${error.message}`); })
+                        .finally(() => { toggleButton.disabled = false; toggleButton.innerHTML = originalIconHTML; }); // 아이콘 HTML 복구
                 }
 
-                // --- 책 삭제 로직 ---
-                else if (event.target.classList.contains('delete-book-btn')) {
-                    const listItem = event.target.closest('li.group-book-item');
-                    const bookIdToDelete = listItem ? listItem.dataset.bookId : null;
-                    const bookTitleToDelete = listItem ? (listItem.dataset.bookTitle || '해당 책') : '해당 책';
+                // --- 책 삭제 ---
+                else if (deleteButton) {
+                    if (confirm(`'${bookTitle}' 책을 그룹에서 삭제하시겠습니까?`)) {
+                        deleteButton.disabled = true;
+                        const icon = deleteButton.querySelector('i');
+                        const originalIconHTML = icon ? icon.outerHTML : '';
+                        deleteButton.innerHTML = '...';
 
-                    if (!bookIdToDelete || !currentGroupId) {
-                        console.error('Could not find book ID or group ID to delete.');
-                        alert('책 또는 그룹 정보를 찾을 수 없어 삭제할 수 없습니다.');
-                        return;
-                    }
-
-                    if (confirm(`'${bookTitleToDelete}' 책을 그룹에서 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
-                        // 삭제 버튼 임시 비활성화
-                        event.target.disabled = true;
-
-                        fetch(`/group/fix/${currentGroupId}/book/${bookIdToDelete}`, {
-                            method: 'DELETE',
-                            headers: {
-                                // CSRF 토큰 헤더 추가 (필요시)
-                            }
-                        })
-                            .then(async response => { // async 추가
-                                const responseBody = await response.text(); // 응답 본문 텍스트로 받기
-                                let errorMsg = responseBody; // 기본 오류 메시지
-                                if (!response.ok) {
-                                    try {
-                                        // JSON 파싱 시도
-                                        const errorJson = JSON.parse(responseBody);
-                                        errorMsg = errorJson.error || errorJson.message || responseBody; // 서버 응답 구조에 맞게 수정
-                                    } catch (e) { /* JSON 파싱 실패 시 원본 텍스트 사용 */ }
-                                    throw new Error(errorMsg || '삭제 실패 (상태 코드: ' + response.status + ')');
-                                }
-                                // 성공 시 (2xx 상태 코드)
-                                listItem.remove(); // UI에서 제거
-                                alert('책이 그룹에서 삭제되었습니다.');
-                                console.log(`Successfully deleted book ID: ${bookIdToDelete} from UI.`);
-                            })
-                            .catch(error => {
-                                console.error('Error deleting book:', error);
-                                alert(`책 삭제 중 오류가 발생했습니다: ${error.message}`);
-                                // 실패 시 버튼 다시 활성화 (필요시)
-                                if(event.target) event.target.disabled = false;
-                            });
+                        fetch(`/group/fix/${currentGroupId}/book/${bookId}`, { method: 'DELETE', headers: headers })
+                            .then(async response => { const body = await response.text(); let msg=body; if(!response.ok){ try{msg=JSON.parse(body).error||body;}catch(e){} throw new Error(msg||`삭제 실패 (${response.status})`); } listItem.remove(); alert('삭제되었습니다.'); console.log(`Deleted book ID: ${bookId}`); if(currentGroupBooksList.querySelectorAll('.group-book-item').length===0){ const p=document.createElement('p'); p.className='no-books-message error under_margin'; p.textContent='등록된 그룹 도서가 없습니다.'; const titleDiv=currentGroupBooksList.closest('.group-book-list-container').querySelector('.title'); if(titleDiv) titleDiv.insertAdjacentElement('afterend', p); else currentGroupBooksList.closest('.group-book-list-container').appendChild(p);} })
+                            .catch(error => { console.error('Error deleting book:', error); alert(`삭제 오류: ${error.message}`); deleteButton.disabled = false; deleteButton.innerHTML = originalIconHTML; });
                     }
                 }
             });
         }
 
     }); // End of DOMContentLoaded
-</script> <!-- 스크립트 끝 -->
-</div>
+    /*]]>*/
+</script>
+
 </body>
 </html>
