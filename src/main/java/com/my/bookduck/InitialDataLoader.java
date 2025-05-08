@@ -29,7 +29,7 @@ public class InitialDataLoader {
         }
 
         for (int i = 1; i < 11; i++) {
-            String name = "t" + i;
+            String name = "test" + i;
             if (userRepository.findByLoginId(name) == null) {
                 User user = User.builder()
                         .loginId(name)

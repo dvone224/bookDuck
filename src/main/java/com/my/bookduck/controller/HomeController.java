@@ -120,6 +120,10 @@ public class HomeController {
 
         log.info("loginUser info: {}", loginUser);
         log.info("user id: {}", userId);
+        if(loginUser.getNickName() == null) {
+            log.info("소셜 로그인 정보가 완성되지 않았습니다");
+            return "redirect:/logout";
+        }
         model.addAttribute("loginuser", loginUser);
 
         // 1. 내 그룹 목록 가져오기 (최대 3개)
