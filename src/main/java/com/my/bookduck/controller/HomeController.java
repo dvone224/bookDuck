@@ -55,6 +55,8 @@ public class HomeController {
 
         Long currentUserId = null;
         loginUserInfo loginUser = null;
+        boolean isLoggedIn = userDetails != null; // 로그인 상태 확인
+        model.addAttribute("isLoggedIn", isLoggedIn); // 모델에 isLoggedIn 추가
 
         if (userDetails != null) {
             currentUserId = userDetails.getUser().getId();
@@ -111,6 +113,8 @@ public class HomeController {
 
         Long currentUserId = null;
         loginUserInfo loginUser = null;
+        boolean isLoggedIn = userDetails != null; // 로그인 상태 확인
+        model.addAttribute("isLoggedIn", isLoggedIn);
 
         if (userDetails == null) {
             log.warn("/logininfo 접근: userDetails가 null. 로그인 폼으로 리다이렉트.");

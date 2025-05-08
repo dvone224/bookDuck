@@ -1,88 +1,62 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- 기존 head 내용 유지 (header 프래그먼트는 주석 처리 또는 실제 경로로) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck² :: 명예의 전당</title>
     <style>
-
-
-
-        /*아이콘 임포트*/
-        /* Fontawesome 4.7 */
+        /* 기존 CSS 그대로 유지 (변경 없음) */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-
-        /*로고용 폰트: cafe24슈퍼매직*/
         @font-face {
             font-family: 'Cafe24Supermagic-Bold-v1.0';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
-
-        /*홈페이지 메인 폰트: 고운바탕*/
         @font-face {
             font-family: 'GowunBatang-Regular';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*고운돋움*/
         @font-face {
             font-family: 'GowunDodum-Regular';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*조선굴림*/
         @font-face {
             font-family: 'ChosunGu';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*온글잎콘콘*/
         @font-face {
             font-family: 'Ownglyph_corncorn-Rg';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*나눔손글씨펜*/
         @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
-        /*font-family: 'NanumPen';*/
-
-        /*학교안심꼬꼬마*/
         @font-face {
             font-family: 'TTHakgyoansimKkokkomaR';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*심경하*/
         @font-face {
             font-family: 'SimKyungha';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*다이어리*/
         @font-face {
             font-family: 'EarlyFontDiary';
             src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-
-        /* 컬러 파레트 */
         :root{
             --main-color-dark: #00479B;
             --main-color-middle: #83C7FF;
@@ -94,62 +68,47 @@
             --cancle-color-middle: #D3D3D3;
             --cancle-color-light: #EAEAEA;
             --crown-color: #ffa500;
-
-            /*사용법: var(--main-color-middle)*/
-            --border-big: 20px;/*큰거...뭐가잇지...*/
-            --border-middle: 10px;/*img*/
-            --border-circle: 50%;/*동그리버튼*/
-
-            /*폰트 사이즈 정의*/
+            --border-big: 20px;
+            --border-middle: 10px;
+            --border-circle: 50%;
             --font-size-0: 28px;
             --font-size-1: 23px;
             --font-size-2: 18px;
             --font-size-3: 13px;
             --font-size-4: 8px;
-
-            /*쪽지 색상 지정*/
             --memo1-color-dark: #00479B;
             --memo1-color-middle: #83C7FF;
             --memo1-color-light: #E3F4FF;
             --memo1-color-back: #B0CAD6;
-
             --memo2-color-dark: #CE7000;
             --memo2-color-middle: #FFB90B;
             --memo2-color-light: #FFF7E6;
             --memo2-color-back: #EAD4AD;
-
             --memo3-coler-dark: #841A1A;
             --memo3-coler-middle: #FF9494;
             --memo3-coler-light: #FFE9E9;
             --memo3-coler-back: #D6B0B0;
-
             --memo4-coler-dark: #325900;
             --memo4-coler-middle: #97CE41;
             --memo4-coler-light: #F6FFD9;
             --memo4-coler-back: #CCD3AE;
-
             --memo5-coler-dark: #A04800;
             --memo5-coler-middle: #FF8B00;
             --memo5-coler-light: #FFE3CA;
             --memo5-coler-back: #C9A88D;
-
             --memo6-coler-dark: #6A297A;
             --memo6-coler-middle: #AF80CE;
             --memo6-coler-light: #F5EEFF;
             --memo6-coler-back: #CDC3DD;
-
             --memo7-coler-dark: #1F1F77;
             --memo7-coler-middle: #7A8CE5;
             --memo7-coler-light: #E9ECFF;
             --memo7-coler-back: #B2B8D3;
-
             --memo8-coler-dark: #006466;
             --memo8-coler-middle: #66C6DD;
             --memo8-coler-light: #EBFFFF;
             --memo8-coler-back: #B8D3D2;
         }
-
-        /* Global 스타일 초기화 */
         * {
             margin: 0;
             padding: 0;
@@ -157,26 +116,17 @@
             font-family: "Gowun Batang";
             font-size: var(--font-size-2);
         }
-
-        /* 기본 설정 */
         body {
             margin: 0;
             padding: 0;
-            width: 100%; /* 가로를 화면에 맞게 설정 */
+            width: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-
-
-        /* 컨테이너 스타일 */
         .container {
-            /*border: 1px solid slateblue;*/
-            /*width: 100%;*/
             width: 768px;
-            /*            max-width: 768px;*/
-            /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
             padding: 15px;
             display: flex;
             flex-direction: column;
@@ -185,12 +135,8 @@
         }
         header{
             width: 768px;
-            /*            max-width: 768px;*/
         }
-
-        /*버튼 기본 규격*/
         .btn_circle{
-            /*            border: 1px solid red;*/
             width: 45px;
             height: 45px;
             border-radius: 50%;
@@ -199,21 +145,17 @@
             align-items: center;
             cursor: pointer;
             margin: 10px;
-            /*            font-size: 20px;*/
         }
-
         .btn_circle .btn_icon{
             width: 25px;
             height: 25px;
             cursor: pointer;
         }
-
         .btn_circle .btn_icon_color{
             width: 35px;
             height: 35px;
             cursor: pointer;
         }
-
         .btn_circle_big{
             width: 55px;
             height: 55px;
@@ -221,13 +163,11 @@
             color: white;
             cursor: pointer;
         }
-
         .btn_circle_big .btn_icon{
             width: 45px;
             height: 45px;
             cursor: pointer;
         }
-
         .btn_long{
             width: 100%;
             height: 45px;
@@ -238,7 +178,6 @@
             font-weight: bold;
             max-width: 768px;
         }
-
         .btn_mini{
             width: auto;
             height: 25px;
@@ -255,7 +194,6 @@
             padding: 10px;
             margin-left: 5px;
         }
-
         .box{
             width: 100%;
             height: auto;
@@ -268,7 +206,6 @@
             margin-bottom: 10px;
             max-width: 768px;
         }
-
         .title{
             display: flex;
             flex-direction: column;
@@ -277,11 +214,9 @@
             margin: 10px;
             font-weight: bold;
         }
-
         .bold{
             font-weight: bold;
         }
-
         .dot{
             width: 15px;
             height: 15px;
@@ -290,17 +225,14 @@
             margin-top: 5px;
             margin-right: 5px;
         }
-
         .underline{
             width: 130%;
             height: 1px;
         }
-
         .line{
             width: 100%;
             height: 1px;
         }
-
         .blue{
             background: var(--main-color-middle);
         }
@@ -337,9 +269,6 @@
         .gray{
             background: var(--cancle-color-middle);
         }
-        .gray2{
-            color: var(--cancle-color-middle);
-        }
         .light_gray{
             background: var(--cancle-color-light);
         }
@@ -349,16 +278,13 @@
         .white2{
             color: white;
         }
-
         .blue_line_thin{
             border: 1px solid var(--main-color-middle);
         }
         .yellow_line_thin{
             border: 1px solid var(--assist-color-middle);
         }
-
         .input_long{
-            /*            margin-bottom: 10px;*/
             width: 100%;
             height: 45px;
             border-radius: 45px;
@@ -366,32 +292,24 @@
             text-align: center;
             max-width: 768px;
         }
-
         .blue_line{
             border: 2px solid var(--main-color-middle);
             color: var(--main-color-dark);
         }
-
         .blue_line:focus{
             border: 4px solid var(--main-color-middle);
             color: var(--main-color-dark);
             outline: none;
         }
-
         .yellow_line{
             border: 2px solid var(--assist-color-middle);
             color: var(--assist-color-dark);
         }
-
         .yellow_line:focus{
             border: 4px solid var(--assist-color-middle);
             color: var(--assist-color-dark);
             outline: none;
         }
-
-
-        /*체크박스 CSS*/
-
         input[type="checkbox"]{
             display: none;
         }
@@ -405,35 +323,21 @@
             cursor: pointer;
             position: relative;
         }
-        /*input[type="checkbox"] + label{
-            border:3px solid var(--main-color-middle);
-        }*/
-        /*input[type="checkbox"] + label{
-            border:3px solid var(--assist-color-middle);
-        }*/
         input[type="checkbox"]:checked + label::after {
             content: '✔';
-            font-size: 16px; /* 체크 아이콘 크기 조정 */
-            width: 22px; /* 내부 원 크기 */
-            height: 22px; /* 내부 원 크기 */
-            border: none; /* 중복 테두리 제거 */
+            font-size: 16px;
+            width: 22px;
+            height: 22px;
+            border: none;
             color: white;
             text-align: center;
-            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+            line-height: 19px;
             position: absolute;
-            left: 50%; /* 중앙 정렬 */
-            top: 50%; /* 중앙 정렬 */
-            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
-            border-radius: 50%; /* 내부 원형 유지 */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
         }
-        /*input[type="checkbox"]:checked + label::after{
-            background: var(--main-color-middle);
-        }*/
-        /*input[type="checkbox"]:checked + label::after{
-            background: var(--assist-color-middle);
-        }*/
-
-        /*대표 이미지들 설정*/
         .processImg{
             width: 300px;
             height: 300px;
@@ -442,16 +346,13 @@
             width: 100%;
             height: 100%;
         }
-
         .error{
             color: red;
             margin: 5px;
             text-align: center;
             font-size: var(--font-size-2);
         }
-
-
-        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+        @media screen and (max-width: 768px) {
             .container {
                 width: 100%;
             }
@@ -459,33 +360,26 @@
                 width: 100%;
             }
         }
-
-        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+        @media screen and (max-width: 480px) {
             .container {
-                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
-                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+                padding: 5px;
+                font-size: 14px;
             }
         }
-
-        /* 여기까지 메인 CSS */
-
-
         .header_one {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 15px; }
-
+            padding: 0 15px;
+        }
         .header_one_top, .header_right{
             display: flex;
         }
-
         .header_one_top {
             justify-content: space-between;
             align-items: center;
             width: 100%;
             padding: 10px 0;
         }
-
         .logo{
             width: 150px;
             height: 40px;
@@ -498,63 +392,52 @@
             cursor: pointer;
             text-decoration: none;
         }
-
-        /*헤더 메뉴*/
         .header_one_bottom{
             display: flex;
             flex-direction: column;
         }
-
         .box_none{
             display: flex;
             width: 100%;
-        } /*!* 메뉴 레이아웃 *!*/
-
+        }
         .box_none2{
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         .point_menu{
             height: 2px;
             width: 30%;
             background: var(--main-color-dark);
         }
-        /*!* 두께 증가 *!*/
         .menu{
-            height: auto; /*!* 내용에 맞게 *!*/
-            padding: 10px 0; /*!* 상하 패딩 *!*/
+            height: auto;
+            padding: 10px 0;
             flex: 1;
             display: flex;
             justify-content: center;
-            align-items: center; /*!* 중앙 정렬 *!*/
+            align-items: center;
             color: var(--cancle-color-dark);
             transition: color 0.3s, font-weight 0.3s;
             cursor: pointer;
             text-decoration: none;
             font-size: var(--font-size-2);
         }
-
         .menu:hover {
             color: var(--main-color-dark);
         }
-
         .this_page {
-            /*border: 1px solid red;*/
             width: 100px;
             color: var(--main-color-dark);
             font-weight: bold;
         }
-
-        /*!* "모임 생성하기" 버튼 스타일 *!*/
         .btn_box {
             background-color: var(--main-color-middle);
             color: white;
             font-weight: bold;
             text-align: center;
-            line-height: 100px; /*!* 텍스트 수직 중앙 정렬 *!*/
+            line-height: 100px;
             cursor: pointer;
             transition: background-color 0.2s;
             border-radius: var(--border-middle);
@@ -562,14 +445,11 @@
         .btn_box:hover {
             background-color: var(--main-color-dark);
         }
-
         .search-area-board{
-            /*            border: 1px solid blue;*/
             width: 100%;
             position: relative;
             margin-bottom: 10px;
         }
-
         .btn_circle_mini{
             border: none;
             width: 35px;
@@ -585,14 +465,12 @@
             right: 5px;
             transform: translateY(-50%);
         }
-
         .controls-container{
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .btn_book{
             width: 150px;
             height: 30px;
@@ -603,21 +481,16 @@
             color: white;
             font-weight: bold;
             transition: background 0.3s ease;
-
         }
-
         .btn_book:hover{
             background: var(--assist-color-dark);
         }
-
-        /*드롭다운 메뉴 꾸미기*/
         .sort-dropdown {
-            width: 100px; /* 필요시 조정 가능 */
+            width: 100px;
             position: relative;
             font-size: var(--font-size-2);
             color: var(--assist-color-dark);
         }
-
         .sort-dropdown select {
             width: 100%;
             padding: 8px 12px;
@@ -626,7 +499,7 @@
             font-size: var(--font-size-2);
             font-weight: 500;
             color: var(--assist-color-dark);
-            appearance: none; /* 기본 브라우저 스타일 제거 */
+            appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41 0L6 4.59 10.59 0 12 1.41 6 7.41 0 1.41z' fill='%23FFB90B'/%3E%3C/svg%3E");
@@ -636,28 +509,21 @@
             cursor: pointer;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
         .sort-dropdown select:focus,
         .sort-dropdown select:hover {
             outline: none;
         }
-
-
-        /*!* 게시글 목록 스타일 *!*/
         .board-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px; width: 100%;
         }
-
         @media (max-width: 400px) {
             .board-list {
                 grid-template-columns: 1fr;
             }
         }
-
         .board-item {
-            /*            border: 1px solid red;*/
             border-radius: var(--border-middle);
             display: flex;
             flex-direction: column;
@@ -665,14 +531,12 @@
             justify-content: center;
             padding: 10px;
         }
-
         .board-item-header {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-
         .board-item-cover {
             width: 150px;
             height: 200px;
@@ -681,11 +545,9 @@
             background-color: #f0f0f0;
             flex-shrink: 0;
         }
-
         .board-item-info {
             flex-grow: 1;
         }
-
         .board-item-book-title {
             font-size: var(--font-size-2);
             font-weight: bold;
@@ -693,43 +555,22 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            /*            line-height: 1.3;
-                        display: -webkit-box;
-                        -webkit-line-clamp: 2;
-                        -webkit-box-orient: vertical;
-                        overflow: hidden;
-                        text-overflow: ellipsis;*/
         }
-
         .box_groupname{
             display: flex;
             justify-content: center;
             align-items: flex-end;
         }
-
         .board-item-group-name {
             font-size: var(--font-size-2);
             display: flex;
             justify-content: center;
             align-items: center;
-            /*            padding: 3px 8px;
-                        border-radius: 10px;
-                        display: inline-block;
-                        margin-top: 4px;*/
         }
-
         .crew_text{
             margin-left: 5px;
             font-size: var(--font-size-3);
         }
-
-        /*        .board-item-date {
-                    font-size: 0.8em;
-                    color: #777;
-                    text-align: right;
-                    margin-top: auto;
-                    padding-top: 10px;
-                }*/
         .no-boards-message {
             text-align: center;
             padding: 40px;
@@ -737,11 +578,6 @@
             font-size: 1.1em;
             width: 100%;
         }
-
-        .test{
-            border: 1px solid red;
-        }
-
     </style>
 </head>
 <body>
@@ -752,10 +588,10 @@
                 <a href="/home" class="logo">BookDuck²</a>
             </div>
             <div class="header_right">
-                <div sec:authorize="isAuthenticated()" class="btn_circle cart-btn">
+                <div class="btn_circle cart-btn">
                     <i class="fa-solid fa-cart-shopping blue2 btn_icon_color"></i>
                 </div>
-                <div sec:authorize="isAuthenticated()" class="btn_circle user-btn">
+                <div class="btn_circle user-btn">
                     <i class="fa-solid fa-user blue2 btn_icon_color"></i>
                 </div>
             </div>
@@ -824,6 +660,7 @@
     /*<![CDATA[*/
     // 로그인 상태를 서버로부터 받아옴
     const isLoggedIn = /*[[${isLoggedIn}]]*/ false;
+    console.log("isLoggedIn value:", isLoggedIn);
 
     // 현재 필터, 정렬, 검색 상태
     let currentBoardQuery = /*[[${currentQuery}]]*/ '';
@@ -898,6 +735,7 @@
     // 장바구니 버튼 클릭 이벤트
     if (cartButton) {
         cartButton.addEventListener('click', function() {
+            console.log("Cart button clicked, isLoggedIn:", isLoggedIn);
             if (isLoggedIn) {
                 window.location.href = '/cart/cartList';
             } else {
@@ -910,6 +748,7 @@
     // 마이페이지 버튼 클릭 이벤트
     if (userButton) {
         userButton.addEventListener('click', function() {
+            console.log("User button clicked, isLoggedIn:", isLoggedIn);
             if (isLoggedIn) {
                 window.location.href = '/userinfo';
             } else {
@@ -921,21 +760,52 @@
 
     // 책 요소 클릭 이벤트
     if (boardList) {
-        boardList.addEventListener('click', function(event) {
+        boardList.addEventListener('click', async function(event) {
             const clickedItem = event.target.closest('.board-item');
             if (clickedItem) {
                 const boardId = clickedItem.dataset.boardId;
-                console.log("Board ID clicked:", boardId);
-                if (isLoggedIn) {
-                    if (boardId && /^\d+$/.test(boardId)) {
-                        window.location.href = `/board/${encodeURIComponent(boardId)}`;
-                    } else {
-                        alert('게시글 정보가 올바르지 않습니다.');
-                        console.error("Invalid or missing board ID:", boardId);
-                    }
-                } else {
+                const bookTitle = clickedItem.querySelector('.board-item-book-title').textContent.trim();
+                console.log("Board ID clicked:", boardId, "Book Title:", bookTitle, "isLoggedIn:", isLoggedIn);
+
+                // 로그인 확인
+                if (!isLoggedIn) {
                     alert('로그인 먼저 해주세요');
                     window.location.href = '/login-form';
+                    return;
+                }
+
+                // 책 보유 여부 확인
+                try {
+                    const response = await fetch('/api/my-books', {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+                            window.location.href = '/login-form';
+                            return;
+                        }
+                        throw new Error(`HTTP error ${response.status}`);
+                    }
+                    const ownedBooks = await response.json();
+                    console.log("Owned books:", ownedBooks);
+                    const ownedBookTitles = ownedBooks.map(book => book.title);
+                    if (ownedBookTitles.includes(bookTitle)) {
+                        // 보유한 책: 게시글 페이지로 이동
+                        if (boardId && /^\d+$/.test(boardId)) {
+                            window.location.href = `/book/viewer/1`;
+                        } else {
+                            alert('게시글 정보가 올바르지 않습니다.');
+                            console.error("Invalid or missing board ID:", boardId);
+                        }
+                    } else {
+                        // 보유하지 않은 책: 알림창과 서점으로 리다이렉트
+                        alert('책을 구매하세요');
+                        window.location.href = '/shop/shopList';
+                    }
+                } catch (error) {
+                    console.error("Error checking owned books:", error);
+                    alert('책 보유 여부를 확인하는 중 오류가 발생했습니다.');
                 }
             }
         });
@@ -947,12 +817,14 @@
             query: currentBoardQuery,
             filterMyBooks: currentBoardFilterMyBooks,
             sortBy: currentBoardSortBy,
-            sortDir: currentBoardSortDir
+            sortDir: currentBoardSortDir,
+            isLoggedIn: isLoggedIn
         });
     });
 
     /*]]>*/
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca3c31ad1144df',t:'MTc0NjcyMDcwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93caaffade9453cc',t:'MTc0NjcyNTQ1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

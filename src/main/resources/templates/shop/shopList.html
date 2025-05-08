@@ -1,84 +1,61 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> <!-- Thymeleaf Security Extras 네임스페이스 추가 -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <!-- 기존 head 내용 유지 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
     <title>BookDuck²::북덕이 eBook 서점</title>
     <style>
-        /* (스타일 코드는 이전 답변과 동일 - 생략하지 않음) */
         @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-
-        /*로고용 폰트: cafe24슈퍼매직*/
         @font-face {
             font-family: 'Cafe24Supermagic-Bold-v1.0';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
-
-        /*홈페이지 메인 폰트: 고운바탕*/
         @font-face {
             font-family: 'GowunBatang-Regular';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*고운돋움*/
         @font-face {
             font-family: 'GowunDodum-Regular';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*조선굴림*/
         @font-face {
             font-family: 'ChosunGu';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*온글잎콘콘*/
         @font-face {
             font-family: 'Ownglyph_corncorn-Rg';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*나눔손글씨펜*/
         @import url('//fonts.googleapis.com/earlyaccess/nanumpenscript.css');
-        /*font-family: 'NanumPen';*/
-
-        /*학교안심꼬꼬마*/
         @font-face {
             font-family: 'TTHakgyoansimKkokkomaR';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimKkokkomaR.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*심경하*/
         @font-face {
             font-family: 'SimKyungha';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
-
-        /*다이어리*/
         @font-face {
             font-family: 'EarlyFontDiary';
             src: url('https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_220508@1.0/EarlyFontDiary.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-
-        /* 컬러 파레트 */
         :root{
             --main-color-dark: #00479B;
             --main-color-middle: #83C7FF;
@@ -90,62 +67,47 @@
             --cancle-color-middle: #D3D3D3;
             --cancle-color-light: #EAEAEA;
             --crown-color: #ffa500;
-
-            /*사용법: var(--main-color-middle)*/
-            --border-big: 20px;/*큰거...뭐가잇지...*/
-            --border-middle: 10px;/*img*/
-            --border-circle: 50%;/*동그리버튼*/
-
-            /*폰트 사이즈 정의*/
+            --border-big: 20px;
+            --border-middle: 10px;
+            --border-circle: 50%;
             --font-size-0: 28px;
             --font-size-1: 23px;
             --font-size-2: 18px;
             --font-size-3: 13px;
             --font-size-4: 8px;
-
-            /*쪽지 색상 지정*/
             --memo1-color-dark: #00479B;
             --memo1-color-middle: #83C7FF;
             --memo1-color-light: #E3F4FF;
             --memo1-color-back: #B0CAD6;
-
             --memo2-color-dark: #CE7000;
             --memo2-color-middle: #FFB90B;
             --memo2-color-light: #FFF7E6;
             --memo2-color-back: #EAD4AD;
-
             --memo3-coler-dark: #841A1A;
             --memo3-coler-middle: #FF9494;
             --memo3-coler-light: #FFE9E9;
             --memo3-coler-back: #D6B0B0;
-
             --memo4-coler-dark: #325900;
             --memo4-coler-middle: #97CE41;
             --memo4-coler-light: #F6FFD9;
             --memo4-coler-back: #CCD3AE;
-
             --memo5-coler-dark: #A04800;
             --memo5-coler-middle: #FF8B00;
             --memo5-coler-light: #FFE3CA;
             --memo5-coler-back: #C9A88D;
-
             --memo6-coler-dark: #6A297A;
             --memo6-coler-middle: #AF80CE;
             --memo6-coler-light: #F5EEFF;
             --memo6-coler-back: #CDC3DD;
-
             --memo7-coler-dark: #1F1F77;
             --memo7-coler-middle: #7A8CE5;
             --memo7-coler-light: #E9ECFF;
             --memo7-coler-back: #B2B8D3;
-
             --memo8-coler-dark: #006466;
             --memo8-coler-middle: #66C6DD;
             --memo8-coler-light: #EBFFFF;
             --memo8-coler-back: #B8D3D2;
         }
-
-        /* Global 스타일 초기화 */
         * {
             margin: 0;
             padding: 0;
@@ -153,31 +115,22 @@
             font-family: "Gowun Batang";
             font-size: var(--font-size-2);
         }
-
-        /* 기본 설정 */
         body {
             margin: 0;
             padding: 0;
-            width: 100%; /* 가로를 화면에 맞게 설정 */
-            display: flex; /* body를 flex container로 */
-            flex-direction: column; /* 자식 요소들을 세로로 정렬 */
-            align-items: center; /* 가로축 중앙 정렬 */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        /* 컨테이너 스타일 */
         .container {
-            /* border: 1px solid slateblue; */ /* 디버깅용 테두리 제거 또는 주석 처리 */
-            width: 100%; /* 너비를 body에 맞춤 */
-            max-width: 768px; /* 최대 너비 설정 */
+            width: 100%;
+            max-width: 768px;
             padding: 10px;
             display: flex;
             flex-direction: column;
-            /* justify-content: center; */ /* container 내부 요소는 시작점에 정렬되도록 제거 */
-            align-items: center; /* 내부 요소들을 가로 중앙 정렬 */
+            align-items: center;
         }
-
-
-        /*버튼 기본 규격*/
         .btn_circle{
             width: 45px;
             height: 45px;
@@ -189,7 +142,6 @@
             cursor: pointer;
             margin: 10px;
         }
-
         .btn_circle_big{
             width: 55px;
             height: 55px;
@@ -197,7 +149,6 @@
             color: white;
             cursor: pointer;
         }
-
         .btn_long{
             width: 100%;
             height: 45px;
@@ -208,7 +159,6 @@
             font-weight: bold;
             max-width: 768px;
         }
-
         .btn_mini{
             width: auto;
             height: 25px;
@@ -225,13 +175,16 @@
             padding: 10px;
             margin-left: 5px;
         }
-
         .btn_icon{
             width: 25px;
             height: 25px;
             cursor: pointer;
         }
-
+        .btn_icon_color{
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+        }
         .box{
             width: 100%;
             height: auto;
@@ -244,7 +197,6 @@
             margin-bottom: 10px;
             max-width: 768px;
         }
-
         .title{
             display: flex;
             flex-direction: column;
@@ -253,11 +205,9 @@
             margin: 10px;
             font-weight: bold;
         }
-
         .bold{
             font-weight: bold;
         }
-
         .dot{
             width: 15px;
             height: 15px;
@@ -266,20 +216,17 @@
             margin-top: 5px;
             margin-right: 5px;
         }
-
         .underline{
             width: 130%;
             height: 1px;
         }
-
         .line{
             width: 100%;
             height: 1px;
-            background-color: var(--cancle-color-middle); /* 선 색상 명시 */
-            margin-top: 10px; /* 위쪽 여백 */
-            margin-bottom: 10px; /* 아래쪽 여백 */
+            background-color: var(--cancle-color-middle);
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
-
         .blue{
             background: var(--main-color-middle);
         }
@@ -319,14 +266,12 @@
         .white{
             background: white;
         }
-
         .blue_line_thin{
             border: 1px solid var(--main-color-middle);
         }
         .yellow_line_thin{
             border: 1px solid var(--assist-color-middle);
         }
-
         .input_long{
             margin-bottom: 10px;
             width: 100%;
@@ -336,32 +281,24 @@
             text-align: center;
             max-width: 768px;
         }
-
         .blue_line{
             border: 2px solid var(--main-color-middle);
             color: var(--main-color-dark);
         }
-
         .blue_line:focus{
             border: 4px solid var(--main-color-middle);
             color: var(--main-color-dark);
             outline: none;
         }
-
         .yellow_line{
             border: 2px solid var(--assist-color-middle);
             color: var(--assist-color-dark);
         }
-
         .yellow_line:focus{
             border: 4px solid var(--assist-color-middle);
             color: var(--assist-color-dark);
             outline: none;
         }
-
-
-        /*체크박스 CSS*/
-
         input[type="checkbox"]{
             display: none;
         }
@@ -377,21 +314,19 @@
         }
         input[type="checkbox"]:checked + label::after {
             content: '✔';
-            font-size: 16px; /* 체크 아이콘 크기 조정 */
-            width: 22px; /* 내부 원 크기 */
-            height: 22px; /* 내부 원 크기 */
-            border: none; /* 중복 테두리 제거 */
+            font-size: 16px;
+            width: 22px;
+            height: 22px;
+            border: none;
             color: white;
             text-align: center;
-            line-height: 19px; /* 내부 원 높이와 동일하게 설정 */
+            line-height: 19px;
             position: absolute;
-            left: 50%; /* 중앙 정렬 */
-            top: 50%; /* 중앙 정렬 */
-            transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
-            border-radius: 50%; /* 내부 원형 유지 */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
         }
-
-        /*대표 이미지들 설정*/
         .processImg{
             width: 300px;
             height: 300px;
@@ -400,29 +335,22 @@
             width: 100%;
             height: 100%;
         }
-
-        /* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
-        @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
+        @media screen and (max-width: 768px) {
             .container {
-                padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+                padding: 5px;
             }
         }
-
-        @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
+        @media screen and (max-width: 480px) {
             .container {
-                font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
+                font-size: 14px;
             }
         }
-
-        /*드롭다운 메뉴 꾸미기*/
         .sort-dropdown {
-            width: 100%; /* 필요시 조정 가능 */
+            width: 100%;
             position: relative;
             font-size: var(--font-size-2);
             color: var(--assist-color-dark);
-
         }
-
         .sort-dropdown select {
             width: 100%;
             padding: 8px 12px;
@@ -430,7 +358,7 @@
             font-size: var(--font-size-2);
             font-weight: 500;
             color: var(--assist-color-dark);
-            appearance: none; /* 기본 브라우저 스타일 제거 */
+            appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41 0L6 4.59 10.59 0 12 1.41 6 7.41 0 1.41z' fill='%23FFB90B'/%3E%3C/svg%3E");
@@ -440,13 +368,10 @@
             cursor: pointer;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
         .sort-dropdown select:focus,
         .sort-dropdown select:hover {
             outline: none;
         }
-
-        /*두번째 드롭다운*/
         .dropdown-content {
             display: none;
             position: absolute;
@@ -459,27 +384,21 @@
         .dropdown-content.show {
             display: block;
         }
-
-        .test1{
-            border: 1px solid red;
-        }
-        .test2{
-            border: 1px solid blue;
-        }
-
-        /* 여기서부터 개별 페이지 스타일 */
         .category-select {
             width: 100%;
             max-width: 768px;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
-            border: 1px solid var(--main-color-middle);
+            border: 2px solid var(--assist-color-middle);
             font-size: var(--font-size-2);
-            color: var(--main-color-dark);
+            color: var(--assist-color-dark);
             background-color: white;
         }
-
+        .category-select:focus {
+            border: 4px solid var(--assist-color-middle);
+            outline: none;
+        }
         .seperate {
             width: 100%;
             height: 45px;
@@ -487,72 +406,65 @@
             justify-content: space-between;
             align-items: center;
             max-width: 768px;
-            /* input_long, yellow_line 클래스 스타일이 이미 적용됨 */
         }
         .seperate_one {
             flex: 1;
-            display: flex; /* 내부 input 정렬을 위해 */
+            display: flex;
             align-items: center;
         }
         .seperate_two {
-            width: 45px; /* 버튼 크기만큼 */
-            height: 100%; /* 부모 높이에 맞춤 */
+            width: 45px;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         .btn_circle_mini {
             border: none;
             width: 35px;
             height: 35px;
             border-radius: 50%;
-            color: white; /* 아이콘 색상 */
-            background-color: var(--assist-color-middle); /* 배경색은 yellow 클래스에서 올 수도 있음 */
+            color: white;
+            background-color: var(--assist-color-middle);
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            padding: 0; /* 내부 여백 제거 */
+            padding: 0;
         }
-        .btn_circle_mini i { /* 아이콘 색상을 직접 지정하는 것이 더 명확할 수 있음 */
+        .btn_circle_mini i {
             color: white;
         }
-
         .input_none_long {
             border: none;
-            text-align: left; /* 검색어는 보통 왼쪽 정렬 */
-            padding-left: 15px; /* 내부 여백 */
+            text-align: left;
+            padding-left: 15px;
             width: 100%;
             height: 100%;
-            font-family: 'GowunBatang-Regular'; /* main.css의 폰트와 일치 */
+            font-family: 'GowunBatang-Regular';
             color: var(--assist-color-dark);
-            font-size: var(--font-size-2); /* main.css와 일치 */
+            font-size: var(--font-size-2);
         }
         .input_none_long:focus {
             outline: none;
         }
-        /* 포커스 시 테두리 변경은 .yellow_line:focus 에서 처리되므로 중복 제거 가능 */
-
         .controller {
             display: flex;
             width: 100%;
             justify-content: space-between;
             align-items: center;
             max-width: 768px;
-            margin-bottom: 10px; /* 하단 여백 증가 */
-            margin-top: 5px; /* 상단 여백 추가 */
+            margin-bottom: 10px;
+            margin-top: 5px;
         }
         .book_cnt {
             color: var(--main-color-dark);
-            font-size: var(--font-size-3); /* 글꼴 크기 조정 */
+            font-size: var(--font-size-3);
         }
         .controller_list {
             display: flex;
-            align-items: center; /* select 태그와 정렬 */
+            align-items: center;
         }
-
-        /* 새로운 select 태그 스타일 */
         #sortSelect {
             padding: 5px 8px;
             border-radius: 5px;
@@ -562,18 +474,14 @@
             background-color: white;
             cursor: pointer;
         }
-
-
-        .box_none { /* 검색 결과 컨테이너를 감싸는 역할 */
+        .box_none {
             width: 100%;
             max-width: 768px;
         }
-
-        /* 검색 결과 아이템 스타일 */
         #results {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* 아이템 간 간격 */
+            gap: 10px;
             width: 100%;
         }
         .book-item {
@@ -582,33 +490,32 @@
             border-radius: var(--border-middle);
             padding: 10px;
             background-color: white;
-            cursor: pointer; /* 클릭 가능하도록 */
+            cursor: pointer;
             transition: box-shadow 0.2s ease-in-out;
         }
         .book-item:hover {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .book-item img {
-            width: 80px; /* 표지 크기 조정 */
-            height: 110px; /* 표지 크기 조정 (비율 유지) */
+            width: 80px;
+            height: 110px;
             object-fit: cover;
             margin-right: 15px;
-            border-radius: calc(var(--border-middle) - 5px); /* 내부 테두리 */
+            border-radius: calc(var(--border-middle) - 5px);
         }
         .book-info {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* 정보들을 수직 중앙 정렬 */
+            justify-content: center;
         }
         .book-info h3 {
             font-size: var(--font-size-2);
             color: var(--main-color-dark);
             margin-bottom: 5px;
-            /* 글자 수 제한은 JS로 또는 서버 사이드에서 처리하는 것이 더 일반적 */
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap; /* 한 줄로 표시 */
+            white-space: nowrap;
         }
         .book-info p {
             font-size: var(--font-size-3);
@@ -616,11 +523,9 @@
             margin-bottom: 3px;
             line-height: 1.4;
         }
-        .book-info p strong { /* 가격 등 강조 텍스트 */
+        .book-info p strong {
             color: var(--assist-color-dark);
         }
-
-        /* 상태 메시지 스타일 */
         .status-message {
             text-align: center;
             padding: 40px 20px;
@@ -637,12 +542,9 @@
             color: var(--assist-color-dark);
         }
         .status-message.error {
-            background-color: #ffe9e9; /* 임시 빨간 계열 */
-            color: #d8000c; /* 임시 빨간 계열 */
+            background-color: #ffe9e9;
+            color: #d8000c;
         }
-
-
-        /* 페이지네이션 스타일 */
         #paginationContainer {
             display: flex;
             justify-content: center;
@@ -682,16 +584,110 @@
             border-color: var(--main-color-dark);
             font-weight: bold;
         }
-        .pagination span { /* '...' 표시용 */
+        .pagination span {
             cursor: default;
             border: none;
             background-color: transparent;
         }
-
+        .header_one {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .header_one_top, .header_right{
+            display: flex;
+        }
+        .header_one_top {
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+        }
+        .logo{
+            width: 150px;
+            height: 40px;
+            font-family: 'Cafe24Supermagic-Bold-v1.0';
+            font-size: var(--font-size-0);
+            color: var(--main-color-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .header_one_bottom{
+            display: flex;
+            flex-direction: column;
+        }
+        .box_none{
+            display: flex;
+            width: 100%;
+        }
+        .box_none2{
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .point_menu{
+            height: 2px;
+            width: 30%;
+            background: var(--main-color-dark);
+        }
+        .menu{
+            height: auto;
+            padding: 10px 0;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--cancle-color-dark);
+            transition: color 0.3s, font-weight 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: var(--font-size-2);
+        }
+        .menu:hover {
+            color: var(--main-color-dark);
+        }
+        .this_page {
+            width: 100px;
+            color: var(--main-color-dark);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
+<header>
+    <div class="header_one">
+        <div class="header_one_top">
+            <div class="heaer_left">
+                <a href="/home" class="logo">BookDuck²</a>
+            </div>
+            <div class="header_right">
+                <div class="btn_circle cart-btn">
+                    <i class="fa-solid fa-cart-shopping blue2 btn_icon_color"></i>
+                </div>
+                <div class="btn_circle user-btn">
+                    <i class="fa-solid fa-user blue2 btn_icon_color"></i>
+                </div>
+            </div>
+        </div>
+        <div class="header_one_bottom">
+            <div class="box_none">
+                <a href="/home" class="menu">명예의 전당</a>
+                <a href="/shop/shopList" class="menu this_page">북덕이 서점</a>
+            </div>
+            <div class="box_none">
+                <div class="box_none2"></div>
+                <div class="box_none2"><div class="point_menu"></div></div>
+            </div>
+            <div class="box_none">
+                <div class="line gray"></div>
+            </div>
+        </div>
+    </div>
+</header>
 
 <div class="container">
     <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
@@ -706,7 +702,6 @@
         <option value="987">컴퓨터/모바일</option>
         <option value="1383">어린이</option>
         <option value="1137">유아</option>
-        <!-- 추가 카테고리 ID와 이름을 알라딘 API 기준으로 채워주세요 -->
     </select>
 
     <div class="seperate input_long yellow_line">
@@ -716,21 +711,6 @@
         <div class="seperate_two">
             <button class="btn_circle_mini yellow" id="searchButton" aria-label="검색"><i class="fas fa-search"></i></button>
         </div>
-    </div>
-    <div class="sort-dropdown yellow_line">
-        <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
-            <option value="">전체 카테고리</option>
-            <option value="1">소설/시/희곡</option>
-            <option value="55889">만화</option>
-            <option value="170">경제경영</option>
-            <option value="336">자기계발</option>
-            <option value="656">인문학</option>
-            <option value="798">사회과학</option>
-            <option value="74">과학</option>
-            <option value="987">컴퓨터/모바일</option>
-            <option value="1383">어린이</option>
-            <option value="1137">유아</option>
-        </select>
     </div>
 
     <div class="controller">
@@ -746,22 +726,17 @@
 
     <div class="box_none">
         <div class="line"></div>
-        <div id="results">
-            <!-- 검색 결과가 여기에 동적으로 삽입됩니다. -->
-        </div>
+        <div id="results"></div>
     </div>
 
-    <div id="paginationContainer">
-        <!-- 페이지네이션이 여기에 동적으로 삽입됩니다. -->
-    </div>
+    <div id="paginationContainer"></div>
 </div>
 
-<!-- JavaScript 코드 -->
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // 로그인 상태를 서버로부터 받아옴 (컨트롤러에서 model.addAttribute("isLoggedIn", ...) 필요)
-    const isLoggedIn = /*[[${isLoggedIn}]]*/ false; // 기본값 false
-    /*]]>*/
+    // 로그인 상태를 서버로부터 받아옴
+    const isLoggedIn = /*[[${isLoggedIn}]]*/ false;
+    console.log("isLoggedIn value:", isLoggedIn);
 
     const searchInput = document.getElementById('searchQuery');
     const searchButton = document.getElementById('searchButton');
@@ -770,6 +745,8 @@
     const paginationContainer = document.getElementById('paginationContainer');
     const bookCountElement = document.querySelector('.book_cnt');
     const sortSelect = document.getElementById('sortSelect');
+    const cartButton = document.querySelector('.cart-btn');
+    const userButton = document.querySelector('.user-btn');
 
     let currentPage = 1;
     let currentQuery = '';
@@ -778,7 +755,53 @@
     let totalResults = 0;
     const itemsPerPage = 10;
 
-    // --- 이벤트 리스너 ---
+    // 장바구니 버튼 클릭 이벤트
+    if (cartButton) {
+        cartButton.addEventListener('click', function() {
+            console.log("Cart button clicked, isLoggedIn:", isLoggedIn);
+            if (isLoggedIn) {
+                window.location.href = '/cart/cartList';
+            } else {
+                alert('로그인 먼저 해주세요');
+                window.location.href = '/login-form';
+            }
+        });
+    }
+
+    // 마이페이지 버튼 클릭 이벤트
+    if (userButton) {
+        userButton.addEventListener('click', function() {
+            console.log("User button clicked, isLoggedIn:", isLoggedIn);
+            if (isLoggedIn) {
+                window.location.href = '/userinfo';
+            } else {
+                alert('로그인 먼저 해주세요');
+                window.location.href = '/login-form';
+            }
+        });
+    }
+
+    // 책 아이템 클릭 이벤트
+    resultsContainer.addEventListener('click', function(event) {
+        const clickedItem = event.target.closest('.clickable-book-item');
+        if (clickedItem) {
+            const isbn13 = clickedItem.dataset.isbn13;
+            console.log("Book ISBN13 clicked:", isbn13, "isLoggedIn:", isLoggedIn);
+            if (isLoggedIn) {
+                if (isbn13 && /^\d+$/.test(isbn13)) {
+                    window.location.href = `/payment?bookId=${encodeURIComponent(isbn13)}`;
+                } else {
+                    alert('상품 정보(ISBN)가 올바르지 않아 이동할 수 없습니다.');
+                    console.error("Invalid or missing ISBN13:", isbn13);
+                }
+            } else {
+                alert('로그인 먼저 해주세요');
+                window.location.href = '/login-form';
+            }
+        }
+    });
+
+    // 정렬 변경 이벤트
     sortSelect.addEventListener('change', () => {
         const newSort = sortSelect.value;
         if (currentSort !== newSort) {
@@ -788,18 +811,21 @@
         }
     });
 
+    // 카테고리 변경 이벤트
     categorySelect.addEventListener('change', () => {
         currentCategory = categorySelect.value;
         currentPage = 1;
         performSearch(true);
     });
 
+    // 검색 버튼 클릭 이벤트
     searchButton.addEventListener('click', () => {
         currentQuery = searchInput.value.trim();
         currentPage = 1;
         performSearch(true);
     });
 
+    // 검색 입력란에서 Enter 키 이벤트
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -809,41 +835,16 @@
         }
     });
 
-    // === 수정된 클릭 이벤트 리스너 ===
-    resultsContainer.addEventListener('click', function(event) {
-        const clickedItem = event.target.closest('.clickable-book-item');
-        if (clickedItem) {
-            const isbn13 = clickedItem.dataset.isbn13;
-            console.log("Book ISBN13 clicked:", isbn13);
-
-            if (isLoggedIn) { // 로그인 상태 확인
-                // 로그인 상태: 기존 결제 페이지 이동 로직 수행
-                if (isbn13 && /^\d+$/.test(isbn13)) { // ISBN13 유효성 검사 (숫자인지)
-                    window.location.href = `/payment?bookId=${encodeURIComponent(isbn13)}`;
-                } else {
-                    alert('상품 정보(ISBN)가 올바르지 않아 이동할 수 없습니다.');
-                    console.error("Invalid or missing ISBN13:", isbn13);
-                }
-            } else {
-                // 로그아웃 상태: 알림창 띄우고 로그인 페이지로 이동
-                alert('로그인 먼저 해주세요'); // 알림 메시지
-                window.location.href = '/login-form'; // 로그인 폼 경로로 변경
-            }
-        }
-    });
-    // =============================
-
-
-    // --- API 호출 함수 ---
+    // API 호출 함수
     async function fetchBooks(query, page, category, sort) {
         let apiUrl = `/api/search/books?query=${encodeURIComponent(query)}&page=${page}&size=${itemsPerPage}`;
         if (category) {
             apiUrl += `&categoryId=${encodeURIComponent(category)}`;
         }
-        apiUrl += `&sort=${encodeURIComponent(sort || 'PublishTime')}`; // 정렬 파라미터 추가
+        apiUrl += `&sort=${encodeURIComponent(sort || 'PublishTime')}`;
         console.log("[FetchBooks] API URL:", apiUrl);
         try {
-            const response = await fetch(apiUrl, { cache: 'no-store' }); // 캐시 사용 안 함
+            const response = await fetch(apiUrl, { cache: 'no-store' });
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`[FetchBooks] HTTP 오류 (${response.status}):`, errorText);
@@ -865,34 +866,28 @@
         }
     }
 
-
-    // --- 상태 메시지 표시 함수 ---
+    // 상태 메시지 표시 함수
     function displayStatusMessage(type, message) {
         resultsContainer.innerHTML = `<div class="status-message ${type}">${message}</div>`;
-        paginationContainer.innerHTML = ''; // 페이지네이션도 초기화
+        paginationContainer.innerHTML = '';
         if (bookCountElement) {
             bookCountElement.textContent = (type === 'loading') ? '...' : '0건';
         }
     }
 
-
-    // --- 검색 결과 표시 함수 ---
+    // 검색 결과 표시 함수
     function displayResults(paginatedResponse) {
-        resultsContainer.innerHTML = ''; // 기존 결과 초기화
-
+        resultsContainer.innerHTML = '';
         if (!paginatedResponse || typeof paginatedResponse.books === 'undefined' || typeof paginatedResponse.totalResults === 'undefined') {
             console.error("Invalid API response structure in displayResults:", paginatedResponse);
             displayStatusMessage('error', '서버로부터 받은 결과 형식이 올바르지 않습니다. 관리자에게 문의해주세요.');
             return;
         }
-
         const books = paginatedResponse.books;
         totalResults = paginatedResponse.totalResults || 0;
-
         if (bookCountElement) {
             bookCountElement.textContent = `${totalResults.toLocaleString()}건`;
         }
-
         if (totalResults === 0) {
             let message = '';
             const queryText = currentQuery.trim();
@@ -900,7 +895,6 @@
             const categoryText = (categoryOption && categoryOption.value !== '') ? categoryOption.text : '';
             const hasQuery = queryText !== '';
             const hasCategory = categoryText !== '';
-
             if (hasQuery && hasCategory) message = `"${queryText}" (${categoryText}) 검색 결과가 없습니다.`;
             else if (hasQuery) message = `"${queryText}" 검색 결과가 없습니다.`;
             else if (hasCategory) message = `(${categoryText}) 카테고리에 해당하는 책이 없습니다.`;
@@ -913,16 +907,13 @@
                 const bookElement = document.createElement('div');
                 bookElement.classList.add('book-item', 'clickable-book-item');
                 bookElement.dataset.isbn13 = book.isbn13 || '';
-
                 const coverUrl = book.cover || '/img/default_book_cover.png';
                 const title = book.title || '제목 없음';
                 const author = book.author || '저자 정보 없음';
                 const publisher = book.publisher || '출판사 정보 없음';
                 const price = book.priceStandard;
-
                 const coverHtml = `<img src="${coverUrl}" alt="${title} 표지" loading="lazy" onerror="this.onerror=null; this.src='/img/default_book_cover.png';">`;
                 const priceHtml = (typeof price === 'number' && price > 0) ? `<p><strong>가격:</strong> ${price.toLocaleString()}원</p>` : '<p>가격 정보 없음</p>';
-
                 bookElement.innerHTML = `
                     ${coverHtml}
                     <div class="book-info">
@@ -938,44 +929,37 @@
         renderPagination(totalResults, currentPage, itemsPerPage);
     }
 
-
-    // --- 페이지네이션 UI 렌더링 함수 ---
+    // 페이지네이션 UI 렌더링 함수
     function renderPagination(totalItems, page, itemsPerPage) {
         paginationContainer.innerHTML = '';
         if (!totalItems || totalItems <= itemsPerPage) return;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
         if (totalPages <= 1) return;
-
         const paginationGroup = document.createElement('div');
         paginationGroup.classList.add('pagination');
         paginationGroup.setAttribute('aria-label', '검색 결과 페이지네이션');
-
         const firstPageButton = document.createElement('button');
         firstPageButton.innerHTML = '«';
         firstPageButton.disabled = page === 1;
         firstPageButton.setAttribute('aria-label', '첫 페이지로 이동');
         firstPageButton.addEventListener('click', () => goToPage(1));
         paginationGroup.appendChild(firstPageButton);
-
         const prevButton = document.createElement('button');
         prevButton.innerHTML = '‹';
         prevButton.disabled = page === 1;
         prevButton.setAttribute('aria-label', '이전 페이지로 이동');
         prevButton.addEventListener('click', () => goToPage(page - 1));
         paginationGroup.appendChild(prevButton);
-
         const maxPageButtons = 5;
         let startPage = Math.max(1, page - Math.floor(maxPageButtons / 2));
         let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
         startPage = Math.max(1, endPage - maxPageButtons + 1);
-
         if (startPage > 1) {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
             ellipsis.setAttribute('aria-hidden', 'true');
             paginationGroup.appendChild(ellipsis);
         }
-
         for (let i = startPage; i <= endPage; i++) {
             const pageButton = document.createElement('button');
             pageButton.textContent = i;
@@ -989,73 +973,60 @@
             }
             paginationGroup.appendChild(pageButton);
         }
-
         if (endPage < totalPages) {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
             ellipsis.setAttribute('aria-hidden', 'true');
             paginationGroup.appendChild(ellipsis);
         }
-
         const nextButton = document.createElement('button');
         nextButton.innerHTML = '›';
         nextButton.disabled = page === totalPages;
         nextButton.setAttribute('aria-label', '다음 페이지로 이동');
         nextButton.addEventListener('click', () => goToPage(page + 1));
         paginationGroup.appendChild(nextButton);
-
         const lastPageButton = document.createElement('button');
         lastPageButton.innerHTML = '»';
         lastPageButton.disabled = page === totalPages;
         lastPageButton.setAttribute('aria-label', '마지막 페이지로 이동');
         lastPageButton.addEventListener('click', () => goToPage(totalPages));
         paginationGroup.appendChild(lastPageButton);
-
         paginationContainer.appendChild(paginationGroup);
     }
 
-
-    // --- 특정 페이지로 이동하는 함수 ---
+    // 특정 페이지로 이동하는 함수
     async function goToPage(pageNumber) {
         if (pageNumber === currentPage) return;
         const totalPages = Math.ceil(totalResults / itemsPerPage);
-        // 페이지 번호 유효성 검사 (선택적이지만 추가하면 좋음)
         if (pageNumber < 1 || pageNumber > totalPages) {
             console.warn(`Invalid page number requested: ${pageNumber}. Total pages: ${totalPages}`);
             return;
         }
-
         currentPage = pageNumber;
         await performSearch(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-
-    // --- 검색 실행 함수 ---
+    // 검색 실행 함수
     async function performSearch(isNewSearch = true) {
         if (isNewSearch) {
             currentPage = 1;
         }
         console.log(`[PerformSearch] isNewSearch: ${isNewSearch}, State:`, { query: currentQuery, category: currentCategory, sort: currentSort, page: currentPage });
-
         const displayQueryText = currentQuery.trim() === '' ? '전체 도서' : `"${currentQuery}"`;
         const categoryOption = categorySelect.options[categorySelect.selectedIndex];
         const categoryText = (categoryOption && categoryOption.value !== '') ? categoryOption.text : '';
-
         let loadingMessage;
         if (categoryText !== '') {
             loadingMessage = isNewSearch ? `(${categoryText}) ${displayQueryText} 검색 중...` : `(${categoryText}) 페이지 ${currentPage} 로딩 중...`;
         } else {
             loadingMessage = isNewSearch ? `${displayQueryText} 검색 중...` : `페이지 ${currentPage} 로딩 중...`;
         }
-
         displayStatusMessage('loading', loadingMessage);
-
         searchButton.disabled = true;
         searchInput.disabled = true;
         categorySelect.disabled = true;
         sortSelect.disabled = true;
-
         try {
             const paginatedResponse = await fetchBooks(currentQuery, currentPage, currentCategory, currentSort);
             displayResults(paginatedResponse);
@@ -1072,18 +1043,23 @@
         }
     }
 
-
-    // --- 페이지 로드 시 초기 검색 실행 ---
+    // 페이지 로드 시 초기 검색 실행
     document.addEventListener('DOMContentLoaded', () => {
         currentQuery = '';
         currentPage = 1;
         currentCategory = categorySelect.value;
         currentSort = sortSelect.value;
-
-        console.log('Initial state set, performing initial search.');
+        console.log('Initial state set, performing initial search. State:', {
+            query: currentQuery,
+            category: currentCategory,
+            sort: currentSort,
+            page: currentPage,
+            isLoggedIn: isLoggedIn
+        });
         performSearch(true);
     });
-
+    /*]]>*/
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca67797c0dbcc6',t:'MTc0NjcyMjQ4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
