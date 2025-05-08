@@ -26,6 +26,12 @@ spring:
     async:
       request-timeout: 30000000
 
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 summarization:
   chunk:
     size: 1500

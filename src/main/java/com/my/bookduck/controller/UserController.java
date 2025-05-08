@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -121,10 +123,23 @@ public class UserController {
     public String imgUpload(@RequestParam("file") MultipartFile file) {
         log.info("imgUpload: {}", file);
         String origin = file.getOriginalFilename();
+        if (origin != null) {
+            origin = URLDecoder.decode(origin, StandardCharsets.UTF_8);
+        }
+
         log.info("origin: {}", origin);
-        String fileName = origin;
+        String fileName = origin.replaceAll("[^a-zA-z0-9.]","");
+        log.info("fileName: {}", fileName);
         //String fileName = origin.substring(origin.lastIndexOf(".") + 1);
-        String filepath = "C:\\bookduckImg";
+        String filepath;
+
+        String osName = System.getProperty("os.name");
+        if(osName.contains("Windows")){
+            filepath = "C:\\bookduckImg\\";
+        }else{
+            filepath ="/path/to/bookduckImg";
+        }
+
         File folder = new File(filepath);
         if(!folder.exists()){
             try{
@@ -136,9 +151,11 @@ public class UserController {
         }else{
             System.out.println("있는 폴더에 저장하였습니다");
         }
+
         String uuid = UUID.randomUUID().toString();
         String savename = filepath+"\\"+uuid+"_"+fileName;
         String onlyname = uuid + "_" + fileName;
+
         try{
             File save = new File(savename);
             file.transferTo(save);
@@ -146,6 +163,7 @@ public class UserController {
             e.printStackTrace();
         }
 
+        log.info("savename: {}", onlyname);
         return "success/"+onlyname;
     }
 

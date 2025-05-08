@@ -192,6 +192,8 @@
             <img th:src="${(loginuser != null and loginuser.img != null and !loginuser.img.isEmpty()) ? '/image/getimg?fileName=' + #uris.escapePath(loginuser.img) : '/img/bookduck_login.png'}"
                  alt="Profile Image" id="userProfileImage"
                  onerror="this.onerror=null; this.src='/img/bookduck_login.png';">
+            <img id="useroriginimg" src="/img/bookduck_login.png" alt="Profile Image">
+            <input type="hidden" id="originImg" th:value="${session.loginuser.img}">
         </div>
         <div class="btn_circle yellow fix" onclick="location.href='/userupdate'">
             <i class="fa-solid fa-pen icon_white"></i>
