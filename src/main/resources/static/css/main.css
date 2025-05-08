@@ -152,19 +152,24 @@ body {
     margin: 0;
     padding: 0;
     width: 100%; /* 가로를 화면에 맞게 설정 */
-}
-
-/* 컨테이너 스타일 */
-.container {
-    border: 1px solid slateblue;
-    max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
-    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
+/* 컨테이너 스타일 */
+.container {
+    border: 1px solid slateblue;
+    width: 100%;
+    max-width: 768px;
+    /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 /*버튼 기본 규격*/
 .btn_circle{
@@ -407,16 +412,17 @@ input[type="checkbox"]:checked + label::after {
 }
 
 
-/* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
 @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
     .container {
-        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+        width: 100%;
     }
 }
 
 @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
     .container {
+        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
         font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
     }
 }
-/* 헤더용 CSS들 */
+
+/* 여기까지 메인 CSS */
