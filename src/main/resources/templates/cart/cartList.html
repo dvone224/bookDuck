@@ -559,7 +559,7 @@
         /*체크박스 CSS*/
 
         input[type="checkbox"]{
-            display: none;
+/*            display: none;*/
         }
         input[type="checkbox"] + label{
             margin-right: 5px;
@@ -702,14 +702,23 @@
 
         }
 
-
         .img_box{
             width: 100px;
             height: 130px;
-            background: #5a6268;
             border-radius: var(--border-middle);
+            overflow: hidden;
         }
-
+        .img_box img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .empty-cart-message{
+            color: var(--cancle-color-middle);
+            margin: 5px;
+            text-align: center;
+            font-size: var(--font-size-2);
+        }
 
     </style>
 </head>
@@ -741,7 +750,7 @@
         <tr style="height: 50px">
             <th class="checkbox-col" style="width: 50px;">
                 <input type="checkbox" id="select-all-items" title="전체 선택/해제">
-                <label for="select-all-items"></label>
+   <!--             <label for="select-all-items"></label>-->
             </th>
 
 
@@ -760,8 +769,9 @@
             class="cart-item-row" style="height: 140px">
             <td class="checkbox-col">
                 <!-- 개별 상품 선택 체크박스 -->
-                <input type="checkbox" class="item-checkbox" name="selectedItems" id="select_item" th:value="${item.bookId}">
-                <label for="select_item"></label>
+                <input type="checkbox" class="item-checkbox" name="selectedItems" th:value="${item.bookId}">
+<!--                <input type="checkbox" class="item-checkbox" name="selectedItems" id="select_item" th:value="${item.bookId}">
+                <label for="select_item"></label> -->
             </td>
             <td class="image-col">
                 <!-- 책 표지 이미지 (기본 이미지 및 오류 처리 포함) -->
