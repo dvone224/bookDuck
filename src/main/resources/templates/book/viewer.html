@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<!-- Thymeleaf 네임스페이스 추가 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ebook Reader (Mobile) - offsetX Nav + Settings</title> <!-- Title updated -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+
+    <style>
+        /* Basic reset and mobile-first styles */
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* 중요: 전체 페이지 스크롤 방지, iframe 내 스크롤 기준 */
+            font-family: sans-serif;
+        }
+
+        /* Overall page structure */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #f8f8f8;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 50;
+            flex-wrap: wrap;
+        }
+        .app-header h1 {
+            font-size: 1.1em;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: auto;
+        }
+        #toggle-toc {
+            padding: 5px 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+        /* Remove debug buttons */
+        #debug-prev, #debug-next {
+            display: none;
+        }
+
+        /* Viewer area */
+        #viewer-container {
+            flex-grow: 1;
+            position: relative; /* 자식 absolute 요소(예: 선택 버튼)의 기준점 역할 가능 */
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #viewer {
+            width: 100%;
+            height: 100%;
+        }
+        #viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: auto;
+        }
+
+        /* Prev/Next Buttons - Hidden */
+        #prev, #next {
+            display: none;
+        }
+
+        /* Loading Indicator */
+        #loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2em;
+            color: #555;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 20;
+        }
+
+        /* --- Mobile Table of Contents (Off-Canvas Menu) --- */
+        #toc-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+        #toc-container {
+            position: fixed;
+            top: 0;
+            left: -85%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            z-index: 1000; /* 선택 버튼보다 아래 */
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+            padding: 15px;
+            padding-top: 50px;
+        }
+        #toc-container h2 { margin-top: 0; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        #toc-container ul { list-style: none; padding: 0; margin: 0; }
+        #toc-container li { margin-bottom: 5px; }
+        #toc-container a { text-decoration: none; color: #337ab7; display: block; padding: 8px 5px; border-radius: 3px; }
+        #toc-container a:hover, #toc-container a:active { background-color: #eee; text-decoration: none; }
+
+        /* State when TOC is visible */
+        body.toc-visible #toc-container { left: 0; }
+        body.toc-visible #toc-overlay {
+            pointer-events: auto;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+
+        /* --- Settings Bar Styles --- */
+        #settings-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-content {
+            width: 100%;
+            background-color: rgba(40, 40, 40, 1);
+            color: white;
+            padding: 10px 15px;
+            z-index: 900; /* 선택 버튼보다 아래 */
+            font-size: 0.9em;
+            position: fixed;
+            left: 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-grow: 1;
+            justify-content: center;
+            flex-wrap: wrap;
+            transition: transform 0.3s ease-in-out;
+        }
+        .settings-content.bottom{
+            bottom: 0;
+            transform: translateY(100%);
+        }
+        .settings-content.top{
+            top: 0;
+            transform: translateY(-100%);
+        }
+        .settings-content.settings-visible {
+            transform: translateY(0);
+        }
+
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .setting-group label {
+            margin-right: 5px;
+        }
+        #settings-bar button { /* 이 스타일은 settings-bar 내부 버튼에만 적용됩니다. */
+            padding: 5px 10px;
+            min-width: 30px;
+            cursor: pointer;
+            background-color: #555;
+            border: 1px solid #777;
+            color: white;
+            border-radius: 3px;
+        }
+        #settings-bar button:active {
+            background-color: #777;
+        }
+        #current-font-size {
+            min-width: 45px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #close-settings {
+            background-color: transparent;
+            border: none;
+            font-size: 1.2em;
+            padding: 0 5px;
+        }
+
+        /* --- Dark Mode Styles for Main UI --- */
+        body.dark-mode { background-color: #121212; }
+        body.dark-mode .app-header { background-color: #1e1e1e; color: #e0e0e0; border-bottom-color: #333; }
+        /* body.dark-mode #settings-bar: 기존 스타일은 settings-content에 적용되므로, 만약 settings-bar 자체의 배경이 필요하면 추가 */
+        body.dark-mode .settings-content { background-color: rgba(30, 30, 30, 0.95); color: #e0e0e0; box-shadow: 0 -2px 5px rgba(0,0,0,0.5); }
+        body.dark-mode #settings-bar button { background-color: #333; border-color: #555; color: #e0e0e0; }
+        body.dark-mode #settings-bar button:active { background-color: #555; }
+        body.dark-mode #close-settings { color: #bbb; }
+        body.dark-mode #toc-container { background-color: #1e1e1e; color: #e0e0e0; border-right: 1px solid #333; }
+        body.dark-mode #toc-container h2 { border-bottom-color: #333; }
+        body.dark-mode #toc-container a { color: #bb86fc; }
+        body.dark-mode #toc-container a:hover, body.dark-mode #toc-container a:active { background-color: #333; }
+        body.dark-mode #loading-indicator { color: #e0e0e0; background: rgba(30, 30, 30, 0.8); }
+
+        /* --- 추가된 선택 버튼 스타일 --- */
+        #selection-action-button {
+            position: absolute; /* body 기준 절대 위치 (JS에서 동적 위치 지정) */
+            display: none;      /* 기본적으로 숨김 */
+            padding: 8px 12px;
+            background-color: #007bff; /* 예시 색상 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1050; /* 다른 UI 요소들보다 위에 오도록 설정 (TOC:1000, Settings:900) */
+            font-size: 0.9em;
+        }
+        #selection-action-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 다크 모드 시 선택 버튼 스타일 */
+        body.dark-mode #selection-action-button {
+            background-color: #bb86fc; /* 다크 모드에 어울리는 색상 */
+            color: #121212; /* 어두운 배경에 밝은 글씨가 아닌, 밝은 버튼에 어두운 글씨로 대비 */
+            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        }
+        body.dark-mode #selection-action-button:hover {
+            background-color: #9e6ddc;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <!-- 헤더는 주석 처리된 상태로 유지합니다. 필요시 주석 해제. -->
+    <!--
+    <header class="app-header">
+        <h1 th:text="${bookTitle != null ? bookTitle : 'Ebook Reader'}">Ebook Reader</h1>
+        <button id="toggle-toc">목차</button>
+    </header>
+    -->
+
+    <div id="viewer-container">
+        <div id="viewer"></div> <!-- iframe will be rendered inside here -->
+        <div id="loading-indicator">Loading...</div>
+        <a id="prev" aria-label="Previous Page"><</a>
+        <a id="next" aria-label="Next Page">></a>
+    </div>
+</div>
+
+<div id="toc-overlay"></div>
+<nav id="toc-container" aria-label="Table of Contents">
+    <h2>목차</h2>
+    <ul id="toc-list"></ul>
+</nav>
+
+<!-- *** Settings UI (with Font Size and Dark Mode) *** -->
+<div id="settings-bar">
+    <div class="settings-content top">
+        <!-- 상단 설정 내용이 있다면 여기에 추가 -->
+    </div>
+    <div class="settings-content bottom"> <!-- 기본적으로 하단에 표시되도록 bottom 클래스 유지 -->
+        <div class="setting-group">
+            <div>
+                <!-- 비어있는 div 유지 -->
+            </div>
+            <button>목차</button> <!-- 이 버튼의 기능은 reader.js에서 별도 구현 필요 -->
+            <button>쪽지</button> <!-- 이 버튼의 기능은 reader.js에서 별도 구현 필요 -->
+            <button>보기 설정</button> <!-- 이 버튼의 기능은 reader.js에서 별도 구현 필요 -->
+        </div>
+        <div class="setting-group">
+            <button id="toggle-dark-mode">Dark Mode</button>
+        </div>
+        <button id="close-settings" aria-label="Close settings">×</button>
+    </div>
+</div>
+
+<!-- 드래그 시 나타날 버튼 (body의 직속 자식으로 추가) -->
+<button id="selection-action-button">액션</button>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const GLOBAL_BOOK_ID = /*[[${bookId}]]*/ null;
+    // 이 부분이 EPUB 내부 파일 서빙 엔드포인트의 기본 경로여야 합니다.
+    const GLOBAL_BOOK_URL_BASE = /*[[@{/book/api/epub-content/}]]*/ '/fallback-base-path/';
+
+    // GLOBAL_BOOK_ID가 null이 아닐 때만 완전한 URL 생성
+    // URL 끝에 "/"를 붙여줍니다. EPUB.js가 이 경로를 기준으로 내부 파일(META-INF/container.xml 등)을 요청합니다.
+    const GLOBAL_BOOK_URL_TEMPLATE = (GLOBAL_BOOK_ID !== null && GLOBAL_BOOK_URL_BASE !== '/fallback-base-path/')
+        ? `${GLOBAL_BOOK_URL_BASE}${GLOBAL_BOOK_ID}/` // 예: /book/api/epub-content/1/
+        : null;
+    /*]]>*/
+</script>
+<!-- 위 스크립트 블록 다음에 reader.js를 로드해야 함 -->
+<script th:src="@{/js/book/viewer.js}"></script>
+
+</body>
+</html>

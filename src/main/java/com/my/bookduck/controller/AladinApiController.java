@@ -43,29 +43,61 @@ public class AladinApiController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/bestsellers/next-batch") // 경로 변경 또는 파라미터 추가 고려
+    /**
+     * 알라딘 일반 도서 종합 베스트셀러 다음 배치를 동기화합니다.
+     */
+    @PostMapping("/bestsellers/next-batch")
     public Mono<ResponseEntity<String>> syncNextBestsellerBatch() {
-        log.info("알라딘 종합 베스트셀러 다음 배치 동기화 요청 수신");
-        // 카테고리 ID는 예시로 0 사용
+        log.info("알라딘 일반 도서 종합 베스트셀러 다음 배치 동기화 요청 수신");
         int categoryId = AladinService.DEFAULT_BESTSELLER_CATEGORY_ID;
-        return aladinService.fetchNextBestsellerBatch(categoryId) // 새로 만든 메소드 호출
+        return aladinService.fetchNextBestsellerBatch(categoryId)
                 .map(result -> {
-                    if (result.isErrorOccurred()) {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body(String.format("베스트셀러(CatId:%d) 다음 배치 동기화 중 오류 발생.", categoryId));
-                    }
-                    String message = String.format(
-                            "알라딘 베스트셀러(CatId:%d) 배치(시작:%d, 시도:%d, 실제처리:%d) 동기화 완료. API 조회:%d, 신규:%d, 업데이트:%d",
+                    String messageBody = String.format(
+                            "알라딘 일반 도서 베스트셀러(CatId:%d) 배치(시작:%d, 시도:%d, 실제처리:%d) 동기화 완료. API 조회:%d, 신규:%d, 업데이트:%d",
                             categoryId, result.getStartPage(), result.getLastAttemptedPage(), result.getActualLastProcessedPage(),
                             result.getTotalApiItems(), result.getSavedCount(), result.getUpdatedCount()
                     );
-                    log.info(message);
-                    return ResponseEntity.ok(message);
+                    if (result.isErrorOccurred()) {
+                        log.error("일반 도서 베스트셀러(CatId:{}) 다음 배치 동기화 중 오류 발생. 상세: {}", categoryId, messageBody);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageBody + " (오류 발생)");
+                    }
+                    log.info(messageBody);
+                    return ResponseEntity.ok(messageBody);
                 })
-                .onErrorResume(error -> { // 최종 에러 처리
-                    log.error("알라딘 베스트셀러 다음 배치 동기화 최종 에러", error);
+                .onErrorResume(error -> {
+                    log.error("알라딘 일반 도서 베스트셀러 다음 배치 동기화 최종 에러", error);
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body("동기화 처리 중 예상치 못한 오류 발생: " + error.getMessage()));
+                            .body("일반 도서 동기화 처리 중 예상치 못한 오류 발생: " + error.getMessage()));
+                });
+    }
+
+    // ★추가★: eBook 베스트셀러 동기화를 위한 새로운 엔드포인트
+    /**
+     * 알라딘 eBook 종합 베스트셀러 다음 배치를 동기화합니다.
+     */
+    @PostMapping("/ebook-bestsellers/next-batch")
+    public Mono<ResponseEntity<String>> syncNextEBookBestsellerBatch() {
+        log.info("알라딘 eBook 종합 베스트셀러 다음 배치 동기화 요청 수신");
+        // eBook 종합 베스트셀러의 카테고리 ID 사용 (AladinService에 정의된 상수 사용)
+        int categoryId = AladinService.DEFAULT_EBOOK_BESTSELLER_CATEGORY_ID;
+        return aladinService.fetchNextEBookBestsellerBatch(categoryId) // 서비스의 eBook용 메소드 호출
+                .map(result -> {
+                    String messageBody = String.format(
+                            "알라딘 eBook 베스트셀러(CatId:%d) 배치(시작:%d, 시도:%d, 실제처리:%d) 동기화 완료. API 조회:%d, 신규:%d, 업데이트:%d",
+                            categoryId, result.getStartPage(), result.getLastAttemptedPage(), result.getActualLastProcessedPage(),
+                            result.getTotalApiItems(), result.getSavedCount(), result.getUpdatedCount()
+                    );
+                    if (result.isErrorOccurred()) {
+                        log.error("eBook 베스트셀러(CatId:{}) 다음 배치 동기화 중 오류 발생. 상세: {}", categoryId, messageBody);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageBody + " (오류 발생)");
+                    }
+                    log.info(messageBody);
+                    return ResponseEntity.ok(messageBody);
+                })
+                .onErrorResume(error -> {
+                    log.error("알라딘 eBook 베스트셀러 다음 배치 동기화 최종 에러", error);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("eBook 동기화 처리 중 예상치 못한 오류 발생: " + error.getMessage()));
                 });
     }
 

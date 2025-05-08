@@ -16,5 +16,6 @@ public class AladinBookItem {
     private String description;
     private String link; // 알라딘 상품 링크
     private int categoryId;
+    private String mallType;
     // 기타 필요한 필드...
 }
