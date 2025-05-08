@@ -161,7 +161,7 @@ body {
 /* 컨테이너 스타일 */
 .container {
     border: 1px solid slateblue;
-    width: 100%;
+/*    width: 100%;*/
     max-width: 768px;
     /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
     padding: 15px;
@@ -170,7 +170,10 @@ body {
     justify-content: center;
     align-items: center;
 }
-
+header{
+/*    width: 100%;*/
+    max-width: 768px;
+}
 /*버튼 기본 규격*/
 .btn_circle{
     width: 45px;
@@ -414,6 +417,9 @@ input[type="checkbox"]:checked + label::after {
 
 @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
     .container {
+        width: 100%;
+    }
+    header{
         width: 100%;
     }
 }
