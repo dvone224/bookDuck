@@ -46,7 +46,7 @@ console.log(originImg);
 if (originImg.length != 0) {
     // 이미지 URL 설정
     $('#uploadImg')
-        .attr("src", "/image/getimg?fileName=" + encodeURIComponent(originImg))
+        .attr("src", "/image/getimg?fileName=" + originImg)
         .on("load", function () {
             //console.log("Image loaded successfully: " + originImg);
         })
@@ -235,6 +235,7 @@ function sendEmail(){
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
+            alert('인증번호가 발송 되었습니다');
         });
 }
 

@@ -111,13 +111,15 @@ public class HomeController {
         Long userId = userDetails.getUser().getId();
         // 세션에서 loginUserInfo 가져오기 (HomeController의 /logininfo 에서 저장한 것을 사용)
         loginUserInfo loginUser = (loginUserInfo) session.getAttribute("loginuser");
-        if (loginUser == null || !loginUser.getId().equals(userId)) {
+        if (loginUser == null || !loginUser.getId().equals(userId) || !loginUser.getImg().equals(session.getAttribute("img"))) {
             // 세션 정보가 없거나 불일치하면 DB에서 다시 조회하거나 /logininfo 로 보내서 세션 설정 유도
             User user = userService.getUserById(userId); // UserService에 ID로 User 찾는 메소드 필요
             loginUser = new loginUserInfo(user);
             session.setAttribute("loginuser", loginUser); // 세션 갱신
         }
 
+        log.info("loginUser info: {}", loginUser);
+        log.info("user id: {}", userId);
         model.addAttribute("loginuser", loginUser);
 
         // 1. 내 그룹 목록 가져오기 (최대 3개)
@@ -137,7 +139,7 @@ public class HomeController {
         if(loginUser.getRole().equals("admin") ) {
             return "admin/adminMain";
         }else{
-            return "member/mypage";
+            return "/home";
         }
     }
 

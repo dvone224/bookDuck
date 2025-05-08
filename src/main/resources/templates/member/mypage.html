@@ -45,7 +45,8 @@
     <!-- 프로필 정보 -->
     <div class="profile_img_box">
         <div class="profile_img">
-            <img src="/img/bookduck_login.png" alt="Profile Image">
+            <img id="useroriginimg" src="/img/bookduck_login.png" alt="Profile Image">
+            <input type="hidden" id="originImg" th:value="${session.loginuser.img}">
         </div>
         <div class="btn_circle yellow fix" onclick="location.href='/userupdate'">
             <i class="fa-solid fa-pen icon_white"></i>

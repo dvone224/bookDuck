@@ -249,6 +249,7 @@ function sendEmail(){
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
+            alert('인증번호가 발송 되었습니다');
         });
 }
 
