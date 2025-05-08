@@ -644,101 +644,87 @@
             color: var(--crown-color);
         }
 
+
+
+
+
         .group-item-content {
-            position: absolute;
-            width: calc(100% - 4px); /* Small gap for parent border/shadow visual */
-            height: calc(100% - 4px);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             display: flex;
-            align-items: stretch;
-            gap: 15px;
-            padding: 15px;
-            background-color: var(--main-color-light);
-            border-radius: calc(var(--border-middle) - 2px); /* Slightly smaller inner radius */
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+            background-color: #e6f2fb; /* light_blue */
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-cover-large{
+            background: white;
+            width: 120px;
+            height: 160px;
+            border-radius: var(--border-middle);
             overflow: hidden;
         }
 
-        .book-cover-large {
-            border: 1px solid red;
-            width: 160px;
-            height: 160px;
-            flex-shrink: 0;
-            width: 100px; /* Width of book cover area */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
         .book-cover-large img {
-            max-width: 100%;
-            height: 100%; /* Image tries to fill height of its container */
-            object-fit: contain; /* Shows whole cover, 'cover' would crop to fill */
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-middle);
+            object-fit: cover;
         }
 
         .group-details {
-            flex-grow: 1;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Header top, members bottom */
-            overflow: hidden; /* Important for text ellipsis */
-            padding: 5px 0;
+            justify-content: space-between;
         }
 
         .group-header {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .group-header .title { /* Container for group name text and underline */
-            color: var(--main-color-dark);
-            margin: 0 0 8px 0;
-            align-items: flex-start; /* For left-aligning text and underline */
-        }
-        .group-header .title span { /* Actual group name text */
-            font-size: 1.25em; /* Slightly larger */
-            font-weight: 600;
-            line-height: 1.2;
-        }
-        .group-header .title .underline {
-            background-color: var(--main-color-dark);
-            height: 2px;
-            width: 70%; /* Underline length relative to title container */
+
+        .underline {
+            width: 500%;
+            height: 1px;
+            background-color: #336699; /* dark_blue1 */
             margin-top: 4px;
+            border-radius: 2px;
         }
-        .group-header p { /* Book title / info */
-            font-size: 0.95em;
-            color: #444; /* Slightly darker */
-            margin: 0;
-            line-height: 1.4;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+
+        .group-header p {
+            font-size: var(--font-size-2);
+            color: var(--main-color-dark);
         }
 
         .group-members {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px; /* Smaller gap between members */
+            justify-content: center;
             align-items: center;
-            margin-top: auto; /* Pushes to bottom if not enough content above */
+            gap: 10px;
         }
+
         .member-container {
-            position: relative;
+            width: 45px;
+            height: 45px;
+            border-radius: var(--border-middle);
+            border: 2px solid var(--main-color-middle);
+            overflow: hidden;
+            background: white;
         }
+
         .member-image {
-            border: 1px solid var(--main-color-middle);
-            width: 38px; /* Slightly smaller */
-            height: 38px;
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-middle);
             object-fit: cover;
-            border: 1px solid #fff; /* Thinner border */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
         }
-        .member-image:hover {
-            transform: scale(1.1);
-        }
+
+
 
 
 
@@ -771,6 +757,8 @@
 
 
 <div class="container">
+
+
     <div class="box" th:if="${session.loginuser != null}">
         <h1 th:text="${session.loginuser.nickName} + '님의 그룹 목록'"></h1>
         <input type="hidden" id="userId" name="userId" th:value="${session.loginuser.id}" />
@@ -786,7 +774,7 @@
         <div class="group-list" th:unless="${myGroupViews == null or #lists.isEmpty(myGroupViews)}">
             <div class="out_box" th:each="groupView : ${myGroupViews}" class="group-item-container" th:data-group-id="${groupView.group.id}">
 
-                <div class="group-item-content box2 light_blue">
+                <div class="group-item-content box2 light_blue ">
                     <div class="book-cover-large">
                         <th:block th:if="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book?.cover != null}">
                             <img th:src="${groupView.group.books[0].book.cover}" alt="Book Cover"/>
@@ -800,9 +788,9 @@
                             <div class="title dark_blue2" th:text="${groupView.group.name}">그룹 이름<div class="underline dark_blue1"></div> </div>
                             <p th:if="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}"
                                th:text="${groupView.group.books[0].book.title}">책 제목</p>
-                            <p th:unless="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}">
+<!--                            <p th:unless="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}">
                                 관련된 책 정보 없음
-                            </p>
+                            </p>-->
                         </div>
                         <div class="group-members">
                             <th:block th:if="${groupView.group.users != null}" th:each="gu : ${groupView.group.users}">

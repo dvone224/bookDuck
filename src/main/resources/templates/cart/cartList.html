@@ -719,12 +719,23 @@
             text-align: center;
             font-size: var(--font-size-2);
         }
+        .margin{
+            margin: 10px;
+        }
 
     </style>
 </head>
 <body>
 <!-- 헤더 프래그먼트 (Thymeleaf 사용 시) -->
-<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
+<!--<div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>-->
+<header th:fragment="bodyHeader">
+    <div class="header_three">
+        <div class="btn_circle gray margin" onclick="history.back()">
+            <i class="fa-solid fa-rotate-left btn_icon white2"></i>
+        </div>
+    </div>
+</header>
+</html>
 
 <div class="container">
 <div class="page-title">

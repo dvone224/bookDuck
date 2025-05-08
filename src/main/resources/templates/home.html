@@ -177,6 +177,9 @@
             border: none;
             font-weight: bold;
             max-width: 768px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .btn_mini{
             width: auto;
@@ -578,6 +581,10 @@
             font-size: 1.1em;
             width: 100%;
         }
+
+        .marginb{
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -613,9 +620,10 @@
 </header>
 
 <div class="container">
-    <div class="box btn_box blue" onclick="location.href='/group/addGroup'">
+<!--    <div class="box btn_box blue" onclick="location.href='/group/addGroup'">
         모임 생성하기
-    </div>
+    </div>-->
+    <div class="btn_long blue marginb" onclick="location.href='/group/addGroup'">모임 생성하기</div>
     <div class="box_none">
         <div class="search-area-board">
             <input class="input_long yellow_line" type="text" id="boardSearchQueryInput" placeholder="책 제목으로 게시글 검색" th:value="${currentQuery}" aria-label="게시글 검색">
