@@ -527,6 +527,12 @@
             background: var(--main-color-middle);
         }
 
+
+        .error{
+            margin: 0px;
+            margin-bottom: 10px;
+        }
+
     </style>
     <title> BookDuck²::회원가입 </title>
 </head>
@@ -538,15 +544,15 @@
     <form id="userjoinform" action="/user" method="post">
         <label for="joinId"></label>
         <input type="text" class="input_long blue_line" id="joinId" name="id" placeholder="ID(4~15자리 영문, 숫자)" required autocomplete="off">
-        <div id="check validId"></div>
+        <div class="error" id="check validId"></div>
 
         <label for="joinPw"></label>
         <input type="text" class="input_long blue_line" id="joinPw" name="pw" placeholder="PASSWORD(8~16자리 영문, 숫자, 특수문자)" required autocomplete="off">
-        <div id="check validPw"></div>
+        <div class="error" id="check validPw"></div>
 
         <label for="joinNickname"></label>
         <input type="text" class="input_long blue_line" id="joinNickname" name="nickName" placeholder="닉네임(2~7자리 한글, 영문, 숫자)" required autocomplete="off">
-        <div id="check validNickname"></div>
+        <div class="error" id="check validNickname"></div>
 
         <div class="seperate">
             <div class="seperate_one">
@@ -557,7 +563,7 @@
                 <input type="button" class="btn_long blue" onclick="sendEmail()" value="인증하기">
             </div>
         </div>
-        <div id="check validEmail"></div>
+        <div class="error" id="check validEmail"></div>
 
         <div class="seperate">
             <div class="seperate_one">
@@ -568,7 +574,7 @@
                 <input type="button" class="btn_long blue" onclick="checkCode()" value="인증완료">
             </div>
         </div>
-        <div id="check validCode"></div>
+        <div class="check_code_text error" id="check validCode"></div>
 
         <div class="input_img">
             <div class="profile_img"> <img id="uploadImg" src="/img/bookduck_login.png" alt="기본이미지"> </div>
@@ -579,7 +585,7 @@
             </div>
             <input type="hidden" id="img" name="img">
             <input type="button" class="btn_long yellow" id="imgUploadBtn" value="프로필 이미지 등록">
-            <div id="imgUploadErr"></div>
+            <div class="error" id="imgUploadErr"></div>
         </div>
         <div class="box">
             <div class="agree dark_blue2">
@@ -589,7 +595,7 @@
             </div>
         </div>
 
-        <div id="check validTotal"></div>
+        <div class="error" id="check validTotal"></div>
         <div class="box">
             <button type="submit" class="btn_long blue">가입하기</button>
         </div>

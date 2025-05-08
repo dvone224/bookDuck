@@ -688,26 +688,20 @@
             background-color: transparent;
         }
 
+        .book-info h3 {
+            overflow: hidden;           /* 넘친 부분 숨기기 */
+            white-space: nowrap;        /* 줄바꿈 안 함 */
+            text-overflow: ellipsis;    /* 넘친 텍스트를 ...으로 표시 */
+            max-width: 100%;            /* 부모 너비 넘지 않게 */
+            display: block;             /* inline 요소를 block으로 변환 (안 하면 width 적용 안 됨) */
+        }
+
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/therdHeader :: bodyHeader}"></div>
 
 <div class="container">
-    <select id="categorySelect" class="category-select" aria-label="카테고리 선택">
-        <option value="">전체 카테고리</option>
-        <option value="1">소설/시/희곡</option>
-        <option value="55889">만화</option>
-        <option value="170">경제경영</option>
-        <option value="336">자기계발</option>
-        <option value="656">인문학</option>
-        <option value="798">사회과학</option>
-        <option value="74">과학</option>
-        <option value="987">컴퓨터/모바일</option>
-        <option value="1383">어린이</option>
-        <option value="1137">유아</option>
-        <!-- 추가 카테고리 ID와 이름을 알라딘 API 기준으로 채워주세요 -->
-    </select>
 
     <div class="seperate input_long yellow_line">
         <div class="seperate_one">
@@ -745,7 +739,6 @@
     </div>
 
     <div class="box_none">
-        <div class="line"></div>
         <div id="results">
             <!-- 검색 결과가 여기에 동적으로 삽입됩니다. -->
         </div>
@@ -927,9 +920,9 @@
                     ${coverHtml}
                     <div class="book-info">
                         <h3>${title}</h3>
-                        <p><strong>저자:</strong> ${author}</p>
-                        <p><strong>출판사:</strong> ${publisher}</p>
-                        ${priceHtml}
+                        <p>${author}</p>
+                        <p>${publisher}</p>
+                        <h2 class="dark_blue2">${priceHtml}</h2>
                     </div>
                 `;
                 resultsContainer.appendChild(bookElement);

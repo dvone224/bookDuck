@@ -380,6 +380,8 @@
         }*/
 
 
+
+
 /*아이콘 임포트*/
 /* Fontawesome 4.7 */
 @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
@@ -533,13 +535,6 @@ body {
     margin: 0;
     padding: 0;
     width: 100%; /* 가로를 화면에 맞게 설정 */
-}
-
-/* 컨테이너 스타일 */
-.container {
-    border: 1px solid slateblue;
-    max-width: 100%; /* 컨테이너 너비를 화면 너비에 맞춤 */
-    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -547,17 +542,49 @@ body {
 }
 
 
+/* 컨테이너 스타일 */
+.container {
+    /*border: 1px solid slateblue;*/
+    /*width: 100%;*/
+    width: 768px;
+    /*            max-width: 768px;*/
+    /*max-width: 100%; !* 컨테이너 너비를 화면 너비에 맞춤 *!*/
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+header{
+    width: 768px;
+    /*            max-width: 768px;*/
+}
+
 /*버튼 기본 규격*/
 .btn_circle{
+    /*            border: 1px solid red;*/
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     margin: 10px;
+    border: none;
+    /*            font-size: 20px;*/
+}
+
+.btn_circle .btn_icon{
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.btn_circle .btn_icon_color{
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
 }
 
 .btn_circle_big{
@@ -565,6 +592,12 @@ body {
     height: 55px;
     border-radius: 50%;
     color: white;
+    cursor: pointer;
+}
+
+.btn_circle_big .btn_icon{
+    width: 45px;
+    height: 45px;
     cursor: pointer;
 }
 
@@ -594,12 +627,6 @@ body {
     align-items: center;
     padding: 10px;
     margin-left: 5px;
-}
-
-.btn_icon{
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
 }
 
 .box{
@@ -638,7 +665,7 @@ body {
 }
 
 .underline{
-    width: 300%;
+    width: 130%;
     height: 1px;
 }
 
@@ -649,6 +676,9 @@ body {
 
 .blue{
     background: var(--main-color-middle);
+}
+.blue2{
+    color: var(--main-color-middle);
 }
 .yellow{
     background: var(--assist-color-middle);
@@ -680,11 +710,17 @@ body {
 .gray{
     background: var(--cancle-color-middle);
 }
+.gray2{
+    color: var(--cancle-color-middle);
+}
 .light_gray{
     background: var(--cancle-color-light);
 }
 .white{
     background: white;
+}
+.white2{
+    color: white;
 }
 
 .blue_line_thin{
@@ -695,7 +731,7 @@ body {
 }
 
 .input_long{
-    margin-bottom: 10px;
+    /*            margin-bottom: 10px;*/
     width: 100%;
     height: 45px;
     border-radius: 45px;
@@ -788,20 +824,32 @@ input[type="checkbox"]:checked + label::after {
 }
 
 
-
-/* 미디어 쿼리 사용 - 모바일 화면에 최적화 */
 @media screen and (max-width: 768px) { /* 768px 이하 화면 (태블릿 및 모바일) */
     .container {
-        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
+        width: 100%;
+    }
+    header{
+        width: 100%;
     }
 }
 
 @media screen and (max-width: 480px) { /* 480px 이하 화면 (스마트폰) */
     .container {
+        padding: 5px; /* 모바일 화면에서는 여백 줄이기 */
         font-size: 14px; /* 작은 화면에 맞는 글꼴 크기 조정 */
     }
 }
-/* 헤더용 CSS들 */
+
+/* 여기까지 메인 CSS */
+.test1{
+    border: 1px solid red;
+}
+.test2{
+    border: 1px solid blue;
+}
+/* test CSS */
+
+
 
 body{
     background: var(--main-color-light);
@@ -892,13 +940,80 @@ form{
     width: 100%;
 }
 
+.group-book-item{
+    width: 170px;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.box_img_btn{
+    width: 170px;
+    height: 200px;
+    position: relative;
+}
+
+.select_book_img_box{
+    width: 150px;
+    height: 180px;
+    border-radius: var(--border-middle);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+}
+
+.select_book_img_box img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-middle);
+}
+
+.btn_borad{
+    background: var(--cancle-color-middle);
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-20%, -20%);
+}
+.btn_del{
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(20%, -20%);
+}
+
+.btn_borad{
+    transition: background-color 0.3s ease;
+}
+
+.btn_borad.is-public {
+    background-color: var(--assist-color-middle); /* 노란색 (공개) */
+}
+
+.btn_borad.is-private {
+    background-color: var(--cancle-color-middle); /* 회색 (비공개) */
+}
+
+input{
+    margin-bottom: 10px;
+}
+
+.under_margin{
+    margin-bottom: 10px;
+}
+.error_box{
+    width: 100%;
+}
+
+
     </style>
 </head>
 <body>
-
-
-
-
 <div class="container">
 <!-- group 객체가 null일 경우를 대비하여 조건부 렌더링 -->
 <!--<h1 th:if="${group}" th:text="${group.name} + ' 정보 수정'">그룹 정보 수정</h1>
@@ -950,6 +1065,7 @@ form{
                 </div>
             </div>
 
+
             <!-- 그룹 도서 목록 및 추가 섹션 -->
             <div class="book-section">
                 <label></label>
@@ -962,7 +1078,7 @@ form{
                 </div>
 
                 <!-- 선택된 추가할 책 정보 표시 -->
-                <div id="selectedBookDisplay" style="display: none;">
+                <div class="box light_yellow" id="selectedBookDisplay" style="display: none;">
                     <img id="selectedBookCover" src="/images/default-book-cover.png" alt="Selected book cover">
                     <span id="selectedBookTitle"></span>
                     <button type="button" id="cancelAddBook" title="추가 취소">×</button>
@@ -972,32 +1088,35 @@ form{
 
                 <!-- 현재 그룹 도서 목록 표시 (전체) -->
                 <!-- books 컬렉션 null 체크 및 비어있는지 확인 -->
-                <ul class="group-book-list" id="currentGroupBooks" th:if="${group.books != null and not #lists.isEmpty(group.books)}">
+                <div class="group-book-list box white" id="currentGroupBooks" th:if="${group.books != null and not #lists.isEmpty(group.books)}">
+                    <div class="title dark_blue2">BOOK<div class="underline dark_blue1"></div></div>
                     <!-- 각 GroupBook 및 내부 book 객체 null 체크 -->
-                    <li th:each="gb : ${group.books}" class="group-book-item" th:if="${gb.book != null}"
+                    <div th:each="gb : ${group.books}" class="group-book-item" th:if="${gb.book != null}"
                         th:data-book-id="${gb.book.id}"
                         th:data-book-title="${gb.book.title}">
                         <!-- 책 커버 null 체크 및 기본 이미지 설정 -->
-                        <img th:src="${gb.book.cover ?: '/images/default-book-cover.png'}" th:alt="${gb.book.title}">
+                        <div class="box_img_btn">
+                            <div class="select_book_img_box">
+                                <img class="select_book_img" th:src="${gb.book.cover ?: '/images/default-book-cover.png'}" th:alt="${gb.book.title}">
+                            </div>
+                            <!-- 공개/비공개 토글 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
+                            <!-- publicBookIds Set이 null이 아니고, book.id가 null이 아닐 때만 contains 체크 -->
+                            <button class="btn_borad btn_circle" type="button"
+                                    class="toggle-privacy-btn"
+                                    th:classappend="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)} ? 'is-public' : 'is-private'"
+                                    th:data-is-public="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)}">
+                                    <!--th:text="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id) ? '비공개로 전환' : '공개로 전환'}"-->
+                                <i class="fa-solid fa-bullhorn btn_icon white2"></i>
+                            </button>
+                            <!-- 삭제 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
+                            <button class="btn_del btn_circle gray" type="button" class="delete-book-btn" title="그룹에서 삭제"><i class="fa-solid fa-xmark btn_icon white2"></i></button>
+                        </div>
                         <!-- 책 제목 표시 -->
-                        <span th:title="${gb.book.title}" th:text="${gb.book.title}">책 제목</span>
-
-                        <!-- 삭제 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
-                        <button type="button" class="delete-book-btn" title="그룹에서 삭제">×</button>
-
-                        <!-- 공개/비공개 토글 버튼 (리더에게만 보일 경우 조건 추가 가능: th:if="${isGroupLeader}") -->
-                        <!-- publicBookIds Set이 null이 아니고, book.id가 null이 아닐 때만 contains 체크 -->
-                        <button type="button"
-                                class="toggle-privacy-btn"
-                                th:classappend="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)} ? 'is-public' : 'is-private'"
-                                th:data-is-public="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id)}"
-                                th:text="${publicBookIds != null and gb.book.id != null and publicBookIds.contains(gb.book.id) ? '비공개로 전환' : '공개로 전환'}">
-                            상태 전환
-                        </button>
-                    </li>
-                </ul>
+                        <div class="select_book_title" th:title="${gb.book.title}" th:text="${gb.book.title}">책 제목</div>
+                    </div>
+                </div>
                 <!-- 그룹 도서가 없을 때 메시지 -->
-                <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message">
+                <p th:if="${group.books == null or #lists.isEmpty(group.books)}" class="no-books-message error under_margin">
                     등록된 그룹 도서가 없습니다.
                 </p>
 
@@ -1008,15 +1127,15 @@ form{
             <input type="hidden" name="bookId" th:value="${group.books != null and not #lists.isEmpty(group.books) and group.books[0].book != null ? group.books[0].book.id : ''}">
 
             <!-- 제출 버튼 (리더에게만 활성화할 경우 disabled 추가 가능) -->
-            <button type="submit" class="submit-button">수정 완료</button>
+            <button class="btn_long blue under_margin" type="submit" class="submit-button">수정 완료</button>
 
         </form> <!-- 폼 끝 -->
     </div>
 
 <!-- group 객체가 없을 경우 표시할 메시지 -->
-<div th:unless="${group}" class="error-message">
-    그룹 정보를 불러올 수 없습니다. 그룹 목록으로 돌아가거나 관리자에게 문의하세요.
-    <p><a href="/group/list">그룹 목록으로 가기</a></p>
+<div th:unless="${group}" class="error-message error_box">
+    <div class="error under_margin">그룹 정보를 불러올 수 없습니다. 그룹 목록으로 돌아가거나 관리자에게 문의하세요.</div>
+    <button class="btn_long yellow" onclick="location.href='/group/list'">그룹 목록으로 가기</button>
 </div>
 
 
