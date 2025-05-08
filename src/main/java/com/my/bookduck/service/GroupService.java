@@ -229,27 +229,27 @@ public class GroupService {
         // 조회된 그룹 목록을 순회하며 DTO로 변환
         List<GroupListViewDto> groupViews = groups.stream()
                 .map(group -> {
-                    log.trace("Processing group ID: {} for DTO mapping", group.getId());
-                    // 현재 사용자가 이 그룹의 리더인지 확인
-                    boolean isLeader = group.getUsers() != null && group.getUsers().stream()
+                    boolean isLeader = group.getUsers().stream() // users는 Fetch Join 되어 있음
                             .anyMatch(gu -> gu.getRole() == GroupUser.Role.ROLE_LEADER && gu.getUserId().equals(currentUserId));
-                    log.trace("Group ID: {}, User ID: {}, Is Leader: {}", group.getId(), currentUserId, isLeader);
 
-                    // 멤버 리스트 정렬 (리더 우선, 다음은 닉네임 순)
-                    List<GroupUser> sortedUsers = new ArrayList<>();
-                    if (group.getUsers() != null && !group.getUsers().isEmpty()) {
-                        sortedUsers = group.getUsers().stream()
-                                .sorted(Comparator.comparing((GroupUser gu) -> gu.getRole() == GroupUser.Role.ROLE_LEADER ? 0 : 1) // 리더(0) < 유저(1)
-                                        .thenComparing(gu -> gu.getUser() != null ? gu.getUser().getNickName() : "", Comparator.nullsLast(String::compareToIgnoreCase))) // 닉네임 가나다순 (null 처리)
-                                .collect(Collectors.toList());
-                        // 정렬된 리스트를 다시 group 객체에 설정할 필요는 없음 (DTO 생성 시 사용)
-                        group.setUsers(sortedUsers); // 필요하다면 Group 객체 자체를 변경
-                    } else {
-                        log.warn("Group ID: {} has no users associated.", group.getId());
+                    // 멤버 정렬 (선택적, DTO에 멤버 목록 표시 시 필요)
+                    // if (group.getUsers() != null) { ... 정렬 로직 ... }
+
+                    // ★★★ 책 목록 정렬 (여기서 books 접근 시 Batch Loading 발생) ★★★
+                    if (group.getBooks() != null && !group.getBooks().isEmpty()) {
+                        try {
+                            // GroupBook에 createdAt 필드와 getter가 있다고 가정
+                            group.getBooks().sort(Comparator.comparing(GroupBook::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())));
+                            if (group.getBooks().get(0).getBook() != null) {
+                                log.trace("Group ID {}: Sorted books. Latest book cover: {}", group.getId(), group.getBooks().get(0).getBook().getCover());
+                            }
+                        } catch (Exception e) {
+                            // 정렬 중 오류 발생 시 로그 (createdAt이 null 이거나 getter 문제 등)
+                            log.error("Error sorting books for group ID {}: {}", group.getId(), e.getMessage());
+                        }
                     }
 
-                    // DTO 생성 및 반환
-                    // GroupListViewDto 생성자에서 필요한 데이터를 group 객체로부터 가져가도록 구현되어야 함
+                    // DTO 생성 (Group 엔티티 포함 버전 사용)
                     return new GroupListViewDto(group, isLeader);
                 })
                 .collect(Collectors.toList()); // 결과를 List<GroupListViewDto> 로 수집

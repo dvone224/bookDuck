@@ -26,40 +26,40 @@
     </style>
 </head>
 <body>
-<h1>결제 완료</h1>
+<!--<h1>결제 완료</h1>-->
 
-<!-- 오류 메시지 표시 (있는 경우) -->
-<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+<!--&lt;!&ndash; 오류 메시지 표시 (있는 경우) &ndash;&gt;-->
+<!--<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>-->
 
-<!-- 주문 요약 정보 -->
-<div class="order-summary">
-    <p><strong>주문 번호:</strong> <span th:text="${orderId}"></span></p>
-    <p><strong>구매자:</strong> <span th:text="${customerName}"></span></p>
-    <p><strong>주문명:</strong> <span th:text="${orderName}"></span></p>
-    <p><strong>결제 키:</strong> <span th:text="${paymentKey}" style="font-size: 0.9em; color: #777;"></span></p>
-    <hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">
-    <p class="total-amount"><strong>총 결제 금액:</strong> <span th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + '원'"></span></p>
-</div>
+<!--&lt;!&ndash; 주문 요약 정보 &ndash;&gt;-->
+<!--<div class="order-summary">-->
+<!--    <p><strong>주문 번호:</strong> <span th:text="${orderId}"></span></p>-->
+<!--    <p><strong>구매자:</strong> <span th:text="${customerName}"></span></p>-->
+<!--    <p><strong>주문명:</strong> <span th:text="${orderName}"></span></p>-->
+<!--    <p><strong>결제 키:</strong> <span th:text="${paymentKey}" style="font-size: 0.9em; color: #777;"></span></p>-->
+<!--    <hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">-->
+<!--    <p class="total-amount"><strong>총 결제 금액:</strong> <span th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + '원'"></span></p>-->
+<!--</div>-->
 
-<!-- 주문 상품 목록 -->
-<div class="order-items" th:if="${orderedItems != null and not #lists.isEmpty(orderedItems)}">
-    <h2>주문 상품 내역</h2>
-    <div th:each="item : ${orderedItems}" class="item-details">
-        <!-- ★★ item 객체가 getTitle(), getPrice() 메소드를 가지고 있다고 가정 ★★ -->
-        <span class="item-title" th:text="${item.title}">상품 제목</span>
-        <span class="item-price" th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">0원</span>
-    </div>
-</div>
-<div class="order-items" th:if="${orderedItems == null or #lists.isEmpty(orderedItems)}">
-    <p>주문 상품 정보를 불러올 수 없습니다.</p>
-</div>
+<!--&lt;!&ndash; 주문 상품 목록 &ndash;&gt;-->
+<!--<div class="order-items" th:if="${orderedItems != null and not #lists.isEmpty(orderedItems)}">-->
+<!--    <h2>주문 상품 내역</h2>-->
+<!--    <div th:each="item : ${orderedItems}" class="item-details">-->
+<!--        &lt;!&ndash; ★★ item 객체가 getTitle(), getPrice() 메소드를 가지고 있다고 가정 ★★ &ndash;&gt;-->
+<!--        <span class="item-title" th:text="${item.title}">상품 제목</span>-->
+<!--        <span class="item-price" th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">0원</span>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="order-items" th:if="${orderedItems == null or #lists.isEmpty(orderedItems)}">-->
+<!--    <p>주문 상품 정보를 불러올 수 없습니다.</p>-->
+<!--</div>-->
 
 
-<!-- 네비게이션 링크 -->
-<div class="nav-links">
-    <a href="/">메인 페이지</a> |
-    <a href="/my-orders">주문 내역 확인</a> <!-- ★★ 실제 주문 내역 페이지 URL로 수정 ★★ -->
-</div>
+<!--&lt;!&ndash; 네비게이션 링크 &ndash;&gt;-->
+<!--<div class="nav-links">-->
+<!--    <a href="/">메인 페이지</a> |-->
+<!--    <a href="/my-orders">주문 내역 확인</a> &lt;!&ndash; ★★ 실제 주문 내역 페이지 URL로 수정 ★★ &ndash;&gt;-->
+<!--</div>-->
 
 </body>
 </html>

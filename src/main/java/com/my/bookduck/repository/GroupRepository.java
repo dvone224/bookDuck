@@ -22,11 +22,4 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     // 그룹 이름 중복 체크용 (기존 메소드가 있다면 유지)
     boolean existsByName(String name);
 
-    @Query("SELECT DISTINCT g FROM Group g " +
-            "LEFT JOIN FETCH g.users gu " +
-            "LEFT JOIN FETCH gu.user u " +
-            "LEFT JOIN FETCH g.books gb " + // books 컬렉션 fetch
-            "LEFT JOIN FETCH gb.book b " +  // books 내부의 book fetch
-            "WHERE g.id IN (SELECT gu_inner.group.id FROM GroupUser gu_inner WHERE gu_inner.user.id = :userId)")
-    List<Group> findGroupsWithUsersAndBooksByUserId(@Param("userId") Long userId);
 }
