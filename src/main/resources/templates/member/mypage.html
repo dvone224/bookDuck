@@ -500,11 +500,15 @@ input[type="checkbox"]:checked + label::after {
     top: 50%;
     left: 50%; /* right 대신 left 사용 */
     transform: translate(-50%, -50%); /* 중앙 정렬 */
+    overflow: hidden;
 }
 .profile_img img{
     width: 100%;
     height: 100%;
     display: block; /* 이미지 아래 여백 제거 */
+    border-radius: var(--border-big);
+    object-fit: cover;
+
 }
 
 .nickname{
@@ -522,7 +526,7 @@ input[type="checkbox"]:checked + label::after {
 
 
 .my_crew, .my_book{
-    max-width: 600px;
+    max-width: 768px;
     margin-bottom: 30px;
 }
 

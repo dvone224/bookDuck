@@ -499,6 +499,10 @@
             text-align: center;
             margin-bottom: 5px;
         }
+        .find_caution{
+            color: var(--main-color-dark);
+            margin-bottom: 10px;
+        }
 
     </style>
     <title> BookDuck²::회원정보 찾기 </title>
@@ -518,7 +522,7 @@
             <label for="joinEmail"></label>
             <input type="text" class="input_long blue_line" id="joinEmail" name="email" placeholder="가입한 E-mail을 입력하세요" required autocomplete="off">
     </div>
-    <div id="exist userEmail"> </div>
+    <div class="find_caution" id="exist userEmail"> </div>
 <!--
     <div class="seperate">
         <div class="seperate_one">
@@ -549,6 +553,11 @@
 
     email.addEventListener('keyup', ()=>{
         valid = false;
+
+        if(email.value == null || email.value == "" ){
+            message.innerHTML = '';
+            return;
+        }
 
         fetch(`/user/searchuseremail?email=${encodeURIComponent(email.value)}`, {
             method: 'GET'
