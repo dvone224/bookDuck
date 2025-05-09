@@ -77,31 +77,58 @@
         body.toc-visible #toc-container { left: 0; }
         body.toc-visible #toc-overlay { pointer-events: auto; opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
 
+        /* Settings Bar Styles */
+        #settings-bar { /* settings-bar는 컨테이너 역할만 함 */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 900; /* 다른 요소 위에 오도록 */
+            pointer-events: none; /* 기본적으로는 클릭 안되게 */
+        }
         .settings-content {
             width: 100%; background-color: rgba(40, 40, 40, 1); color: white;
-            padding: 10px 15px; z-index: 900; font-size: 0.9em; position: fixed;
-            left: 0; display: flex; flex-direction: column; align-items: center;
+            padding: 10px 15px; font-size: 0.9em;
+            display: flex; flex-direction: column; align-items: center;
             gap: 10px; transition: transform 0.3s ease-in-out;
+            pointer-events: auto; /* 내용 부분은 클릭 가능 */
+            position: absolute; /* settings-bar 내에서 위치 */
+            left: 0;
         }
-        .settings-content.bottom { bottom: 0; transform: translateY(100%); padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
-        .settings-content.top { top: 0; transform: translateY(-100%); flex-direction: row; justify-content: center; padding-top: env(safe-area-inset-top); }
-        .settings-content.settings-visible { transform: translateY(0); }
-        .setting-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        #settings-bar button, .setting-group button {
+        .settings-content.bottom {
+            bottom: 0; transform: translateY(100%);
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        .settings-content.top { /* Top bar 스타일은 유지 */
+            top: 0; transform: translateY(-100%); flex-direction: row; justify-content: center; padding-top: env(safe-area-inset-top);
+        }
+        .settings-content.settings-visible { transform: translateY(0); } /* 화면에 보이게 */
+
+        /* Setting Group Styles */
+        .setting-group {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
+            width: 100%; /* 그룹 너비 확보 */
+        }
+        #settings-bar button, .setting-group button, .setting-group a /* 링크도 버튼처럼 보이게 */ {
             padding: 8px 12px; min-width: 40px; cursor: pointer; background-color: #555;
             border: 1px solid #777; color: white; border-radius: 4px; font-size: 0.9em;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            display: inline-flex; /* 내부 텍스트 정렬 */
+            align-items: center;
+            justify-content: center;
         }
-        #settings-bar button:active, .setting-group button:active { background-color: #777; }
+        #settings-bar button:active, .setting-group button:active, .setting-group a:active { background-color: #777; }
         #close-settings {
             background-color: transparent; border: none; font-size: 1.5em; padding: 0 8px;
             position: absolute; top: 10px; right: 15px;
         }
         #current-chapter-title { font-size: 1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%; }
 
+        /* Dark Mode Styles */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
         body.dark-mode .settings-content { background-color: rgba(30, 30, 30, 0.98); color: #e0e0e0; }
-        body.dark-mode #settings-bar button, body.dark-mode .setting-group button { background-color: #333; border-color: #555; color: #e0e0e0; }
-        body.dark-mode #settings-bar button:active, body.dark-mode .setting-group button:active { background-color: #555; }
+        body.dark-mode #settings-bar button, body.dark-mode .setting-group button, body.dark-mode .setting-group a { background-color: #333; border-color: #555; color: #e0e0e0; }
+        body.dark-mode #settings-bar button:active, body.dark-mode .setting-group button:active, body.dark-mode .setting-group a:active { background-color: #555; }
         body.dark-mode #close-settings { color: #bbb; }
         body.dark-mode #toc-container { background-color: #1e1e1e; color: #e0e0e0; border-right: 1px solid #333; }
         body.dark-mode #toc-container h2 { border-bottom-color: #333; }
@@ -109,6 +136,7 @@
         body.dark-mode #toc-container a:hover, body.dark-mode #toc-container a:active { background-color: #333; }
         body.dark-mode #loading-indicator { color: #e0e0e0; background: rgba(30, 30, 30, 0.8); }
 
+        /* Selection Action Button Styles */
         #selection-action-button {
             position: absolute; display: none; padding: 8px 12px; background-color: #007bff;
             color: white; border: none; border-radius: 4px; cursor: pointer;
@@ -118,7 +146,7 @@
         body.dark-mode #selection-action-button { background-color: #bb86fc; color: #121212; box-shadow: 0 2px 5px rgba(255,255,255,0.1); }
         body.dark-mode #selection-action-button:hover { background-color: #9e6ddc; }
 
-        /* ★★★ 진행률 슬라이더 스타일 (JS 직접 제어 방식) ★★★ */
+        /* Progress Slider Styles */
         .progress-slider-container {
             width: 100%; padding: 15px 0 10px 0; display: flex;
             flex-direction: column; align-items: center; gap: 8px;
@@ -127,60 +155,38 @@
         body:not(.dark-mode) .progress-info { color: #555; }
 
         .slider-track-wrapper {
-            width: 80%; position: relative; height: 6px; /* 트랙 높이 */
-            background-color: #444; /* 다크모드 기본 트랙 배경 */
-            border-radius: 3px;
-            display: flex; /* 내부 input 정렬 위해 */
-            align-items: center; /* 내부 input 정렬 위해 */
-            overflow: hidden; /* .slider-fill이 넘치지 않도록 */
+            width: 80%; position: relative; height: 6px;
+            background-color: #444; border-radius: 3px;
+            display: flex; align-items: center; overflow: hidden;
         }
-        body:not(.dark-mode) .slider-track-wrapper {
-            background-color: #ccc; /* 라이트모드 기본 트랙 배경 */
-        }
+        body:not(.dark-mode) .slider-track-wrapper { background-color: #ccc; }
 
-        .slider-fill { /* 채워지는 부분을 담당할 div */
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%; /* 부모(.slider-track-wrapper) 높이와 동일하게 */
-            background-color: #76c7c0; /* 다크모드 채워진 색상 */
-            /* border-radius: 3px 0 0 3px; 채워지는 방향에 따라 조절, 또는 부모의 overflow:hidden 활용 */
-            border-radius: 3px; /* 양쪽 다 둥글게 해도 괜찮음 */
-            width: 0%; /* JS로 업데이트 */
-            pointer-events: none; /* 클릭 방해 안함 */
+        .slider-fill {
+            position: absolute; left: 0; top: 0; height: 100%;
+            background-color: #76c7c0; border-radius: 3px;
+            width: 0%; pointer-events: none;
         }
-        body:not(.dark-mode) .slider-fill {
-            background-color: #007bff; /* 라이트모드 채워진 색상 */
-        }
+        body:not(.dark-mode) .slider-fill { background-color: #007bff; }
 
         input[type="range"].progress-slider {
             -webkit-appearance: none; appearance: none;
-            width: 100%;
-            height: 18px; /* 핸들 높이와 맞추거나, 실제 인터랙션 영역 확보 */
-            background: transparent; /* input 자체의 배경은 투명하게 */
+            width: 100%; height: 18px; background: transparent;
             outline: none; cursor: pointer; margin: 0;
-            position: relative; /* 핸들이 다른 요소 위에 오도록 */
-            z-index: 1;
+            position: relative; z-index: 1;
         }
-
         input[type="range"].progress-slider::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
             width: 18px; height: 18px; background: #76c7c0;
             border-radius: 50%; border: 2px solid #222; cursor: pointer;
-            /* margin-top 제거 또는 조정 (input height와 트랙 wrapper height에 따라) */
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
-        body:not(.dark-mode) input[type="range"].progress-slider::-webkit-slider-thumb {
-            background: #007bff; border: 2px solid #fff;
-        }
+        body:not(.dark-mode) input[type="range"].progress-slider::-webkit-slider-thumb { background: #007bff; border: 2px solid #fff; }
         input[type="range"].progress-slider::-moz-range-thumb {
             width: 18px; height: 18px; background: #76c7c0;
             border-radius: 50%; border: 2px solid #222; cursor: pointer;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
-        body:not(.dark-mode) input[type="range"].progress-slider::-moz-range-thumb {
-            background: #007bff; border: 2px solid #fff;
-        }
+        body:not(.dark-mode) input[type="range"].progress-slider::-moz-range-thumb { background: #007bff; border: 2px solid #fff; }
 
         .slider-value-tooltip {
             position: absolute; background-color: #76c7c0; color: #121212;
@@ -197,9 +203,7 @@
             transform: translateX(-50%); border-width: 6px; border-style: solid;
             border-color: #76c7c0 transparent transparent transparent;
         }
-        body:not(.dark-mode) .slider-value-tooltip::after {
-            border-color: #007bff transparent transparent transparent;
-        }
+        body:not(.dark-mode) .slider-value-tooltip::after { border-color: #007bff transparent transparent transparent; }
     </style>
 </head>
 <body>
@@ -219,34 +223,45 @@
     <ul id="toc-list"></ul>
 </nav>
 
+<!-- ★★★ Settings Bar 구조 수정 ★★★ -->
 <div id="settings-bar">
     <div class="settings-content top">
         <span id="current-chapter-title"></span>
     </div>
     <div class="settings-content bottom">
-        <div class="progress-slider-container">
-            <div class="progress-info">
-                <span id="current-location-value">0</span> / <span id="total-location-value">0</span>
-                (<span id="progress-percentage-display">0%</span>)
-            </div>
-            <div class="slider-track-wrapper">
-                <!-- ★★★ 채워지는 부분을 위한 div 추가 ★★★ -->
-                <div class="slider-fill" id="progressSliderFill"></div>
-                <input type="range" min="0" max="100" value="0" class="progress-slider" id="progressSliderInput" aria-label="Book progress">
-                <div class="slider-value-tooltip" id="sliderValueTooltip">
-                    <span id="tooltip-current-value">0</span>/<span id="tooltip-total-value">0</span>
+        <!-- 첫 번째 Setting Group -->
+        <div class="setting-group">
+            <!-- 슬라이더 컨테이너를 첫 번째 그룹 안으로 이동 (children[0]) -->
+            <div class="progress-slider-container">
+                <div class="progress-info">
+                    <span id="current-location-value">0</span> / <span id="total-location-value">0</span>
+                    (<span id="progress-percentage-display">0%</span>)
+                </div>
+                <div class="slider-track-wrapper">
+                    <div class="slider-fill" id="progressSliderFill"></div>
+                    <input type="range" min="0" max="100" value="0" class="progress-slider" id="progressSliderInput" aria-label="Book progress">
+                    <div class="slider-value-tooltip" id="sliderValueTooltip">
+                        <span id="tooltip-current-value">0</span>/<span id="tooltip-total-value">0</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="setting-group">
+            <!-- 목차 버튼 (children[1]) -->
             <button id="toc-button-in-settings">목차</button>
+
+            <!-- 쪽지 버튼 (children[2]) -->
             <button id="notes-button-in-settings">쪽지</button>
+
+            <!-- 보기 설정 버튼 (children[3]) -->
             <button id="view-settings-button-in-settings">보기 설정</button>
         </div>
+
+        <!-- 두 번째 Setting Group (다크 모드 버튼) -->
         <div class="setting-group">
             <button id="toggle-dark-mode">Dark Mode</button>
         </div>
+
+        <!-- 닫기 버튼 -->
         <button id="close-settings" aria-label="Close settings">×</button>
     </div>
 </div>
@@ -256,13 +271,15 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     const GLOBAL_BOOK_ID = /*[[${bookId}]]*/ null;
-    const GLOBAL_USER_ID = /*[[${session.loginuser != null ? session.loginuser.id : null}]]*/ null;
+    // 세션에서 사용자 ID 가져오기 (세션 속성 이름 'loginUser' 가정, 없으면 null)
+    const GLOBAL_USER_ID = /*[[${session.loginUser != null ? session.loginUser.id : null}]]*/ null;
     const GLOBAL_BOOK_URL_BASE = /*[[@{/book/api/epub-content/}]]*/ '/fallback-base-path/';
     const GLOBAL_BOOK_URL_TEMPLATE = (GLOBAL_BOOK_ID !== null && GLOBAL_BOOK_URL_BASE !== '/fallback-base-path/')
         ? `${GLOBAL_BOOK_URL_BASE}${GLOBAL_BOOK_ID}/`
         : null;
     /*]]>*/
 </script>
+<!-- viewer.js 스크립트는 그대로 사용 -->
 <script th:src="@{/js/book/viewer.js}"></script>
 
 </body>

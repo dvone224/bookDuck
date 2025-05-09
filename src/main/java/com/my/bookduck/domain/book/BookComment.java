@@ -40,6 +40,9 @@ public class BookComment {
 
     private LocalDateTime createdAt; // 코멘트를 단 시간
 
+    @Column(length = 20) // 예: #RRGGBB 형식 등 저장
+    private String noteColor; // 쪽지 배경 색상
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
@@ -52,13 +55,13 @@ public class BookComment {
     @JoinColumn(name = "book_id")
     private Book book;
 
-    // 빌더 패턴 (Lombok @Builder로 대체 가능하나, 명시적으로 작성)
     @Builder
-    public BookComment(String chapterHref, String locationCfi, String comment,
+    public BookComment(String chapterHref, String locationCfi, String comment, String noteColor, // noteColor 추가
                        LocalDateTime createdAt, Group group, User user, Book book) {
         this.chapterHref = chapterHref;
         this.locationCfi = locationCfi;
         this.comment = comment;
+        this.noteColor = noteColor; // 필드 설정
         this.createdAt = createdAt;
         this.group = group;
         this.user = user;

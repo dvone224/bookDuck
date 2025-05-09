@@ -1,54 +1,423 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"> <!-- (선택) 레이아웃을 사용한다면 -->
 <head>
     <meta charset="UTF-8">
     <title>쪽지 작성</title>
     <style>
-        .selected-text-preview { background-color: #f0f0f0; padding: 10px; border: 1px solid #ccc; margin-bottom: 15px; white-space: pre-wrap; }
-        textarea { width: 100%; min-height: 150px; }
-        .form-actions { margin-top: 15px; }
-        .error { color: red; font-size: 0.9em; }
-        .message.success { color: green; }
-        .message.error { color: red; }
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Gowun+Dodum&family=Dongle:wght@400;700&family=Nanum+Myeongjo&family=Single+Day&family=Stylish&family=Sunflower:wght@300&display=swap');
+        /* 필요에 따라 다른 웹폰트 import */
+        /* 예시: 로컬 폰트 (실제 경로 맞게 수정)
+        @font-face {
+            font-family: 'Diary';
+            src: url('/fonts/Diary.woff2') format('woff2'),
+                 url('/fonts/Diary.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        */
+
+        body {
+            font-family: 'Gowun Dodum', sans-serif; /* 기본 폰트 고운돋움으로 변경 */
+            background-color: #e9f2f9; /* 이미지의 하늘색 배경과 더 유사하게 조정 */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .comment-form-wrapper { /* 전체 컨텐츠를 감싸는 div */
+            width: 100%;
+            max-width: 550px; /* 이미지 비율에 맞게 조금 넓힘 */
+        }
+
+        .back-button-container {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: left; /* 왼쪽 정렬 */
+        }
+
+        .back-button {
+            display: inline-flex; /* 아이콘 중앙 정렬 위해 flex 사용 */
+            justify-content: center;
+            align-items: center;
+            width: 40px; /* 크기 조절 */
+            height: 40px;
+            background-color: #ffffff; /* 흰색 배경 */
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            text-decoration: none;
+            color: #555; /* 아이콘 색상 */
+            font-size: 24px; /* 아이콘 크기 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .back-button:hover {
+            background-color: #f8f8f8;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .selected-text-preview-container {
+            background-color: #ffffff; /* 흰색 배경 */
+            padding: 25px 20px; /* 상하 패딩 늘림 */
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+        .selected-text-preview-container blockquote {
+            font-size: 1.1em; /* 조금 더 크게 */
+            color: #333; /* 좀 더 진하게 */
+            margin: 0;
+            padding: 0 40px; /* 양 옆 인용부호 공간 확보 */
+            position: relative;
+            font-style: normal; /* 이탤릭 제거 */
+            line-height: 1.6;
+        }
+        .selected-text-preview-container blockquote::before,
+        .selected-text-preview-container blockquote::after {
+            font-family: serif; /* 인용부호 폰트 */
+            font-size: 3.5em; /* 인용부호 크기 */
+            color: #cccccc; /* 인용부호 색상 */
+            position: absolute;
+            line-height: 0.5;
+        }
+        .selected-text-preview-container blockquote::before {
+            content: '“';
+            left: 5px; /* 위치 조정 */
+            top: 0px;
+        }
+        .selected-text-preview-container blockquote::after {
+            content: '”';
+            right: 5px; /* 위치 조정 */
+            bottom: -0.2em; /* 위치 조정 */
+        }
+
+
+        .note-paper {
+            background-color: #fffacd; /* 이미지의 노란색과 유사하게 */
+            padding: 20px 25px; /* 좌우 패딩 늘림 */
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* 그림자 좀 더 진하게 */
+            position: relative;
+            min-height: 280px; /* 높이 조금 늘림 */
+            margin-bottom: 25px;
+            /* 귀퉁이 접힌 효과 제거하고 border-radius 사용 */
+            border-bottom-right-radius: 0; /* 오른쪽 아래 각지게 */
+            overflow: hidden; /* ::after 요소가 넘치지 않도록 */
+        }
+        /* 포스트잇 귀퉁이 그림자 효과 (조금 더 자연스럽게) */
+        .note-paper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px; /* 크기 조정 */
+            height: 40px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.12) 50.1%);
+            /* transform: translate(2px, 2px); */ /* 불필요할 수 있음 */
+            border-bottom-right-radius: 3px;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.08); /* 미세한 그림자 추가 */
+            z-index: 0; /* 내용 아래로 가도록 */
+        }
+
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #d4c07a; /* 점선 색상 조정 */
+            position: relative; /* z-index 적용 위해 */
+            z-index: 1;
+        }
+        .profile-icon {
+            width: 45px; /* 아이콘 크기 조정 */
+            height: 45px;
+            background-color: #ffe8a1; /* 아이콘 배경색 조정 */
+            border-radius: 10px; /* 좀 더 둥글게 */
+            margin-right: 12px;
+            border: 1px solid #fff3cd; /* 약간의 테두리 */
+        }
+        .user-info {
+            font-weight: bold;
+            color: #8b7300; /* 글자 색상 조정 */
+            font-size: 1.05em;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            min-height: 180px; /* 텍스트 영역 높이 조정 */
+            border: none;
+            background-color: transparent;
+            resize: vertical;
+            padding: 5px 0; /* 상하 패딩만 */
+            box-sizing: border-box;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #444; /* 텍스트 색상 */
+            position: relative; /* z-index 적용 위해 */
+            z-index: 1;
+        }
+        .comment-textarea:focus {
+            outline: none;
+        }
+
+        .settings-section {
+            background-color: #ffffff; /* 흰색 배경 */
+            padding: 20px;
+            border-radius: 15px; /* 더 둥근 모서리 */
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+        .settings-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #555;
+            text-align: center;
+            border-bottom: 1px solid #eee; /* 선 색상 연하게 */
+            padding-bottom: 8px;
+            font-weight: normal;
+        }
+
+        .color-options, .font-options-grid { /* 이름 변경 및 스타일 수정 */
+            display: flex;
+            justify-content: center; /* 가운데 정렬 */
+            flex-wrap: wrap;
+            gap: 10px; /* 옵션 사이 간격 */
+        }
+        .color-option {
+            width: 32px; /* 크기 조정 */
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent; /* 기본 테두리 투명 */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            border-color: #555; /* 선택된 색상 테두리 */
+            transform: scale(1.1);
+        }
+
+        /* 이미지에 있는 색상과 유사하게 */
+        .color-yellow { background-color: #fffacd; } /* 기본 쪽지색 */
+        .color-blue { background-color: #d1e7ff; }
+        .color-pink { background-color: #ffe4e1; }
+        .color-lightgreen { background-color: #f0fff0; } /* 연한 녹색 */
+        .color-orange { background-color: #fff0db; } /* 연한 주황 */
+        .color-purple { background-color: #e6e6fa; } /* 연한 보라 */
+        .color-skyblue { background-color: #e0ffff; } /* 연한 하늘색 */
+        .color-mint { background-color: #f5fffa; } /* 민트 크림 */
+
+
+        /* 글씨체 옵션은 grid 로 변경 */
+        .font-options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4열 그리드 */
+            gap: 10px; /* 그리드 간격 */
+        }
+        .font-option {
+            padding: 8px 0; /* 상하 패딩만 */
+            background-color: #f8f8f8; /* 배경색 연하게 */
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em; /* 폰트 크기 약간 키움 */
+            text-align: center;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .font-option:hover {
+            background-color: #e9e9e9;
+            border-color: #ddd;
+        }
+        .font-option.selected {
+            background-color: #87CEEB; /* 선택 시 하늘색 배경 */
+            color: white;
+            border-color: #76bada;
+            font-weight: bold;
+        }
+        /* 각 폰트 미리보기 적용 (CSS font-family 설정) */
+        .font-option[data-font="GowunBatang-Regular"] { font-family: 'Gowun Batang', serif; }
+        .font-option[data-font="GowunDodum-Regular"] { font-family: 'Gowun Dodum', sans-serif; }
+        .font-option[data-font="Dongle-Regular"] { font-family: 'Dongle', sans-serif; font-size: 1.1em; } /* 동글 폰트는 클 수 있음 */
+        /* 다른 폰트들도 font-family 적용 */
+        .font-option[data-font="NanumMyeongjo"] { font-family: 'Nanum Myeongjo', serif; }
+        .font-option[data-font="SingleDay"] { font-family: 'Single Day', cursive; }
+        .font-option[data-font="Stylish"] { font-family: 'Stylish', serif; }
+        .font-option[data-font="Sunflower"] { font-family: 'Sunflower', sans-serif; }
+
+
+        .submit-button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .submit-button {
+            background-color: #87CEEB;
+            color: white;
+            padding: 14px 40px; /* 버튼 크기 키움 */
+            border: none;
+            border-radius: 30px; /* 더 둥글게 */
+            font-size: 1.15em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        .submit-button:hover {
+            background-color: #76bada;
+        }
+        .submit-button:active {
+            transform: translateY(1px); /* 클릭 시 살짝 눌리는 효과 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message { color: #dc3545; font-size: 0.9em; margin-top: 5px; text-align: center; }
+        .success-message { color: #28a745; font-size: 0.9em; margin-top: 5px; text-align: center; }
     </style>
 </head>
 <body>
-<h1><span th:text="${bookTitle}">책 제목</span>: 쪽지 작성</h1>
-
-<!-- 성공/에러 메시지 표시 (RedirectAttributes로 전달된 경우) -->
-<div th:if="${message}" class="message success" th:text="${message}"></div>
-<div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
-
-
-<div th:if="${selectedText}">
-    <h3>선택한 내용:</h3>
-    <div class="selected-text-preview" th:text="${selectedText}"></div>
-</div>
-
-<!--
-    폼의 action은 @PostMapping("/comments")를 가리키도록 설정
-    th:object는 컨트롤러에서 model.addAttribute("commentForm", ...)으로 넘겨준 객체 이름과 일치
--->
-<form th:action="@{/comments}" th:object="${commentForm}" method="post">
-    <!-- 숨겨진 필드로 주요 정보 전달 (bookId, cfi, chapterHref는 DTO에 이미 포함되어 있음) -->
-    <input type="hidden" th:field="*{bookId}" />
-    <input type="hidden" th:field="*{cfi}" />
-    <input type="hidden" th:field="*{chapterHref}" />
-    <!-- selectedText는 DTO에 포함시키지 않고, 사용자가 입력하는 comment만 DTO의 comment 필드와 바인딩 -->
-
-    <div>
-        <label for="comment">쪽지 내용:</label><br/>
-        <textarea id="comment" th:field="*{comment}" placeholder="여기에 쪽지 내용을 입력하세요..." required></textarea>
-        <!-- th:if와 th:errors를 사용하여 유효성 검사 에러 메시지 표시 (Spring Validation 사용 시) -->
-        <div th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" class="error"></div>
+<div class="comment-form-wrapper"> <!-- 전체 감싸는 div 추가 -->
+    <div class="back-button-container">
+        <a th:href="@{'/viewer/' + ${bookId}}" class="back-button" title="뒤로가기">↺</a>
     </div>
 
-    <div class="form-actions">
-        <button type="submit">저장</button>
-        <!-- 취소 버튼: 이전 페이지(뷰어)로 돌아가기. bookId를 사용. -->
-        <a th:href="@{'/viewer/' + ${bookId}}">취소</a>
-    </div>
-</form>
+    <div class="comment-form-container">
+        <!-- 성공/에러 메시지 표시 -->
+        <div th:if="${message}" class="success-message" th:text="${message}"></div>
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
 
+        <!-- 선택된 텍스트 미리보기 -->
+        <div th:if="${selectedText}" class="selected-text-preview-container">
+            <blockquote th:text="${selectedText}"></blockquote>
+        </div>
+
+        <form th:action="@{/comments}" th:object="${commentForm}" method="post">
+            <!-- CSRF 토큰 (Spring Security 사용 시) -->
+            <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+
+            <!-- 숨겨진 필드로 주요 정보 전달 -->
+            <input type="hidden" th:field="*{bookId}" />
+            <input type="hidden" th:field="*{cfi}" />
+            <input type="hidden" th:field="*{chapterHref}" />
+
+            <!-- 쪽지 작성 영역 -->
+            <div class="note-paper" id="notePaper">
+                <div class="note-header">
+                    <div class="profile-icon"></div>
+                    <div class="user-info" th:text="${session.loginuser?.nickName ?: '사용자'} + ' 님의 쪽지'">사용자 님의 쪽지</div>
+                </div>
+                <textarea id="comment" th:field="*{comment}" class="comment-textarea" placeholder="여기에 쪽지 내용을 입력하세요..." required></textarea>
+                <div th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" class="error-message"></div>
+            </div>
+
+            <!-- 쪽지 색상 선택 -->
+            <div class="settings-section">
+                <h3>쪽지 색상</h3>
+                <div class="color-options">
+                    <div class="color-option color-yellow selected" data-color="#fffacd"></div>
+                    <div class="color-option color-blue" data-color="#d1e7ff"></div>
+                    <div class="color-option color-pink" data-color="#ffe4e1"></div>
+                    <div class="color-option color-lightgreen" data-color="#f0fff0"></div>
+                    <div class="color-option color-orange" data-color="#fff0db"></div>
+                    <div class="color-option color-purple" data-color="#e6e6fa"></div>
+                    <div class="color-option color-skyblue" data-color="#e0ffff"></div>
+                    <div class="color-option color-mint" data-color="#f5fffa"></div>
+                    <input type="hidden" id="selectedNoteColor" name="noteColor" value="#fffacd" />
+                </div>
+            </div>
+
+            <!-- 글씨체 선택 -->
+            <div class="settings-section">
+                <h3>글씨체</h3>
+                <div class="font-options-grid" id="fontOptionsContainer"> <!-- 클래스명 변경 -->
+                    <div class="font-option selected" data-font="GowunBatang">고운바탕</div>
+                    <div class="font-option" data-font="GowunDodum">고운돋움</div>
+                    <div class="font-option" data-font="Dongle">조선굴림</div>
+                    <div class="font-option" data-font="Sunflower">온글잎큰붓</div> <!-- 이미지와 이름 맞춤 -->
+                    <div class="font-option" data-font="NanumMyeongjo">나눔명조</div>
+                    <div class="font-option" data-font="Stylish">학교안심고딕</div> <!-- 이미지와 이름 맞춤 -->
+                    <div class="font-option" data-font="SingleDay">심경하</div> <!-- 이미지와 이름 맞춤 -->
+                    <div class="font-option" data-font="Diary">다이어리</div> <!-- data-font 값 확인 필요 -->
+                    <input type="hidden" id="selectedFontFamily" name="fontFamily" value="GowunBatang" />
+                </div>
+            </div>
+
+            <div class="submit-button-container">
+                <button type="submit" class="submit-button">작성 완료</button>
+            </div>
+        </form>
+    </div>
+</div> <!-- comment-form-wrapper 끝 -->
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const notePaper = document.getElementById('notePaper');
+        const commentTextarea = document.getElementById('comment');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const selectedNoteColorInput = document.getElementById('selectedNoteColor');
+
+        const fontOptionsContainer = document.getElementById('fontOptionsContainer');
+        const selectedFontFamilyInput = document.getElementById('selectedFontFamily');
+
+        // 초기 폰트 설정 (CSS에서 기본으로 설정하고, JS에서는 선택 시 변경만)
+        const applyFont = (fontFamily) => {
+            if (commentTextarea) {
+                // CSS에서 정의된 font-family 이름을 직접 사용하도록 함
+                commentTextarea.style.fontFamily = `"${fontFamily}", sans-serif`; // 폰트 이름에 공백이 있을 수 있으므로 따옴표 추가
+            }
+            if (selectedFontFamilyInput) {
+                selectedFontFamilyInput.value = fontFamily;
+            }
+        };
+
+        // 초기 색상 설정
+        const applyColor = (colorValue) => {
+            if (notePaper) {
+                notePaper.style.backgroundColor = colorValue;
+            }
+            if (selectedNoteColorInput) {
+                selectedNoteColorInput.value = colorValue;
+            }
+        };
+
+        // 쪽지 색상 변경 이벤트 리스너
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                applyColor(option.dataset.color);
+            });
+        });
+
+        // 글씨체 변경 이벤트 리스너
+        fontOptionsContainer.addEventListener('click', (event) => {
+            const targetOption = event.target.closest('.font-option');
+            if (!targetOption) return;
+
+            fontOptionsContainer.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('selected'));
+            targetOption.classList.add('selected');
+            applyFont(targetOption.dataset.font);
+        });
+
+        // 페이지 로드 시 초기 선택된 값 적용
+        const initialColorOption = document.querySelector('.color-option.selected');
+        if (initialColorOption) {
+            applyColor(initialColorOption.dataset.color);
+        }
+
+        const initialFontOption = document.querySelector('.font-option.selected');
+        if (initialFontOption) {
+            applyFont(initialFontOption.dataset.font);
+        }
+    });
+</script>
 </body>
 </html>

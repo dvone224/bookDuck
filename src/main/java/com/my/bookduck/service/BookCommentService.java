@@ -1,6 +1,7 @@
 package com.my.bookduck.service;
 
 import com.my.bookduck.controller.request.AddCommentRequest;
+import com.my.bookduck.controller.response.BookCommentHighlightDto;
 import com.my.bookduck.controller.response.loginUserInfo;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.book.BookComment;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j // Slf4j 로거 추가
 @Service
@@ -66,14 +69,24 @@ public class BookCommentService {
                 .comment(formDto.getComment())
                 .chapterHref(formDto.getChapterHref())
                 .locationCfi(formDto.getCfi())
+                .noteColor(formDto.getNoteColor()) // DTO에서 noteColor 가져와 설정
+                // .fontFamily(formDto.getFontFamily()) // (선택) 글꼴 정보도 저장
                 .createdAt(LocalDateTime.now())
                 .book(book)
-                .user(userEntity) // DB에서 조회한 User 엔티티 사용
-                // .group(book.getGroup()) // 필요시 그룹 정보 설정
+                .user(userEntity)
                 .build();
 
         bookCommentRepository.save(newComment);
         log.info("Service: BookComment saved successfully. Book ID: {}, User ID: {}, Comment ID: {}",
                 book.getId(), userEntity.getId(), newComment.getId());
+    }
+
+    public List<BookCommentHighlightDto> findHighlightsByBookAndChapter(Long bookId, String chapterHref) {
+        // Repository를 사용하여 bookId와 chapterHref로 BookComment 엔티티 목록 조회
+        List<BookComment> comments = bookCommentRepository.findByBookIdAndChapterHref(bookId, chapterHref);
+        // 엔티티 목록을 DTO 목록으로 변환하여 반환
+        return comments.stream()
+                .map(BookCommentHighlightDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

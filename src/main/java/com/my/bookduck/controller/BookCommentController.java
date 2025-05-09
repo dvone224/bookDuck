@@ -1,6 +1,7 @@
 package com.my.bookduck.controller;
 
 import com.my.bookduck.controller.request.AddCommentRequest;
+import com.my.bookduck.controller.response.BookCommentHighlightDto;
 import com.my.bookduck.controller.response.loginUserInfo;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.user.User; // User 엔티티 import
@@ -10,10 +11,16 @@ import jakarta.servlet.http.HttpSession; // HttpSession import
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 // import org.springframework.security.core.annotation.AuthenticationPrincipal; // 더 이상 사용 안 함
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -124,6 +131,29 @@ public class BookCommentController {
                     (loginUser != null ? loginUser.getId() : "N/A"), e);
             redirectAttributes.addFlashAttribute("errorMessage", "쪽지 저장 중 시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
             return "redirect:/viewer/" + (commentForm != null ? commentForm.getBookId() : "") + "?error=system_error";
+        }
+    }
+
+
+    @GetMapping("/{bookId}/{chapterHrefEncoded}")
+    public ResponseEntity<List<BookCommentHighlightDto>> getCommentsForChapter(
+            @PathVariable Long bookId,
+            @PathVariable String chapterHrefEncoded) {
+        try {
+            // URL 인코딩된 chapterHref 디코딩
+            String chapterHref = URLDecoder.decode(chapterHrefEncoded, StandardCharsets.UTF_8.toString());
+            log.debug("Fetching comments for bookId: {}, decoded chapterHref: {}", bookId, chapterHref);
+
+            // 서비스 계층에서 해당 챕터의 코멘트 조회 (하이라이트에 필요한 정보만)
+            List<BookCommentHighlightDto> highlights = bookCommentService.findHighlightsByBookAndChapter(bookId, chapterHref);
+            return ResponseEntity.ok(highlights);
+
+        } catch (UnsupportedEncodingException e) {
+            log.error("Error decoding chapterHref: {}", chapterHrefEncoded, e);
+            return ResponseEntity.badRequest().build(); // 잘못된 요청으로 처리
+        } catch (Exception e) {
+            log.error("Error fetching comments for bookId: {}, chapterHrefEncoded: {}", bookId, chapterHrefEncoded, e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
