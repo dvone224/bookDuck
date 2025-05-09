@@ -87,7 +87,7 @@
     --crown-color: #ffa500;
 
     /*사용법: var(--main-color-middle)*/
-    --border-big: 20px;/*큰거...뭐가잇지...*/
+    --border-big: 20px;/*큰 이미지*/
     --border-middle: 10px;/*img*/
     --border-circle: 50%;/*동그리버튼*/
 

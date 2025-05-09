@@ -724,12 +724,9 @@
             object-fit: cover;
         }
 
-
-
-
-
-
-
+        .title_line{
+            width: 20%
+        }
 
     </style>
 </head>
@@ -772,7 +769,7 @@
             <p>속한 그룹이 없습니다.</p>
         </div>
         <div class="group-list" th:unless="${myGroupViews == null or #lists.isEmpty(myGroupViews)}">
-            <div class="out_box" th:each="groupView : ${myGroupViews}" class="group-item-container" th:data-group-id="${groupView.group.id}">
+            <div th:each="groupView : ${myGroupViews}" class="group-item-container out_box" th:data-group-id="${groupView.group.id}">
 
                 <div class="group-item-content box2 light_blue ">
                     <div class="book-cover-large">
@@ -785,7 +782,9 @@
                     </div>
                     <div class="group-details">
                         <div class="group-header">
-                            <div class="title dark_blue2" th:text="${groupView.group.name}">그룹 이름<div class="underline dark_blue1"></div> </div>
+                            <!--<div class="title dark_blue2" th:text="${groupView.group.name}">그룹 이름<div class="underline dark_blue1"></div> </div>-->
+                            <h3 class="title dark_blue2" th:text="${groupView.group.name}">그룹 이름</h3>
+                            <div class="title_line dark_blue1"></div>
                             <p th:if="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}"
                                th:text="${groupView.group.books[0].book.title}">책 제목</p>
 <!--                            <p th:unless="${groupView.group.books != null and not #lists.isEmpty(groupView.group.books) and groupView.group.books[0].book != null}">
@@ -803,8 +802,12 @@
                 </div>
                 <th:block th:if="${groupView.isCurrentUserLeader}">
                     <!--그룹수정버튼-->
-                    <button th:href="@{/group/fix/{groupId}(groupId=${groupView.group.id})}" class="modify-button btn_circle blue" title="그룹 수정"
-                            onclick="event.stopPropagation();"><i class="fa-solid fa-pen btn_icon white2"></i></i></button>
+<!--                    <button th:href="@{/group/fix/{groupId}(groupId=${groupView.group.id})}" class="modify-button btn_circle blue" title="그룹 수정"
+                            onclick="event.stopPropagation();"><i class="fa-solid fa-pen btn_icon white2"></i></button>-->
+                    <button class="modify-button btn_circle blue" title="그룹 수정"
+                            th:onclick="'event.stopPropagation(); location.href=\'' + @{/group/fix/{groupId}(groupId=${groupView.group.id})} + '\';'">
+                        <i class="fa-solid fa-pen btn_icon white2"></i>
+                    </button>
                     <!--그룹왕관 버튼-->
                     <span class="leader-icon btn_circle crown" th:if="${gu.role == T(com.my.bookduck.domain.group.GroupUser.Role).ROLE_LEADER}"><i class="fa-solid fa-crown btn_icon_color"></i></span>
                 </th:block>

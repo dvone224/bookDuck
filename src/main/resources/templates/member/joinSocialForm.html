@@ -6,7 +6,36 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/member/joinSocialForm.css">
     <script src="https://kit.fontawesome.com/116a85af51.js" crossorigin="anonymous"></script>
-    <style></style>
+    <style>
+        input{
+            margin-bottom: 10px;
+        }
+        .filebox{
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .filebox label{
+            vertical-align: middle;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filebox input[type="file"] {
+            position: absolute;
+            width: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            border: 0;
+        }
+        .error{
+            margin: 0;
+            margin-bottom: 10px;
+        }
+    </style>
     <title> BookDuck²::회원가입 </title>
 </head>
 <body>
@@ -19,13 +48,17 @@
             <!--<label for="joinNickname"> <span th:text="${joinSocial}">null</span>닉네임</label>-->
             <label for="joinNickname"></label>
             <input type="text" class="input_long blue_line" id="joinNickname" name="nickName" placeholder="닉네임(2~7자, 한글, 대/소문자, 숫자)" required autocomplete="off">
-            <div id="check validNickname"></div>
+            <div class="error" id="check validNickname"></div>
         </div>
         <div class="input_img">
             <!--<label for="joinImg"> <span th:text="${joinSocial}">null</span>이미지 임시</label>
             <input type="text" id="joinImg" name="img" placeholder="사진을 넣어주세요" required autocomplete="off">-->
             <div class="profile_img"> <img id="uploadImg" src="/img/bookduck_login.png"> </div>
-            <input type="file" id="userImg" name="userImg" accept="image/*">
+<!--            <input type="file" id="userImg" name="userImg" accept="image/*">-->
+            <div class="filebox">
+                <label class="btn_long yellow" for="userImg">파일찾기</label>
+                <input type="file" id="userImg" name="userImg" accept="image/*">
+            </div>
             <input type="hidden" id="img" name="img">
             <input type="button" class="btn_long yellow" id="imgUploadBtn" value="프로필 이미지 등록">
         </div>
