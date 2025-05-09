@@ -1,19 +1,23 @@
 package com.my.bookduck.service;
 
 import com.my.bookduck.controller.request.AddCommentRequest;
+import com.my.bookduck.controller.request.BookCommentDetailDto;
 import com.my.bookduck.controller.response.BookCommentHighlightDto;
 import com.my.bookduck.controller.response.loginUserInfo;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.book.BookComment;
 import com.my.bookduck.domain.user.User;
 import com.my.bookduck.repository.BookCommentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // Slf4j 로거 추가
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j // Slf4j 로거 추가
@@ -89,4 +93,69 @@ public class BookCommentService {
                 .map(BookCommentHighlightDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    // ★★★ 쪽지 상세 정보 조회 메소드 추가 ★★★
+    public BookCommentDetailDto getCommentDetail(Long commentId) {
+        log.debug("Service: Fetching comment detail for id: {}", commentId);
+        // findById는 Optional<BookComment>를 반환
+        Optional<BookComment> commentOpt = bookCommentRepository.findById(commentId);
+
+        // 코멘트가 존재하지 않으면 예외 발생 (컨트롤러에서 404 처리)
+        if (commentOpt.isEmpty()) {
+            log.warn("Service: Comment not found for id: {}", commentId);
+            throw new EntityNotFoundException("Comment not found with id: " + commentId);
+        }
+
+        BookComment comment = commentOpt.get();
+        log.debug("Service: Comment found. Converting to DTO.");
+
+        // 엔티티를 DTO로 변환하여 반환
+        // BookCommentDetailDto.fromEntity 내부에서 User 정보 접근 시 LAZY 로딩 주의
+        return BookCommentDetailDto.fromEntity(comment);
+    }
+
+    // (선택) 쪽지 수정 메소드 추가
+    /*
+    @Transactional
+    public void updateComment(Long commentId, UpdateCommentRequestDto updateDto, Long userId) {
+        log.debug("Service: Attempting to update comment id: {}", commentId);
+        BookComment comment = bookCommentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found: " + commentId));
+
+        // 작성자 본인 확인
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You do not have permission to edit this comment.");
+        }
+
+        // 내용, 색상, 글꼴 등 업데이트
+        comment.setComment(updateDto.getComment());
+        comment.setNoteColor(updateDto.getNoteColor());
+        // comment.setFontFamily(updateDto.getFontFamily());
+        // comment.setUpdatedAt(LocalDateTime.now()); // 수정 시간 필드 있다면 업데이트
+
+        bookCommentRepository.save(comment); // 변경 사항 저장 (JPA 변경 감지)
+        log.info("Service: Comment updated successfully. ID: {}", commentId);
+    }
+    */
+
+    @Transactional // 데이터 변경
+    public void deleteComment(Long commentId, Long currentUserId) throws AccessDeniedException {
+        log.debug("Service: Attempting to delete comment id: {}", commentId);
+        BookComment comment = bookCommentRepository.findById(commentId)
+                .orElseThrow(() -> {
+                    log.warn("Service: Delete failed. Comment not found for id: {}", commentId);
+                    return new EntityNotFoundException("삭제할 쪽지를 찾을 수 없습니다. ID: " + commentId);
+                });
+
+        // 작성자 본인 확인
+        if (!comment.getUser().getId().equals(currentUserId)) {
+            log.warn("Service: Delete failed. User (id:{}) is not the author of comment (id:{}). Author ID: {}",
+                    currentUserId, commentId, comment.getUser().getId());
+            throw new AccessDeniedException("이 쪽지를 삭제할 권한이 없습니다.");
+        }
+
+        bookCommentRepository.delete(comment);
+        log.info("Service: Comment deleted successfully. ID: {}", commentId);
+    }
+
 }

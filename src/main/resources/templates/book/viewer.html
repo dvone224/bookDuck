@@ -13,6 +13,7 @@
         * {
             box-sizing: border-box;
         }
+
         html, body {
             margin: 0;
             padding: 0;
@@ -33,15 +34,19 @@
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
+
         #viewer {
             width: 100%;
             height: 100%;
         }
+
         #viewer iframe {
             border: none;
         }
 
-        #prev, #next { display: none; }
+        #prev, #next {
+            display: none;
+        }
 
         #loading-indicator {
             position: absolute;
@@ -58,152 +63,561 @@
         }
 
         #toc-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 999; opacity: 0;
-            visibility: hidden; pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
             transition: opacity 0.3s ease, visibility 0s linear 0.3s;
         }
+
         #toc-container {
-            position: fixed; top: 0; left: -85%; width: 80%; max-width: 300px;
-            height: 100%; background: #fff; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            z-index: 1000; overflow-y: auto; transition: left 0.3s ease-in-out;
-            padding: 15px; padding-top: 50px;
+            position: fixed;
+            top: 0;
+            left: -85%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+            padding: 15px;
+            padding-top: 50px;
         }
-        #toc-container h2 { margin-top: 0; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        #toc-container ul { list-style: none; padding: 0; margin: 0; }
-        #toc-container li { margin-bottom: 5px; }
-        #toc-container a { text-decoration: none; color: #337ab7; display: block; padding: 8px 5px; border-radius: 3px; }
-        #toc-container a:hover, #toc-container a:active { background-color: #eee; text-decoration: none; }
-        body.toc-visible #toc-container { left: 0; }
-        body.toc-visible #toc-overlay { pointer-events: auto; opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+
+        #toc-container h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #toc-container ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #toc-container li {
+            margin-bottom: 5px;
+        }
+
+        #toc-container a {
+            text-decoration: none;
+            color: #337ab7;
+            display: block;
+            padding: 8px 5px;
+            border-radius: 3px;
+        }
+
+        #toc-container a:hover, #toc-container a:active {
+            background-color: #eee;
+            text-decoration: none;
+        }
+
+        body.toc-visible #toc-container {
+            left: 0;
+        }
+
+        body.toc-visible #toc-overlay {
+            pointer-events: auto;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
 
         /* Settings Bar Styles */
-        #settings-bar { /* settings-bar는 컨테이너 역할만 함 */
+        #settings-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            z-index: 900; /* 다른 요소 위에 오도록 */
-            pointer-events: none; /* 기본적으로는 클릭 안되게 */
+            z-index: 900;
+            pointer-events: none;
         }
+
         .settings-content {
-            width: 100%; background-color: rgba(40, 40, 40, 1); color: white;
-            padding: 10px 15px; font-size: 0.9em;
-            display: flex; flex-direction: column; align-items: center;
-            gap: 10px; transition: transform 0.3s ease-in-out;
-            pointer-events: auto; /* 내용 부분은 클릭 가능 */
-            position: absolute; /* settings-bar 내에서 위치 */
+            width: 100%;
+            background-color: rgba(40, 40, 40, 1);
+            color: white;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease-in-out;
+            pointer-events: auto;
+            position: absolute;
             left: 0;
         }
+
         .settings-content.bottom {
-            bottom: 0; transform: translateY(100%);
+            bottom: 0;
+            transform: translateY(100%);
             padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
-        .settings-content.top { /* Top bar 스타일은 유지 */
-            top: 0; transform: translateY(-100%); flex-direction: row; justify-content: center; padding-top: env(safe-area-inset-top);
-        }
-        .settings-content.settings-visible { transform: translateY(0); } /* 화면에 보이게 */
 
-        /* Setting Group Styles */
-        .setting-group {
-            display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
-            width: 100%; /* 그룹 너비 확보 */
+        .settings-content.top {
+            top: 0;
+            transform: translateY(-100%);
+            flex-direction: row;
+            justify-content: center;
+            padding-top: env(safe-area-inset-top);
         }
-        #settings-bar button, .setting-group button, .setting-group a /* 링크도 버튼처럼 보이게 */ {
-            padding: 8px 12px; min-width: 40px; cursor: pointer; background-color: #555;
-            border: 1px solid #777; color: white; border-radius: 4px; font-size: 0.9em;
-            text-decoration: none; /* 링크 밑줄 제거 */
-            display: inline-flex; /* 내부 텍스트 정렬 */
+
+        .settings-content.settings-visible {
+            transform: translateY(0);
+        }
+
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #settings-bar button, .setting-group button, .setting-group a {
+            padding: 8px 12px;
+            min-width: 40px;
+            cursor: pointer;
+            background-color: #555;
+            border: 1px solid #777;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
         }
-        #settings-bar button:active, .setting-group button:active, .setting-group a:active { background-color: #777; }
-        #close-settings {
-            background-color: transparent; border: none; font-size: 1.5em; padding: 0 8px;
-            position: absolute; top: 10px; right: 15px;
+
+        #settings-bar button:active, .setting-group button:active, .setting-group a:active {
+            background-color: #777;
         }
-        #current-chapter-title { font-size: 1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%; }
+
+        #close-settings {
+            background-color: transparent;
+            border: none;
+            font-size: 1.5em;
+            padding: 0 8px;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+
+        #current-chapter-title {
+            font-size: 1em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+        }
 
         /* Dark Mode Styles */
-        body.dark-mode { background-color: #121212; color: #e0e0e0; }
-        body.dark-mode .settings-content { background-color: rgba(30, 30, 30, 0.98); color: #e0e0e0; }
-        body.dark-mode #settings-bar button, body.dark-mode .setting-group button, body.dark-mode .setting-group a { background-color: #333; border-color: #555; color: #e0e0e0; }
-        body.dark-mode #settings-bar button:active, body.dark-mode .setting-group button:active, body.dark-mode .setting-group a:active { background-color: #555; }
-        body.dark-mode #close-settings { color: #bbb; }
-        body.dark-mode #toc-container { background-color: #1e1e1e; color: #e0e0e0; border-right: 1px solid #333; }
-        body.dark-mode #toc-container h2 { border-bottom-color: #333; }
-        body.dark-mode #toc-container a { color: #bb86fc; }
-        body.dark-mode #toc-container a:hover, body.dark-mode #toc-container a:active { background-color: #333; }
-        body.dark-mode #loading-indicator { color: #e0e0e0; background: rgba(30, 30, 30, 0.8); }
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .settings-content {
+            background-color: rgba(30, 30, 30, 0.98);
+            color: #e0e0e0;
+        }
+
+        body.dark-mode #settings-bar button, body.dark-mode .setting-group button, body.dark-mode .setting-group a {
+            background-color: #333;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode #settings-bar button:active, body.dark-mode .setting-group button:active, body.dark-mode .setting-group a:active {
+            background-color: #555;
+        }
+
+        body.dark-mode #close-settings {
+            color: #bbb;
+        }
+
+        body.dark-mode #toc-container {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border-right: 1px solid #333;
+        }
+
+        body.dark-mode #toc-container h2 {
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode #toc-container a {
+            color: #bb86fc;
+        }
+
+        body.dark-mode #toc-container a:hover, body.dark-mode #toc-container a:active {
+            background-color: #333;
+        }
+
+        body.dark-mode #loading-indicator {
+            color: #e0e0e0;
+            background: rgba(30, 30, 30, 0.8);
+        }
 
         /* Selection Action Button Styles */
         #selection-action-button {
-            position: absolute; display: none; padding: 8px 12px; background-color: #007bff;
-            color: white; border: none; border-radius: 4px; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1050; font-size: 0.9em;
+            position: absolute;
+            display: none;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1050;
+            font-size: 0.9em;
         }
-        #selection-action-button:hover { background-color: #0056b3; }
-        body.dark-mode #selection-action-button { background-color: #bb86fc; color: #121212; box-shadow: 0 2px 5px rgba(255,255,255,0.1); }
-        body.dark-mode #selection-action-button:hover { background-color: #9e6ddc; }
+
+        #selection-action-button:hover {
+            background-color: #0056b3;
+        }
+
+        body.dark-mode #selection-action-button {
+            background-color: #bb86fc;
+            color: #121212;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode #selection-action-button:hover {
+            background-color: #9e6ddc;
+        }
 
         /* Progress Slider Styles */
         .progress-slider-container {
-            width: 100%; padding: 15px 0 10px 0; display: flex;
-            flex-direction: column; align-items: center; gap: 8px;
+            width: 100%;
+            padding: 15px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
-        .progress-info { font-size: 0.8em; color: #ccc; margin-bottom: 5px; }
-        body:not(.dark-mode) .progress-info { color: #555; }
+
+        .progress-info {
+            font-size: 0.8em;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        body:not(.dark-mode) .progress-info {
+            color: #555;
+        }
 
         .slider-track-wrapper {
-            width: 80%; position: relative; height: 6px;
-            background-color: #444; border-radius: 3px;
-            display: flex; align-items: center; overflow: hidden;
+            width: 80%;
+            position: relative;
+            height: 6px;
+            background-color: #444;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
         }
-        body:not(.dark-mode) .slider-track-wrapper { background-color: #ccc; }
+
+        body:not(.dark-mode) .slider-track-wrapper {
+            background-color: #ccc;
+        }
 
         .slider-fill {
-            position: absolute; left: 0; top: 0; height: 100%;
-            background-color: #76c7c0; border-radius: 3px;
-            width: 0%; pointer-events: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: #76c7c0;
+            border-radius: 3px;
+            width: 0%;
+            pointer-events: none;
         }
-        body:not(.dark-mode) .slider-fill { background-color: #007bff; }
+
+        body:not(.dark-mode) .slider-fill {
+            background-color: #007bff;
+        }
 
         input[type="range"].progress-slider {
-            -webkit-appearance: none; appearance: none;
-            width: 100%; height: 18px; background: transparent;
-            outline: none; cursor: pointer; margin: 0;
-            position: relative; z-index: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 18px;
+            background: transparent;
+            outline: none;
+            cursor: pointer;
+            margin: 0;
+            position: relative;
+            z-index: 1;
         }
+
         input[type="range"].progress-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 18px; height: 18px; background: #76c7c0;
-            border-radius: 50%; border: 2px solid #222; cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #76c7c0;
+            border-radius: 50%;
+            border: 2px solid #222;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
-        body:not(.dark-mode) input[type="range"].progress-slider::-webkit-slider-thumb { background: #007bff; border: 2px solid #fff; }
+
+        body:not(.dark-mode) input[type="range"].progress-slider::-webkit-slider-thumb {
+            background: #007bff;
+            border: 2px solid #fff;
+        }
+
         input[type="range"].progress-slider::-moz-range-thumb {
-            width: 18px; height: 18px; background: #76c7c0;
-            border-radius: 50%; border: 2px solid #222; cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            width: 18px;
+            height: 18px;
+            background: #76c7c0;
+            border-radius: 50%;
+            border: 2px solid #222;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
-        body:not(.dark-mode) input[type="range"].progress-slider::-moz-range-thumb { background: #007bff; border: 2px solid #fff; }
+
+        body:not(.dark-mode) input[type="range"].progress-slider::-moz-range-thumb {
+            background: #007bff;
+            border: 2px solid #fff;
+        }
 
         .slider-value-tooltip {
-            position: absolute; background-color: #76c7c0; color: #121212;
-            padding: 5px 10px; border-radius: 5px; font-size: 0.85em;
+            position: absolute;
+            background-color: #76c7c0;
+            color: #121212;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
             white-space: nowrap;
             transform: translateX(-50%) translateY(-100%) translateY(-12px);
-            pointer-events: none; opacity: 0;
+            pointer-events: none;
+            opacity: 0;
             transition: opacity 0.15s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
         }
-        body:not(.dark-mode) .slider-value-tooltip { background-color: #007bff; color: white; }
+
+        body:not(.dark-mode) .slider-value-tooltip {
+            background-color: #007bff;
+            color: white;
+        }
+
         .slider-value-tooltip::after {
-            content: ""; position: absolute; top: 100%; left: 50%;
-            transform: translateX(-50%); border-width: 6px; border-style: solid;
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
             border-color: #76c7c0 transparent transparent transparent;
         }
-        body:not(.dark-mode) .slider-value-tooltip::after { border-color: #007bff transparent transparent transparent; }
+
+        body:not(.dark-mode) .slider-value-tooltip::after {
+            border-color: #007bff transparent transparent transparent;
+        }
+
+        /* ★★★ 모달 스타일 추가 ★★★ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1040;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal-overlay.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            z-index: 1050;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .modal.visible {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fffacd;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            min-height: 200px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50.1%);
+            border-bottom-right-radius: 3px;
+            box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.05);
+            z-index: 0;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            position: relative;
+        }
+
+        .modal-actions-top {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        .modal-action-btn {
+            background: rgba(0, 0, 0, 0.08);
+            border: none;
+            border-radius: 50%;
+            color: #555;
+            cursor: pointer;
+            font-size: 18px;
+            width: 32px;
+            height: 32px;
+            line-height: 1;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            transition: background-color 0.2s;
+        }
+
+        .modal-action-btn:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-close-btn {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .modal-header .note-header {
+            margin-bottom: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #d4c07a;
+            padding-right: 90px;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* z-index 추가 */
+        .modal-header .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #ffe8a1;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        .modal-header .user-info {
+            font-weight: bold;
+            color: #8b7300;
+            font-size: 1em;
+        }
+
+        .modal-body {
+            padding: 15px 25px;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #444;
+            white-space: pre-wrap;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* 쪽지 스타일 재활용 (선택적) */
+        .note-paper { /* 모달 외부 쪽지에도 적용될 수 있음 */
+            background-color: #fffacd;
+            padding: 20px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+            min-height: 280px;
+            margin-bottom: 25px;
+            border-bottom-right-radius: 0;
+            overflow: hidden;
+        }
+
+        .note-paper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.12) 50.1%);
+            border-bottom-right-radius: 3px;
+            box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.08);
+            z-index: 0;
+        }
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #d4c07a;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-icon {
+            width: 45px;
+            height: 45px;
+            background-color: #ffe8a1;
+            border-radius: 10px;
+            margin-right: 12px;
+            border: 1px solid #fff3cd;
+        }
+
+        .user-info {
+            font-weight: bold;
+            color: #8b7300;
+            font-size: 1.05em;
+        }
     </style>
 </head>
 <body>
@@ -223,15 +637,12 @@
     <ul id="toc-list"></ul>
 </nav>
 
-<!-- ★★★ Settings Bar 구조 수정 ★★★ -->
 <div id="settings-bar">
     <div class="settings-content top">
         <span id="current-chapter-title"></span>
     </div>
     <div class="settings-content bottom">
-        <!-- 첫 번째 Setting Group -->
         <div class="setting-group">
-            <!-- 슬라이더 컨테이너를 첫 번째 그룹 안으로 이동 (children[0]) -->
             <div class="progress-slider-container">
                 <div class="progress-info">
                     <span id="current-location-value">0</span> / <span id="total-location-value">0</span>
@@ -239,47 +650,63 @@
                 </div>
                 <div class="slider-track-wrapper">
                     <div class="slider-fill" id="progressSliderFill"></div>
-                    <input type="range" min="0" max="100" value="0" class="progress-slider" id="progressSliderInput" aria-label="Book progress">
+                    <input type="range" min="0" max="100" value="0" class="progress-slider" id="progressSliderInput"
+                           aria-label="Book progress">
                     <div class="slider-value-tooltip" id="sliderValueTooltip">
                         <span id="tooltip-current-value">0</span>/<span id="tooltip-total-value">0</span>
                     </div>
                 </div>
             </div>
-
-            <!-- 목차 버튼 (children[1]) -->
             <button id="toc-button-in-settings">목차</button>
-
-            <!-- 쪽지 버튼 (children[2]) -->
             <button id="notes-button-in-settings">쪽지</button>
-
-            <!-- 보기 설정 버튼 (children[3]) -->
             <button id="view-settings-button-in-settings">보기 설정</button>
         </div>
-
-        <!-- 두 번째 Setting Group (다크 모드 버튼) -->
         <div class="setting-group">
             <button id="toggle-dark-mode">Dark Mode</button>
         </div>
-
-        <!-- 닫기 버튼 -->
         <button id="close-settings" aria-label="Close settings">×</button>
     </div>
 </div>
 
 <button id="selection-action-button">액션</button>
 
+<!-- ★★★ 쪽지 내용 표시 모달 창 구조 추가 ★★★ -->
+<div id="comment-modal-overlay" class="modal-overlay"></div>
+<div id="comment-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="comment-modal-user-info" hidden>
+    {/* aria-labelledby 수정 */}
+    <div class="modal-content note-paper" id="modalNotePaper">
+        <div class="modal-header">
+
+            <div class="modal-actions-top">
+                <button class="modal-action-btn" id="modalDeleteButton" aria-label="삭제">🗑️</button>
+                <button class="modal-action-btn" id="modalEditButton" aria-label="수정">✏️</button>
+                <button class="modal-action-btn modal-close-btn" id="modalCloseButtonTop" aria-label="닫기">×</button>
+            </div>
+
+            <div class="note-header">
+                <div class="profile-icon" id="modalProfileIcon"></div>
+                <div class="user-info" id="modalCommentUser" aria-labelledby="comment-modal-user-info">사용자 님의 쪽지</div>
+            </div>
+        </div>
+        <div class="modal-body" id="modalCommentText">
+
+        </div>
+    </div>
+</div>
+<!-- ★★★ 모달 창 구조 끝 ★★★ -->
+
+
 <script th:inline="javascript">
     /*<![CDATA[*/
     const GLOBAL_BOOK_ID = /*[[${bookId}]]*/ null;
-    // 세션에서 사용자 ID 가져오기 (세션 속성 이름 'loginUser' 가정, 없으면 null)
-    const GLOBAL_USER_ID = /*[[${session.loginUser != null ? session.loginUser.id : null}]]*/ null;
+    const GLOBAL_USER_ID = /*[[${session.loginUser != null ? session.loginUser.id : null}]]*/ null; // 세션 키 확인!
     const GLOBAL_BOOK_URL_BASE = /*[[@{/book/api/epub-content/}]]*/ '/fallback-base-path/';
     const GLOBAL_BOOK_URL_TEMPLATE = (GLOBAL_BOOK_ID !== null && GLOBAL_BOOK_URL_BASE !== '/fallback-base-path/')
         ? `${GLOBAL_BOOK_URL_BASE}${GLOBAL_BOOK_ID}/`
         : null;
     /*]]>*/
 </script>
-<!-- viewer.js 스크립트는 그대로 사용 -->
+<!-- JavaScript 파일 로드 -->
 <script th:src="@{/js/book/viewer.js}"></script>
 
 </body>

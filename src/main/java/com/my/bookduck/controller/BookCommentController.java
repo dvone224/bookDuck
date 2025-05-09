@@ -1,16 +1,19 @@
 package com.my.bookduck.controller;
 
 import com.my.bookduck.controller.request.AddCommentRequest;
+import com.my.bookduck.controller.request.BookCommentDetailDto;
 import com.my.bookduck.controller.response.BookCommentHighlightDto;
 import com.my.bookduck.controller.response.loginUserInfo;
 import com.my.bookduck.domain.book.Book;
 import com.my.bookduck.domain.user.User; // User 엔티티 import
 import com.my.bookduck.service.BookService;
 import com.my.bookduck.service.BookCommentService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession; // HttpSession import
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 // import org.springframework.security.core.annotation.AuthenticationPrincipal; // 더 이상 사용 안 함
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Slf4j
@@ -136,6 +140,7 @@ public class BookCommentController {
 
 
     @GetMapping("/{bookId}/{chapterHrefEncoded}")
+    @ResponseBody
     public ResponseEntity<List<BookCommentHighlightDto>> getCommentsForChapter(
             @PathVariable Long bookId,
             @PathVariable String chapterHrefEncoded) {
@@ -153,6 +158,56 @@ public class BookCommentController {
             return ResponseEntity.badRequest().build(); // 잘못된 요청으로 처리
         } catch (Exception e) {
             log.error("Error fetching comments for bookId: {}, chapterHrefEncoded: {}", bookId, chapterHrefEncoded, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // ★★★ 쪽지 상세 정보 조회 API (GET /comments/detail/{commentId}) ★★★
+    @GetMapping("/detail/{commentId}") // '/api' 제거됨
+    @ResponseBody // JSON 응답
+    public ResponseEntity<?> getCommentDetail(@PathVariable Long commentId) {
+        log.debug("API: Fetching detail for commentId: {}", commentId);
+        try {
+            BookCommentDetailDto commentDetail = bookCommentService.getCommentDetail(commentId); // 서비스 호출
+            return ResponseEntity.ok(commentDetail);
+        } catch (EntityNotFoundException e) {
+            log.warn("API: Comment detail not found for id: {}", commentId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()); // 404 반환
+        } catch (Exception e) {
+            log.error("API: Error fetching comment detail for id: {}", commentId, e);
+            return ResponseEntity.internalServerError().build(); // 500 반환
+        }
+    }
+
+    // (참고) 만약 쪽지 수정/삭제 API도 필요하다면 여기에 추가
+    // @PutMapping("/{commentId}") @ResponseBody public ResponseEntity<?> updateComment(...)
+    // @DeleteMapping("/{commentId}") @ResponseBody public ResponseEntity<?> deleteComment(...)
+
+    @DeleteMapping("/{commentId}") // HTTP DELETE 메소드
+    @ResponseBody
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long commentId,
+            HttpSession session) { // 또는 @AuthenticationPrincipal User currentUser
+
+        loginUserInfo loginUser = (loginUserInfo) session.getAttribute("loginuser");
+        if (loginUser == null) {
+            log.warn("API: Delete comment failed. User not logged in.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 본문 없이 401
+        }
+        Long currentUserId = loginUser.getId();
+
+        log.debug("API: Attempting to delete commentId: {} by userId: {}", commentId, currentUserId);
+        try {
+            bookCommentService.deleteComment(commentId, currentUserId);
+            return ResponseEntity.ok().build(); // 성공 시 200 OK (본문 없음)
+        } catch (EntityNotFoundException e) {
+            log.warn("API: Delete comment failed. {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (AccessDeniedException e) {
+            log.warn("API: Delete comment failed. Access denied for userId: {}. {}", currentUserId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            log.error("API: Error deleting comment for id: {}", commentId, e);
             return ResponseEntity.internalServerError().build();
         }
     }
